@@ -79,24 +79,26 @@
                 position: absolute; left: 0; top: 0; width: 100%; display: block !important; background: white;
             }
         }
-        @@media (min-width: 768px) {
-    /* Membuat kontainer melebar penuh dan fleksibel di layar PC / Desktop HP */
+        @media (min-width: 768px) {
+    /* Menghilangkan batasan sempit saat di PC / Mode Desktop */
     main.max-w-md, 
     header .max-w-md, 
     nav .max-w-md {
-        max-width: 1280px !important; /* Diperbesar dari 900px menjadi 1280px */
-        width: 95% !important;
+        max-width: 100% !important; /* Membuat tampilan melebar penuh */
+        width: 100% !important;
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
     }
-    
-    /* Memperbesar tampilan kartu barang di Kasir & Stok */
+
+    /* Membuat grid kartu di Beranda/Dashboard jadi 4 kolom */
     .grid-cols-2 {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
         gap: 1rem !important;
     }
 
-    /* Memperbesar ukuran teks dan padding agar proporsional di PC */
+    /* Menyesuaikan font dan ukuran kartu */
     body {
-        font-size: 16px;
+        font-size: 15px;
     }
 }
     </style>
@@ -196,7 +198,7 @@
             </div>
         </header>
 
-        <main class="max-w-md mx-auto px-4 pt-4">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
 
             <!-- Notifikasi Floating -->
             <template x-if="notification.show">
