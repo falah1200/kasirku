@@ -80,27 +80,16 @@
             }
         }
         @media (min-width: 768px) {
-    /* Menghilangkan batasan sempit saat di PC / Mode Desktop */
-    main.max-w-md, 
-    header .max-w-md, 
-    nav .max-w-md {
-        max-width: 100% !important; /* Membuat tampilan melebar penuh */
-        width: 100% !important;
-        padding-left: 2rem !important;
-        padding-right: 2rem !important;
-    }
-
-    /* Membuat grid kartu di Beranda/Dashboard jadi 4 kolom */
-    .grid-cols-2 {
-        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-        gap: 1rem !important;
-    }
-
-    /* Menyesuaikan font dan ukuran kartu */
-    body {
-        font-size: 15px;
-    }
-}
+            main.max-w-md, 
+            header .max-w-md, 
+            nav .max-w-md {
+                max-width: 1280px !important;
+                width: 95% !important;
+            }
+            .grid-cols-2 {
+                grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen pb-28" x-data="warungApp()">
@@ -198,7 +187,7 @@
             </div>
         </header>
 
-        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        <main class="max-w-md mx-auto px-4 pt-4">
 
             <!-- Notifikasi Floating -->
             <template x-if="notification.show">
@@ -334,128 +323,137 @@
 
             <!-- TAB: KASIR / POS -->
             <div x-show="currentTab === 'kasir'" class="space-y-4">
-                <div class="flex gap-2">
-                    <div class="relative flex-1">
-                        <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input type="text" x-model="searchKasir" placeholder="Cari nama barang..." class="w-full bg-white border border-slate-300 rounded-2xl pl-11 pr-4 py-3.5 text-base font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand-600 shadow-sm">
-                    </div>
-                    <button @click="bukaScannerKamera()" class="bg-brand-600 hover:bg-brand-700 text-white px-4 rounded-2xl flex items-center justify-center shadow-md active:scale-95 transition" title="Scan Barcode Kamera">
-                        <i data-lucide="scan-line" class="w-6 h-6"></i>
-                    </button>
-                </div>
-
-                <div class="grid grid-cols-2 gap-2.5 max-h-[350px] overflow-y-auto pr-1">
-                    <template x-for="item in filteredStokKasir" :key="item.id">
-                        <div @click="tambahKeKeranjang(item)" 
-                             :class="item.stok === 0 ? 'opacity-40 cursor-not-allowed bg-slate-100 border-slate-200' : 'active:scale-95 hover:border-brand-500 cursor-pointer bg-white border-slate-200 shadow-sm'" 
-                             class="border p-3.5 rounded-2xl transition flex flex-col justify-between relative">
-                            <div>
-                                <div class="w-full h-20 bg-slate-100 rounded-xl mb-2 overflow-hidden flex items-center justify-center border border-slate-100">
-                                    <template x-if="item.gambar">
-                                        <img :src="item.gambar" class="w-full h-full object-cover">
-                                    </template>
-                                    <template x-if="!item.gambar">
-                                        <i data-lucide="image" class="w-6 h-6 text-slate-300"></i>
-                                    </template>
-                                </div>
-                                <span class="text-[10px] font-extrabold text-brand-700 bg-brand-50 px-1.5 py-0.5 rounded border border-brand-100" x-text="item.kategori"></span>
-                                <h4 class="font-bold text-slate-900 text-sm mt-1 line-clamp-2 leading-snug" x-text="item.nama"></h4>
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
+                    
+                    <!-- KOLOM KIRI: DAFTAR BARANG & PENCARIAN -->
+                    <div class="md:col-span-7 space-y-4">
+                        <div class="flex gap-2">
+                            <div class="relative flex-1">
+                                <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                <input type="text" x-model="searchKasir" placeholder="Cari nama barang..." class="w-full bg-white border border-slate-300 rounded-2xl pl-11 pr-4 py-3.5 text-base font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand-600 shadow-sm">
                             </div>
-                            <div class="flex justify-between items-end mt-2 pt-2 border-t border-slate-100">
-                                <span class="text-sm font-black text-brand-600" x-text="formatRupiah(item.jual)"></span>
-                                <span class="text-xs font-bold px-2 py-0.5 rounded" :class="item.stok < 5 ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'" x-text="item.stok + ' pcs'"></span>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-
-                <!-- KERANJANG BELANJA KASIR LOKAL -->
-                <div class="clean-card rounded-2xl p-4 space-y-3">
-                    <div class="flex justify-between items-center border-b border-slate-200 pb-2.5">
-                        <h3 class="font-black text-sm text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                            <i data-lucide="shopping-cart" class="w-5 h-5 text-brand-600"></i> Keranjang Belanja Kasir
-                        </h3>
-                        <button @click="keranjang = []" x-show="keranjang.length > 0" class="text-xs text-rose-600 font-bold hover:underline">Kosongkan</button>
-                    </div>
-
-                    <div class="max-h-40 overflow-y-auto space-y-2.5 pr-1 divide-y divide-slate-100">
-                        <template x-for="(cart, index) in keranjang" :key="cart.id">
-                            <div class="pt-2 flex justify-between items-center text-sm">
-                                <div class="flex items-center space-x-2.5 flex-1 pr-2">
-                                    <div class="w-10 h-10 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center border">
-                                        <template x-if="cart.gambar">
-                                            <img :src="cart.gambar" class="w-full h-full object-cover">
-                                        </template>
-                                        <template x-if="!cart.gambar">
-                                            <i data-lucide="image" class="w-4 h-4 text-slate-300"></i>
-                                        </template>
-                                    </div>
-                                    <div class="truncate">
-                                        <p class="font-bold text-slate-900 text-sm truncate" x-text="cart.nama"></p>
-                                        <p class="text-xs text-slate-500 font-medium" x-text="formatRupiah(cart.jual) + ' x ' + cart.qty"></p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center space-x-1.5">
-                                    <button @click="kurangiQtyKeranjang(index)" class="w-7 h-7 bg-slate-100 rounded-lg font-black text-sm">-</button>
-                                    <span class="text-sm font-black w-6 text-center" x-text="cart.qty"></span>
-                                    <button @click="tambahQtyKeranjang(index)" class="w-7 h-7 bg-slate-100 rounded-lg font-black text-sm">+</button>
-                                </div>
-                            </div>
-                        </template>
-                        <template x-if="keranjang.length === 0">
-                            <p class="text-center text-slate-400 text-sm py-4">Keranjang belanja masih kosong</p>
-                        </template>
-                    </div>
-
-                    <div class="border-t border-slate-200 pt-3 space-y-3">
-                        <div class="flex justify-between items-center bg-slate-50 p-3.5 rounded-xl border">
-                            <span class="text-xs font-bold text-slate-600 uppercase">Total Belanja</span>
-                            <span class="text-xl font-black text-brand-600" x-text="formatRupiah(totalKeranjang())"></span>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2">
-                            <button @click="metodeBayar = 'tunai'" :class="metodeBayar === 'tunai' ? 'bg-brand-600 text-white font-bold shadow-md' : 'bg-slate-100 text-slate-700 font-semibold'" class="py-2.5 rounded-xl text-sm transition">💵 Tunai</button>
-                            <button @click="metodeBayar = 'qris'" :class="metodeBayar === 'qris' ? 'bg-brand-600 text-white font-bold shadow-md' : 'bg-slate-100 text-slate-700 font-semibold'" class="py-2.5 rounded-xl text-sm transition">📱 QRIS</button>
-                        </div>
-
-                        <div x-show="metodeBayar === 'tunai'" class="space-y-3">
-                            <div class="grid grid-cols-2 gap-2.5">
-                                <div>
-                                    <label class="text-xs font-bold text-slate-500 uppercase">Uang Tunai (Rp)</label>
-                                    <input type="number" min="0" x-model.number="uangBayar" placeholder="50000" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold">
-                                </div>
-                                <div>
-                                    <label class="text-xs font-bold text-slate-500 uppercase">Kembalian</label>
-                                    <div class="bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-3 flex items-center">
-                                        <span :class="hitungKembalian() < 0 ? 'text-rose-600' : 'text-slate-900'" class="text-base font-black" x-text="hitungKembalian() < 0 ? 'Kurang!' : formatRupiah(hitungKembalian())"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <button @click="prosesPembayaran()" :disabled="keranjang.length === 0 || hitungKembalian() < 0" 
-                                    class="w-full bg-brand-600 hover:bg-brand-700 disabled:opacity-45 text-white font-extrabold py-4 rounded-2xl text-base transition shadow-lg active:scale-95 flex items-center justify-center gap-2">
-                                <i data-lucide="check-circle" class="w-5 h-5"></i> Selesaikan Transaksi Tunai
+                            <button @click="bukaScannerKamera()" class="bg-brand-600 hover:bg-brand-700 text-white px-4 rounded-2xl flex items-center justify-center shadow-md active:scale-95 transition" title="Scan Barcode Kamera">
+                                <i data-lucide="scan-line" class="w-6 h-6"></i>
                             </button>
                         </div>
 
-                        <div x-show="metodeBayar === 'qris'" class="space-y-3 text-center">
-                            <div class="bg-slate-50 p-4 rounded-2xl border space-y-2">
-                                <p class="text-xs font-bold text-slate-500 uppercase">Scan QRIS untuk Pembayaran</p>
-                                <template x-if="profilToko.qrisImg">
-                                    <img :src="profilToko.qrisImg" class="w-48 h-48 mx-auto object-contain bg-white p-2 rounded-xl border shadow-sm">
-                                </template>
-                                <template x-if="!profilToko.qrisImg">
-                                    <div class="p-6 bg-amber-50 text-amber-800 rounded-xl border border-amber-200 text-xs font-medium">
-                                        ⚠️ Gambar QRIS toko belum diatur.
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[520px] overflow-y-auto pr-1">
+                            <template x-for="item in filteredStokKasir" :key="item.id">
+                                <div @click="tambahKeKeranjang(item)" 
+                                     :class="item.stok === 0 ? 'opacity-40 cursor-not-allowed bg-slate-100 border-slate-200' : 'active:scale-95 hover:border-brand-500 cursor-pointer bg-white border-slate-200 shadow-sm'" 
+                                     class="border p-3.5 rounded-2xl transition flex flex-col justify-between relative">
+                                    <div>
+                                        <div class="w-full h-20 bg-slate-100 rounded-xl mb-2 overflow-hidden flex items-center justify-center border border-slate-100">
+                                            <template x-if="item.gambar">
+                                                <img :src="item.gambar" class="w-full h-full object-cover">
+                                            </template>
+                                            <template x-if="!item.gambar">
+                                                <i data-lucide="image" class="w-6 h-6 text-slate-300"></i>
+                                            </template>
+                                        </div>
+                                        <span class="text-[10px] font-extrabold text-brand-700 bg-brand-50 px-1.5 py-0.5 rounded border border-brand-100" x-text="item.kategori"></span>
+                                        <h4 class="font-bold text-slate-900 text-sm mt-1 line-clamp-2 leading-snug" x-text="item.nama"></h4>
                                     </div>
-                                </template>
-                                <p class="text-xs text-slate-400">Total Tagihan: <strong class="text-slate-900 font-bold" x-text="formatRupiah(totalKeranjang())"></strong></p>
-                            </div>
-                            <button @click="prosesPembayaranQRIS()" :disabled="keranjang.length === 0 || !profilToko.qrisImg" 
-                                    class="w-full bg-brand-600 hover:bg-brand-700 disabled:opacity-45 text-white font-extrabold py-4 rounded-2xl text-base transition shadow-lg active:scale-95 flex items-center justify-center gap-2">
-                                <i data-lucide="check-circle" class="w-5 h-5"></i> Konfirmasi Pembayaran QRIS Lunas
-                            </button>
+                                    <div class="flex justify-between items-end mt-2 pt-2 border-t border-slate-100">
+                                        <span class="text-sm font-black text-brand-600" x-text="formatRupiah(item.jual)"></span>
+                                        <span class="text-xs font-bold px-2 py-0.5 rounded" :class="item.stok < 5 ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'" x-text="item.stok + ' pcs'"></span>
+                                    </div>
+                                </div>
+                            </template>
                         </div>
                     </div>
+
+                    <!-- KOLOM KANAN: KERANJANG BELANJA & TOMBOL BAYAR -->
+                    <div class="md:col-span-5 md:sticky md:top-24">
+                        <div class="clean-card rounded-2xl p-4 space-y-3">
+                            <div class="flex justify-between items-center border-b border-slate-200 pb-2.5">
+                                <h3 class="font-black text-sm text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                                    <i data-lucide="shopping-cart" class="w-5 h-5 text-brand-600"></i> Keranjang Belanja Kasir
+                                </h3>
+                                <button @click="keranjang = []" x-show="keranjang.length > 0" class="text-xs text-rose-600 font-bold hover:underline">Kosongkan</button>
+                            </div>
+
+                            <div class="max-h-52 overflow-y-auto space-y-2.5 pr-1 divide-y divide-slate-100">
+                                <template x-for="(cart, index) in keranjang" :key="cart.id">
+                                    <div class="pt-2 flex justify-between items-center text-sm">
+                                        <div class="flex items-center space-x-2.5 flex-1 pr-2">
+                                            <div class="w-10 h-10 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center border">
+                                                <template x-if="cart.gambar">
+                                                    <img :src="cart.gambar" class="w-full h-full object-cover">
+                                                </template>
+                                                <template x-if="!cart.gambar">
+                                                    <i data-lucide="image" class="w-4 h-4 text-slate-300"></i>
+                                                </template>
+                                            </div>
+                                            <div class="truncate">
+                                                <p class="font-bold text-slate-900 text-sm truncate" x-text="cart.nama"></p>
+                                                <p class="text-xs text-slate-500 font-medium" x-text="formatRupiah(cart.jual) + ' x ' + cart.qty"></p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-1.5">
+                                            <button @click="kurangiQtyKeranjang(index)" class="w-7 h-7 bg-slate-100 rounded-lg font-black text-sm">-</button>
+                                            <span class="text-sm font-black w-6 text-center" x-text="cart.qty"></span>
+                                            <button @click="tambahQtyKeranjang(index)" class="w-7 h-7 bg-slate-100 rounded-lg font-black text-sm">+</button>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template x-if="keranjang.length === 0">
+                                    <p class="text-center text-slate-400 text-sm py-4">Keranjang belanja masih kosong</p>
+                                </template>
+                            </div>
+
+                            <div class="border-t border-slate-200 pt-3 space-y-3">
+                                <div class="flex justify-between items-center bg-slate-50 p-3.5 rounded-xl border">
+                                    <span class="text-xs font-bold text-slate-600 uppercase">Total Belanja</span>
+                                    <span class="text-xl font-black text-brand-600" x-text="formatRupiah(totalKeranjang())"></span>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button @click="metodeBayar = 'tunai'" :class="metodeBayar === 'tunai' ? 'bg-brand-600 text-white font-bold shadow-md' : 'bg-slate-100 text-slate-700 font-semibold'" class="py-2.5 rounded-xl text-sm transition">💵 Tunai</button>
+                                    <button @click="metodeBayar = 'qris'" :class="metodeBayar === 'qris' ? 'bg-brand-600 text-white font-bold shadow-md' : 'bg-slate-100 text-slate-700 font-semibold'" class="py-2.5 rounded-xl text-sm transition">📱 QRIS</button>
+                                </div>
+
+                                <div x-show="metodeBayar === 'tunai'" class="space-y-3">
+                                    <div class="grid grid-cols-2 gap-2.5">
+                                        <div>
+                                            <label class="text-xs font-bold text-slate-500 uppercase">Uang Tunai (Rp)</label>
+                                            <input type="number" min="0" x-model.number="uangBayar" placeholder="50000" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold">
+                                        </div>
+                                        <div>
+                                            <label class="text-xs font-bold text-slate-500 uppercase">Kembalian</label>
+                                            <div class="bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-3 flex items-center">
+                                                <span :class="hitungKembalian() < 0 ? 'text-rose-600' : 'text-slate-900'" class="text-base font-black" x-text="hitungKembalian() < 0 ? 'Kurang!' : formatRupiah(hitungKembalian())"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button @click="prosesPembayaran()" :disabled="keranjang.length === 0 || hitungKembalian() < 0" 
+                                            class="w-full bg-brand-600 hover:bg-brand-700 disabled:opacity-45 text-white font-extrabold py-4 rounded-2xl text-base transition shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                                        <i data-lucide="check-circle" class="w-5 h-5"></i> Selesaikan Transaksi Tunai
+                                    </button>
+                                </div>
+
+                                <div x-show="metodeBayar === 'qris'" class="space-y-3 text-center">
+                                    <div class="bg-slate-50 p-4 rounded-2xl border space-y-2">
+                                        <p class="text-xs font-bold text-slate-500 uppercase">Scan QRIS untuk Pembayaran</p>
+                                        <template x-if="profilToko.qrisImg">
+                                            <img :src="profilToko.qrisImg" class="w-48 h-48 mx-auto object-contain bg-white p-2 rounded-xl border shadow-sm">
+                                        </template>
+                                        <template x-if="!profilToko.qrisImg">
+                                            <div class="p-6 bg-amber-50 text-amber-800 rounded-xl border border-amber-200 text-xs font-medium">
+                                                ⚠️ Gambar QRIS toko belum diatur.
+                                            </div>
+                                        </template>
+                                        <p class="text-xs text-slate-400">Total Tagihan: <strong class="text-slate-900 font-bold" x-text="formatRupiah(totalKeranjang())"></strong></p>
+                                    </div>
+                                    <button @click="prosesPembayaranQRIS()" :disabled="keranjang.length === 0 || !profilToko.qrisImg" 
+                                            class="w-full bg-brand-600 hover:bg-brand-700 disabled:opacity-45 text-white font-extrabold py-4 rounded-2xl text-base transition shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                                        <i data-lucide="check-circle" class="w-5 h-5"></i> Konfirmasi Pembayaran QRIS Lunas
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
