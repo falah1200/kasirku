@@ -79,22 +79,12 @@
                 position: absolute; left: 0; top: 0; width: 100%; display: block !important; background: white;
             }
         }
-        @media (min-width: 768px) {
-            main.max-w-md, 
-            header .max-w-md, 
-            nav .max-w-md {
-                max-width: 900px !important;
-            }
-            .grid-cols-2 {
-                grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-            }
-        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 antialiased min-h-screen pb-28" x-data="warungApp()">
+<body class="bg-slate-50 text-slate-900 antialiased min-h-screen pb-28 md:pb-10" x-data="warungApp()">
 
     <!-- ================= INDIKATOR STATUS KONEKSI ================= -->
-    <div class="bg-slate-900 text-white text-[11px] font-bold px-3 py-1 flex justify-between items-center z-50 sticky top-0">
+    <div class="bg-slate-900 text-white text-[11px] font-bold px-4 py-1.5 flex justify-between items-center z-50 sticky top-0">
         <div class="flex items-center gap-1.5">
             <span class="w-2.5 h-2.5 rounded-full" :class="isOnlineNetwork && !isModeOffline ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'"></span>
             <span x-text="isModeOffline ? '🔴 Mode Lokal Offline (Tanpa Sinkron)' : (isOnlineNetwork ? '🟢 Terhubung Internet (Online)' : '🔴 Tanpa Internet (Offline Mode)')"></span>
@@ -151,8 +141,8 @@
 
     <!-- ================= APLIKASI UTAMA ================= -->
     <div x-show="isLoggedIn" x-cloak>
-        <header class="sticky top-7 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 py-3.5 shadow-sm">
-            <div class="max-w-md mx-auto flex items-center justify-between">
+        <header class="sticky top-[27px] z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 py-3 shadow-sm">
+            <div class="max-w-7xl mx-auto flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <div class="w-11 h-11 rounded-2xl bg-brand-600 flex items-center justify-center text-white shadow-md shadow-brand-500/30 font-black text-xl overflow-hidden border">
                         <template x-if="profilToko.logoImg">
@@ -167,16 +157,36 @@
                             <span x-text="profilToko.nama || 'Kasirku'"></span>
                             <span class="text-xs font-bold px-2.5 py-0.5 rounded-md" :class="isModeOffline ? 'bg-slate-200 text-slate-700' : (userRole === 'pemilik' ? 'bg-amber-100 text-amber-800' : 'bg-brand-100 text-brand-800')" x-text="isModeOffline ? 'OFFLINE' : (userRole === 'pemilik' ? 'PEMILIK' : 'KARYAWAN')"></span>
                         </h1>
-                        <p class="text-xs text-slate-500 font-medium truncate max-w-[160px]" x-text="isModeOffline ? 'Mode Lokal' : ('Toko: ' + kodeToko)"></p>
+                        <p class="text-xs text-slate-500 font-medium truncate max-w-[160px] md:max-w-xs" x-text="isModeOffline ? 'Mode Lokal' : ('Toko: ' + kodeToko)"></p>
                     </div>
                 </div>
+
+                <!-- NAVIGASI MODE PC (ATAS DENGAN TOMBOL LENGKAP & ICON) -->
+                <nav class="hidden md:flex items-center space-x-1 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200">
+                    <button @click="currentTab = 'dashboard'" :class="currentTab === 'dashboard' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2">
+                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Beranda
+                    </button>
+                    <button @click="currentTab = 'kasir'" :class="currentTab === 'kasir' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2">
+                        <i data-lucide="shopping-bag" class="w-4 h-4"></i> Kasir
+                    </button>
+                    <button @click="currentTab = 'stok'" :class="currentTab === 'stok' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2">
+                        <i data-lucide="boxes" class="w-4 h-4"></i> Stok
+                    </button>
+                    <button @click="currentTab = 'pengeluaran'" :class="currentTab === 'pengeluaran' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 relative">
+                        <i data-lucide="wallet" class="w-4 h-4"></i> Biaya
+                        <span x-show="!isModeOffline && pesananOnlineList.length > 0" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                    </button>
+                    <button @click="currentTab = 'riwayat'" :class="currentTab === 'riwayat' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2">
+                        <i data-lucide="file-text" class="w-4 h-4"></i> Laporan
+                    </button>
+                </nav>
                 
-                <div class="flex items-center gap-1.5">
-                    <button @click="bukaLiveChatModalUmum()" class="relative p-2.5 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold transition" title="Live Chat Customer Online">
+                <div class="flex items-center gap-2">
+                    <button @click="bukaLiveChatModalUmum()" class="relative p-2.5 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold transition hover:bg-indigo-100" title="Live Chat Customer Online">
                         <i data-lucide="message-square" class="w-5 h-5"></i>
                         <span x-show="!isModeOffline && pesananOnlineList.length > 0" class="absolute -top-1 -right-1 bg-indigo-600 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-black animate-pulse" x-text="pesananOnlineList.length"></span>
                     </button>
-                    <button @click="connectBluetooth()" :class="btDeviceConnected ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-600 border-slate-200'" class="p-2.5 rounded-xl text-sm font-bold border transition" title="Printer Bluetooth">
+                    <button @click="connectBluetooth()" :class="btDeviceConnected ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-600 border-slate-200'" class="p-2.5 rounded-xl text-sm font-bold border transition hover:bg-slate-200" title="Printer Bluetooth">
                         <i data-lucide="printer" class="w-5 h-5"></i>
                     </button>
                     <button @click="logout()" class="p-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition" title="Keluar Akun">
@@ -186,7 +196,7 @@
             </div>
         </header>
 
-        <main class="max-w-md mx-auto px-4 pt-4">
+        <main class="max-w-7xl mx-auto px-4 pt-4">
 
             <!-- Notifikasi Floating -->
             <template x-if="notification.show">
@@ -201,7 +211,7 @@
             </template>
 
             <!-- TAB: DASHBOARD -->
-            <div x-show="currentTab === 'dashboard'" class="space-y-4">
+            <div x-show="currentTab === 'dashboard'" class="space-y-4 max-w-4xl mx-auto">
                 <div class="bg-gradient-to-br from-brand-600 via-brand-700 to-indigoBrand-700 p-6 rounded-3xl text-white shadow-xl shadow-brand-600/20">
                     <div class="flex justify-between items-start mb-4">
                         <div>
@@ -247,7 +257,7 @@
                         </h3>
                         <button @click="simpanProfilToko()" class="text-xs bg-brand-600 text-white font-bold px-3.5 py-1.5 rounded-lg hover:bg-brand-700">Simpan Profil</button>
                     </div>
-                    <div class="space-y-2.5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
                             <label class="text-xs font-bold text-slate-500 uppercase">Upload Logo Toko Profil</label>
                             <input type="file" accept="image/*" @change="handleLogoUpload($event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 mt-1">
@@ -320,147 +330,160 @@
                 </div>
             </div>
 
-            <!-- TAB: KASIR / POS -->
-            <div x-show="currentTab === 'kasir'" class="space-y-4">
-                <div class="flex gap-2">
-                    <div class="relative flex-1">
-                        <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input type="text" x-model="searchKasir" placeholder="Cari nama barang..." class="w-full bg-white border border-slate-300 rounded-2xl pl-11 pr-4 py-3.5 text-base font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand-600 shadow-sm">
-                    </div>
-                    <button @click="bukaScannerKamera()" class="bg-brand-600 hover:bg-brand-700 text-white px-4 rounded-2xl flex items-center justify-center shadow-md active:scale-95 transition" title="Scan Barcode Kamera">
-                        <i data-lucide="scan-line" class="w-6 h-6"></i>
-                    </button>
-                </div>
-
-                <div class="grid grid-cols-2 gap-2.5 max-h-[350px] overflow-y-auto pr-1">
-                    <template x-for="item in filteredStokKasir" :key="item.id">
-                        <div @click="tambahKeKeranjang(item)" 
-                             :class="item.stok === 0 ? 'opacity-40 cursor-not-allowed bg-slate-100 border-slate-200' : 'active:scale-95 hover:border-brand-500 cursor-pointer bg-white border-slate-200 shadow-sm'" 
-                             class="border p-3.5 rounded-2xl transition flex flex-col justify-between relative">
-                            <div>
-                                <div class="w-full h-20 bg-slate-100 rounded-xl mb-2 overflow-hidden flex items-center justify-center border border-slate-100">
-                                    <template x-if="item.gambar">
-                                        <img :src="item.gambar" class="w-full h-full object-cover">
-                                    </template>
-                                    <template x-if="!item.gambar">
-                                        <i data-lucide="image" class="w-6 h-6 text-slate-300"></i>
-                                    </template>
-                                </div>
-                                <span class="text-[10px] font-extrabold text-brand-700 bg-brand-50 px-1.5 py-0.5 rounded border border-brand-100" x-text="item.kategori"></span>
-                                <h4 class="font-bold text-slate-900 text-sm mt-1 line-clamp-2 leading-snug" x-text="item.nama"></h4>
-                            </div>
-                            <div class="flex justify-between items-end mt-2 pt-2 border-t border-slate-100">
-                                <span class="text-sm font-black text-brand-600" x-text="formatRupiah(item.jual)"></span>
-                                <span class="text-xs font-bold px-2 py-0.5 rounded" :class="item.stok < 5 ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'" x-text="item.stok + ' pcs'"></span>
-                            </div>
+            <!-- TAB: KASIR / POS (LAYOUT MODEREN DUA KOLOM KHUSUS PC) -->
+            <div x-show="currentTab === 'kasir'" class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                
+                <!-- KOLOM KIRI (PC): PENCARIAN & KATALOG PRODUK -->
+                <div class="md:col-span-7 lg:col-span-8 space-y-4">
+                    <div class="flex gap-2">
+                        <div class="relative flex-1">
+                            <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" x-model="searchKasir" placeholder="Cari nama barang atau barcode..." class="w-full bg-white border border-slate-300 rounded-2xl pl-11 pr-4 py-3.5 text-base font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand-600 shadow-sm">
                         </div>
-                    </template>
-                </div>
-
-                <!-- KERANJANG BELANJA KASIR LOKAL (Diturankan posisinya dengan md:mt-6 dan diberi jarak ke bawah) -->
-                <div class="clean-card rounded-2xl p-4 space-y-3 md:mt-6 md:mb-12">
-                    <div class="flex justify-between items-center border-b border-slate-200 pb-2.5">
-                        <h3 class="font-black text-sm text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                            <i data-lucide="shopping-cart" class="w-5 h-5 text-brand-600"></i> Keranjang Belanja Kasir
-                        </h3>
-                        <button @click="keranjang = []" x-show="keranjang.length > 0" class="text-xs text-rose-600 font-bold hover:underline">Kosongkan</button>
+                        <button @click="bukaScannerKamera()" class="bg-brand-600 hover:bg-brand-700 text-white px-4 rounded-2xl flex items-center justify-center shadow-md active:scale-95 transition" title="Scan Barcode Kamera">
+                            <i data-lucide="scan-line" class="w-6 h-6"></i>
+                        </button>
                     </div>
 
-                    <div class="max-h-40 overflow-y-auto space-y-2.5 pr-1 divide-y divide-slate-100">
-                        <template x-for="(cart, index) in keranjang" :key="cart.id">
-                            <div class="pt-2 flex justify-between items-center text-sm">
-                                <div class="flex items-center space-x-2.5 flex-1 pr-2">
-                                    <div class="w-10 h-10 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center border">
-                                        <template x-if="cart.gambar">
-                                            <img :src="cart.gambar" class="w-full h-full object-cover">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 max-h-[550px] md:max-h-[calc(100vh-180px)] overflow-y-auto pr-1">
+                        <template x-for="item in filteredStokKasir" :key="item.id">
+                            <div @click="tambahKeKeranjang(item)" 
+                                 :class="item.stok === 0 ? 'opacity-40 cursor-not-allowed bg-slate-100 border-slate-200' : 'active:scale-95 hover:border-brand-500 hover:shadow-md cursor-pointer bg-white border-slate-200 shadow-sm'" 
+                                 class="border p-3.5 rounded-2xl transition flex flex-col justify-between relative">
+                                <div>
+                                    <div class="w-full h-24 bg-slate-100 rounded-xl mb-2 overflow-hidden flex items-center justify-center border border-slate-100">
+                                        <template x-if="item.gambar">
+                                            <img :src="item.gambar" class="w-full h-full object-cover">
                                         </template>
-                                        <template x-if="!cart.gambar">
-                                            <i data-lucide="image" class="w-4 h-4 text-slate-300"></i>
+                                        <template x-if="!item.gambar">
+                                            <i data-lucide="image" class="w-6 h-6 text-slate-300"></i>
                                         </template>
                                     </div>
-                                    <div class="truncate">
-                                        <p class="font-bold text-slate-900 text-sm truncate" x-text="cart.nama"></p>
-                                        <p class="text-xs text-slate-500 font-medium" x-text="formatRupiah(cart.jual) + ' x ' + cart.qty"></p>
-                                    </div>
+                                    <span class="text-[10px] font-extrabold text-brand-700 bg-brand-50 px-1.5 py-0.5 rounded border border-brand-100" x-text="item.kategori"></span>
+                                    <h4 class="font-bold text-slate-900 text-sm mt-1 line-clamp-2 leading-snug" x-text="item.nama"></h4>
                                 </div>
-                                <div class="flex items-center space-x-1.5">
-                                    <button @click="kurangiQtyKeranjang(index)" class="w-7 h-7 bg-slate-100 rounded-lg font-black text-sm">-</button>
-                                    <span class="text-sm font-black w-6 text-center" x-text="cart.qty"></span>
-                                    <button @click="tambahQtyKeranjang(index)" class="w-7 h-7 bg-slate-100 rounded-lg font-black text-sm">+</button>
+                                <div class="flex justify-between items-end mt-2 pt-2 border-t border-slate-100">
+                                    <span class="text-sm font-black text-brand-600" x-text="formatRupiah(item.jual)"></span>
+                                    <span class="text-xs font-bold px-2 py-0.5 rounded" :class="item.stok < 5 ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'" x-text="item.stok + ' pcs'"></span>
                                 </div>
                             </div>
                         </template>
-                        <template x-if="keranjang.length === 0">
-                            <p class="text-center text-slate-400 text-sm py-4">Keranjang belanja masih kosong</p>
-                        </template>
                     </div>
+                </div>
 
-                    <div class="border-t border-slate-200 pt-3 space-y-3">
-                        <div class="flex justify-between items-center bg-slate-50 p-3.5 rounded-xl border">
-                            <span class="text-xs font-bold text-slate-600 uppercase">Total Belanja</span>
-                            <span class="text-xl font-black text-brand-600" x-text="formatRupiah(totalKeranjang())"></span>
+                <!-- KOLOM KANAN (PC): KERANJANG BELANJA & PEMBAYARAN DI KANAN -->
+                <div class="md:col-span-5 lg:col-span-4 md:sticky md:top-24">
+                    <div class="clean-card rounded-2xl p-4.5 space-y-4 shadow-md">
+                        <div class="flex justify-between items-center border-b border-slate-200 pb-3">
+                            <h3 class="font-black text-base text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                                <i data-lucide="shopping-cart" class="w-5 h-5 text-brand-600"></i> Keranjang Belanja
+                            </h3>
+                            <button @click="keranjang = []" x-show="keranjang.length > 0" class="text-xs text-rose-600 font-bold hover:underline">Kosongkan</button>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-2">
-                            <button @click="metodeBayar = 'tunai'" :class="metodeBayar === 'tunai' ? 'bg-brand-600 text-white font-bold shadow-md' : 'bg-slate-100 text-slate-700 font-semibold'" class="py-2.5 rounded-xl text-sm transition">💵 Tunai</button>
-                            <button @click="metodeBayar = 'qris'" :class="metodeBayar === 'qris' ? 'bg-brand-600 text-white font-bold shadow-md' : 'bg-slate-100 text-slate-700 font-semibold'" class="py-2.5 rounded-xl text-sm transition">📱 QRIS</button>
-                        </div>
-
-                        <div x-show="metodeBayar === 'tunai'" class="space-y-3">
-                            <div class="grid grid-cols-2 gap-2.5">
-                                <div>
-                                    <label class="text-xs font-bold text-slate-500 uppercase">Uang Tunai (Rp)</label>
-                                    <input type="number" min="0" x-model.number="uangBayar" placeholder="50000" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold">
-                                </div>
-                                <div>
-                                    <label class="text-xs font-bold text-slate-500 uppercase">Kembalian</label>
-                                    <div class="bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-3 flex items-center">
-                                        <span :class="hitungKembalian() < 0 ? 'text-rose-600' : 'text-slate-900'" class="text-base font-black" x-text="hitungKembalian() < 0 ? 'Kurang!' : formatRupiah(hitungKembalian())"></span>
+                        <!-- LIST KERANJANG -->
+                        <div class="max-h-56 md:max-h-64 overflow-y-auto space-y-2.5 pr-1 divide-y divide-slate-100">
+                            <template x-for="(cart, index) in keranjang" :key="cart.id">
+                                <div class="pt-2 flex justify-between items-center text-sm">
+                                    <div class="flex items-center space-x-2.5 flex-1 pr-2">
+                                        <div class="w-10 h-10 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center border">
+                                            <template x-if="cart.gambar">
+                                                <img :src="cart.gambar" class="w-full h-full object-cover">
+                                            </template>
+                                            <template x-if="!cart.gambar">
+                                                <i data-lucide="image" class="w-4 h-4 text-slate-300"></i>
+                                            </template>
+                                        </div>
+                                        <div class="truncate">
+                                            <p class="font-bold text-slate-900 text-sm truncate" x-text="cart.nama"></p>
+                                            <p class="text-xs text-slate-500 font-medium" x-text="formatRupiah(cart.jual) + ' x ' + cart.qty"></p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-1.5">
+                                        <button @click="kurangiQtyKeranjang(index)" class="w-7 h-7 bg-slate-100 hover:bg-slate-200 rounded-lg font-black text-sm transition">-</button>
+                                        <span class="text-sm font-black w-6 text-center" x-text="cart.qty"></span>
+                                        <button @click="tambahQtyKeranjang(index)" class="w-7 h-7 bg-slate-100 hover:bg-slate-200 rounded-lg font-black text-sm transition">+</button>
                                     </div>
                                 </div>
-                            </div>
-                            <button @click="prosesPembayaran()" :disabled="keranjang.length === 0 || hitungKembalian() < 0" 
-                                    class="w-full bg-brand-600 hover:bg-brand-700 disabled:opacity-45 text-white font-extrabold py-4 rounded-2xl text-base transition shadow-lg active:scale-95 flex items-center justify-center gap-2">
-                                <i data-lucide="check-circle" class="w-5 h-5"></i> Selesaikan Transaksi Tunai
-                            </button>
+                            </template>
+                            <template x-if="keranjang.length === 0">
+                                <div class="text-center py-8">
+                                    <i data-lucide="shopping-bag" class="w-10 h-10 mx-auto text-slate-300 mb-2"></i>
+                                    <p class="text-slate-400 text-sm">Keranjang belanja masih kosong</p>
+                                </div>
+                            </template>
                         </div>
 
-                        <div x-show="metodeBayar === 'qris'" class="space-y-3 text-center">
-                            <div class="bg-slate-50 p-4 rounded-2xl border space-y-2">
-                                <p class="text-xs font-bold text-slate-500 uppercase">Scan QRIS untuk Pembayaran</p>
-                                <template x-if="profilToko.qrisImg">
-                                    <img :src="profilToko.qrisImg" class="w-48 h-48 mx-auto object-contain bg-white p-2 rounded-xl border shadow-sm">
-                                </template>
-                                <template x-if="!profilToko.qrisImg">
-                                    <div class="p-6 bg-amber-50 text-amber-800 rounded-xl border border-amber-200 text-xs font-medium">
-                                        ⚠️ Gambar QRIS toko belum diatur.
-                                    </div>
-                                </template>
-                                <p class="text-xs text-slate-400">Total Tagihan: <strong class="text-slate-900 font-bold" x-text="formatRupiah(totalKeranjang())"></strong></p>
+                        <!-- RINGKASAN PEMBAYARAN -->
+                        <div class="border-t border-slate-200 pt-3 space-y-3">
+                            <div class="flex justify-between items-center bg-slate-50 p-3.5 rounded-xl border">
+                                <span class="text-xs font-bold text-slate-600 uppercase">Total Belanja</span>
+                                <span class="text-2xl font-black text-brand-600" x-text="formatRupiah(totalKeranjang())"></span>
                             </div>
-                            <button @click="prosesPembayaranQRIS()" :disabled="keranjang.length === 0 || !profilToko.qrisImg" 
-                                    class="w-full bg-brand-600 hover:bg-brand-700 disabled:opacity-45 text-white font-extrabold py-4 rounded-2xl text-base transition shadow-lg active:scale-95 flex items-center justify-center gap-2">
-                                <i data-lucide="check-circle" class="w-5 h-5"></i> Konfirmasi Pembayaran QRIS Lunas
-                            </button>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <button @click="metodeBayar = 'tunai'" :class="metodeBayar === 'tunai' ? 'bg-brand-600 text-white font-bold shadow-md' : 'bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200'" class="py-2.5 rounded-xl text-sm transition">💵 Tunai</button>
+                                <button @click="metodeBayar = 'qris'" :class="metodeBayar === 'qris' ? 'bg-brand-600 text-white font-bold shadow-md' : 'bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200'" class="py-2.5 rounded-xl text-sm transition">📱 QRIS</button>
+                            </div>
+
+                            <div x-show="metodeBayar === 'tunai'" class="space-y-3">
+                                <div class="grid grid-cols-2 gap-2.5">
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">Uang Tunai (Rp)</label>
+                                        <input type="number" min="0" x-model.number="uangBayar" placeholder="50000" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold text-slate-900 focus:outline-none focus:border-brand-600">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-500 uppercase">Kembalian</label>
+                                        <div class="bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-3 flex items-center">
+                                            <span :class="hitungKembalian() < 0 ? 'text-rose-600' : 'text-slate-900'" class="text-base font-black" x-text="hitungKembalian() < 0 ? 'Kurang!' : formatRupiah(hitungKembalian())"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button @click="prosesPembayaran()" :disabled="keranjang.length === 0 || hitungKembalian() < 0" 
+                                        class="w-full bg-brand-600 hover:bg-brand-700 disabled:opacity-45 text-white font-extrabold py-4 rounded-2xl text-base transition shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                                    <i data-lucide="check-circle" class="w-5 h-5"></i> Selesaikan Transaksi Tunai
+                                </button>
+                            </div>
+
+                            <div x-show="metodeBayar === 'qris'" class="space-y-3 text-center">
+                                <div class="bg-slate-50 p-4 rounded-2xl border space-y-2">
+                                    <p class="text-xs font-bold text-slate-500 uppercase">Scan QRIS untuk Pembayaran</p>
+                                    <template x-if="profilToko.qrisImg">
+                                        <img :src="profilToko.qrisImg" class="w-48 h-48 mx-auto object-contain bg-white p-2 rounded-xl border shadow-sm">
+                                    </template>
+                                    <template x-if="!profilToko.qrisImg">
+                                        <div class="p-6 bg-amber-50 text-amber-800 rounded-xl border border-amber-200 text-xs font-medium">
+                                            ⚠️ Gambar QRIS toko belum diatur.
+                                        </div>
+                                    </template>
+                                    <p class="text-xs text-slate-400">Total Tagihan: <strong class="text-slate-900 font-bold" x-text="formatRupiah(totalKeranjang())"></strong></p>
+                                </div>
+                                <button @click="prosesPembayaranQRIS()" :disabled="keranjang.length === 0 || !profilToko.qrisImg" 
+                                        class="w-full bg-brand-600 hover:bg-brand-700 disabled:opacity-45 text-white font-extrabold py-4 rounded-2xl text-base transition shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                                    <i data-lucide="check-circle" class="w-5 h-5"></i> Konfirmasi Pembayaran QRIS Lunas
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- TAB: BIAYA & KERANJANG PESANAN CUSTOMER ONLINE -->
-            <div x-show="currentTab === 'pengeluaran'" class="space-y-4">
+            <div x-show="currentTab === 'pengeluaran'" class="space-y-4 max-w-4xl mx-auto">
                 
                 <!-- BIAYA OPERASIONAL FORM -->
                 <div class="clean-card p-4.5 rounded-2xl">
                     <h3 class="font-black text-sm text-slate-900 uppercase tracking-wider mb-3">Catat Biaya Operasional / Kulakan</h3>
                     <form @submit.prevent="simpanPengeluaran()" class="space-y-3">
-                        <div>
-                            <label class="text-xs font-bold text-slate-600 uppercase">Keterangan Biaya</label>
-                            <input type="text" x-model="formPengeluaran.keterangan" required placeholder="misal: Bayar Listrik" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-medium">
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-slate-600 uppercase">Jumlah Biaya (Rp)</label>
-                            <input type="number" min="0" x-model.number="formPengeluaran.jumlah" required placeholder="0" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs font-bold text-slate-600 uppercase">Keterangan Biaya</label>
+                                <input type="text" x-model="formPengeluaran.keterangan" required placeholder="misal: Bayar Listrik" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-medium">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-slate-600 uppercase">Jumlah Biaya (Rp)</label>
+                                <input type="number" min="0" x-model.number="formPengeluaran.jumlah" required placeholder="0" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold">
+                            </div>
                         </div>
                         <button type="submit" class="w-full bg-slate-900 text-white font-extrabold py-3.5 rounded-xl text-base transition">+ Catat Pengeluaran</button>
                     </form>
@@ -475,49 +498,51 @@
                         <span class="text-xs font-bold bg-amber-200 text-amber-900 px-2.5 py-1 rounded-lg" x-text="pesananOnlineList.length + ' Pesanan'"></span>
                     </div>
 
-                    <div class="space-y-3 max-h-[350px] overflow-y-auto pr-1">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto pr-1">
                         <template x-for="p in pesananOnlineList" :key="p.id">
-                            <div class="bg-white p-3.5 rounded-2xl space-y-2 border shadow-sm">
-                                <div class="flex justify-between items-start border-b pb-2">
-                                    <div>
-                                        <span class="text-[10px] text-slate-400" x-text="p.tanggal"></span>
-                                        <h4 class="font-extrabold text-sm text-slate-900" x-text="p.customer ? p.customer.nama : 'Pelanggan'"></h4>
-                                        <p class="text-xs font-bold text-brand-600" x-text="'📱 ' + (p.customer ? p.customer.telp : '-')"></p>
+                            <div class="bg-white p-3.5 rounded-2xl space-y-2 border shadow-sm flex flex-col justify-between">
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-start border-b pb-2">
+                                        <div>
+                                            <span class="text-[10px] text-slate-400" x-text="p.tanggal"></span>
+                                            <h4 class="font-extrabold text-sm text-slate-900" x-text="p.customer ? p.customer.nama : 'Pelanggan'"></h4>
+                                            <p class="text-xs font-bold text-brand-600" x-text="'📱 ' + (p.customer ? p.customer.telp : '-')"></p>
+                                        </div>
+                                        <span class="text-[10px] font-extrabold bg-amber-100 text-amber-800 px-2 py-0.5 rounded" x-text="p.status || 'Baru'"></span>
                                     </div>
-                                    <span class="text-[10px] font-extrabold bg-amber-100 text-amber-800 px-2 py-0.5 rounded" x-text="p.status || 'Baru'"></span>
-                                </div>
 
-                                <div class="text-xs text-slate-600 space-y-1">
-                                    <p><strong>Alamat:</strong> <span x-text="p.customer ? p.customer.alamat : '-'"></span></p>
-                                    <template x-if="p.customer && p.customer.lat">
-                                        <a :href="'https://www.google.com/maps?q=' + p.customer.lat + ',' + p.customer.lng" target="_blank" class="inline-flex items-center gap-1 text-brand-600 font-bold hover:underline">
-                                            <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> Google Maps
-                                        </a>
-                                    </template>
-                                </div>
+                                    <div class="text-xs text-slate-600 space-y-1">
+                                        <p><strong>Alamat:</strong> <span x-text="p.customer ? p.customer.alamat : '-'"></span></p>
+                                        <template x-if="p.customer && p.customer.lat">
+                                            <a :href="'https://www.google.com/maps?q=' + p.customer.lat + ',' + p.customer.lng" target="_blank" class="inline-flex items-center gap-1 text-brand-600 font-bold hover:underline">
+                                                <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> Google Maps
+                                            </a>
+                                        </template>
+                                    </div>
 
-                                <div class="bg-slate-50 p-2.5 rounded-xl space-y-1 border text-xs">
-                                    <template x-for="i in p.items" :key="i.id">
-                                        <div class="flex justify-between">
-                                            <span x-text="i.nama + ' (' + i.qty + 'x)'"></span>
-                                            <span class="font-bold" x-text="formatRupiah(i.jual * i.qty)"></span>
+                                    <div class="bg-slate-50 p-2.5 rounded-xl space-y-1 border text-xs">
+                                        <template x-for="i in p.items" :key="i.id">
+                                            <div class="flex justify-between">
+                                                <span x-text="i.nama + ' (' + i.qty + 'x)'"></span>
+                                                <span class="font-bold" x-text="formatRupiah(i.jual * i.qty)"></span>
+                                            </div>
+                                        </template>
+                                        <div class="border-t pt-1 flex justify-between font-black text-slate-900">
+                                            <span>TOTAL</span>
+                                            <span class="text-brand-600" x-text="formatRupiah(p.totalTagihan || p.total)"></span>
+                                        </div>
+                                    </div>
+
+                                    <template x-if="p.customer && p.customer.buktiImg">
+                                        <div class="space-y-1">
+                                            <p class="text-[10px] font-bold text-slate-500 uppercase">Bukti Pembayaran:</p>
+                                            <img :src="p.customer.buktiImg" @click="window.open(p.customer.buktiImg)" class="w-full h-24 object-cover rounded-xl border cursor-pointer">
                                         </div>
                                     </template>
-                                    <div class="border-t pt-1 flex justify-between font-black text-slate-900">
-                                        <span>TOTAL</span>
-                                        <span class="text-brand-600" x-text="formatRupiah(p.totalTagihan || p.total)"></span>
-                                    </div>
                                 </div>
 
-                                <template x-if="p.customer && p.customer.buktiImg">
-                                    <div class="space-y-1">
-                                        <p class="text-[10px] font-bold text-slate-500 uppercase">Bukti Pembayaran:</p>
-                                        <img :src="p.customer.buktiImg" @click="window.open(p.customer.buktiImg)" class="w-full h-24 object-cover rounded-xl border cursor-pointer">
-                                    </div>
-                                </template>
-
                                 <!-- AKSI PESANAN ONLINE (CHAT, TERIMA, TOLAK) -->
-                                <div class="grid grid-cols-3 gap-2 pt-1">
+                                <div class="grid grid-cols-3 gap-2 pt-2">
                                     <button @click="bukaLiveChat(p)" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-2 rounded-xl text-xs flex items-center justify-center gap-1">
                                         <i data-lucide="message-square" class="w-3.5 h-3.5"></i> Chat
                                     </button>
@@ -531,14 +556,14 @@
                             </div>
                         </template>
                         <template x-if="pesananOnlineList.length === 0">
-                            <p class="text-center text-xs text-slate-400 py-4">Belum ada pesanan online masuk.</p>
+                            <p class="text-center text-xs text-slate-400 py-4 md:col-span-2">Belum ada pesanan online masuk.</p>
                         </template>
                     </div>
                 </div>
 
                 <div class="space-y-2.5">
                     <h3 class="text-xs font-black text-slate-500 uppercase tracking-wider">Riwayat Catatan Biaya</h3>
-                    <div class="space-y-2.5 max-h-[280px] overflow-y-auto pr-1">
+                    <div class="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
                         <template x-for="item in riwayatPengeluaran" :key="item.id">
                             <div class="clean-card p-4 rounded-2xl flex justify-between items-center">
                                 <div>
@@ -558,7 +583,7 @@
             <!-- MODAL LIVE CHAT DENGAN PELANGGAN -->
             <template x-if="showChatModal">
                 <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
-                    <div class="bg-white rounded-3xl p-5 w-full max-w-sm space-y-3 shadow-2xl flex flex-col h-[520px] relative">
+                    <div class="bg-white rounded-3xl p-5 w-full max-w-md space-y-3 shadow-2xl flex flex-col h-[550px] relative">
                         <div class="flex justify-between items-center border-b pb-2.5">
                             <div class="flex items-center gap-2">
                                 <button @click="showChatModal = false" class="p-1.5 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 transition" title="Kembali / Tutup">
@@ -596,7 +621,7 @@
             </template>
 
             <!-- TAB: STOK BARANG -->
-            <div x-show="currentTab === 'stok'" class="space-y-4">
+            <div x-show="currentTab === 'stok'" class="space-y-4 max-w-5xl mx-auto">
                 <div x-show="isModeOffline || userRole === 'pemilik'" class="clean-card p-4.5 rounded-2xl">
                     <h3 class="font-black text-sm text-slate-900 uppercase tracking-wider mb-3 flex items-center justify-between border-b pb-2">
                         <span x-text="isEditing ? 'Edit Data Barang' : 'Tambah Produk Baru'"></span>
@@ -604,23 +629,23 @@
                     </h3>
 
                     <form @submit.prevent="simpanBarang()" class="space-y-3">
-                        <div>
-                            <label class="text-xs font-bold text-slate-600 uppercase">Nama Produk</label>
-                            <input type="text" x-model="formBarang.nama" required placeholder="misal: Beras Ramos 5kg" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-medium">
-                        </div>
-                        <div>
-                            <div class="flex justify-between items-center">
-                                <label class="text-xs font-bold text-slate-600 uppercase">Kode Barcode / SKU</label>
-                                <button type="button" @click="generateRandomSku()" class="text-[11px] text-brand-600 font-bold hover:underline">✨ Generate Otomatis</button>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs font-bold text-slate-600 uppercase">Nama Produk</label>
+                                <input type="text" x-model="formBarang.nama" required placeholder="misal: Beras Ramos 5kg" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-medium">
                             </div>
-                            <input type="text" x-model="formBarang.sku" @input="previewBarcode()" required placeholder="Contoh: 899600123" class="w-full mt-1 bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold">
-                            
-                            <div class="mt-2 text-center bg-slate-50 p-2.5 rounded-xl border" x-show="formBarang.sku">
-                                <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Preview Barcode Stiker:</p>
-                                <svg id="preview-barcode-svg" class="mx-auto"></svg>
+                            <div>
+                                <div class="flex justify-between items-center">
+                                    <label class="text-xs font-bold text-slate-600 uppercase">Kode Barcode / SKU</label>
+                                    <button type="button" @click="generateRandomSku()" class="text-[11px] text-brand-600 font-bold hover:underline">✨ Generate Otomatis</button>
+                                </div>
+                                <input type="text" x-model="formBarang.sku" @input="previewBarcode()" required placeholder="Contoh: 899600123" class="w-full mt-1 bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold">
+                                
+                                <div class="mt-2 text-center bg-slate-50 p-2.5 rounded-xl border" x-show="formBarang.sku">
+                                    <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Preview Barcode Stiker:</p>
+                                    <svg id="preview-barcode-svg" class="mx-auto"></svg>
+                                </div>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2.5">
                             <div>
                                 <label class="text-xs font-bold text-slate-600 uppercase">Kategori</label>
                                 <input type="text" x-model="formBarang.kategori" required placeholder="Sembako" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-medium">
@@ -629,8 +654,6 @@
                                 <label class="text-xs font-bold text-slate-600 uppercase">Jumlah Stok</label>
                                 <input type="number" min="0" x-model.number="formBarang.stok" required placeholder="0" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold">
                             </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2.5">
                             <div>
                                 <label class="text-xs font-bold text-slate-600 uppercase">Harga Modal (Rp)</label>
                                 <input type="number" min="0" x-model.number="formBarang.modal" required placeholder="0" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold">
@@ -666,7 +689,7 @@
                         </button>
                     </div>
 
-                    <div class="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
+                    <div class="space-y-2.5 max-h-[450px] overflow-y-auto pr-1">
                         <template x-for="item in filteredStokBarang" :key="item.id">
                             <div class="clean-card p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                                 <div class="flex items-center space-x-3.5">
@@ -710,7 +733,7 @@
             </div>
 
             <!-- TAB: LAPORAN -->
-            <div x-show="currentTab === 'riwayat'" class="space-y-4">
+            <div x-show="currentTab === 'riwayat'" class="space-y-4 max-w-5xl mx-auto">
                 <div class="clean-card p-4 rounded-2xl space-y-3">
                     <h3 class="font-black text-xs text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
                         <i data-lucide="bar-chart-3" class="w-4 h-4 text-brand-600"></i> Ringkasan Keuangan
@@ -876,8 +899,8 @@
             </template>
         </main>
 
-        <!-- Navigasi Bawah -->
-        <nav class="fixed bottom-0 left-0 right-0 z-50 clean-nav py-2.5 px-3">
+        <!-- Navigasi Bawah (Khusus Tampilan HP / Mobile) -->
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 clean-nav py-2.5 px-3">
             <div class="max-w-md mx-auto grid grid-cols-5 gap-1">
                 <button @click="currentTab = 'dashboard'" :class="currentTab === 'dashboard' ? 'text-brand-600 font-extrabold' : 'text-slate-400'" class="flex flex-col items-center py-1">
                     <i data-lucide="layout-dashboard" class="w-6 h-6 mb-1"></i><span class="text-xs">Beranda</span>
