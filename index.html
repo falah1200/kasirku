@@ -79,16 +79,26 @@
                 position: absolute; left: 0; top: 0; width: 100%; display: block !important; background: white;
             }
         }
-        @media (min-width: 768px) {
-            main.max-w-md, 
-            header .max-w-md, 
-            nav .max-w-md {
-                max-width: 900px !important;
-            }
-            .grid-cols-2 {
-                grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-            }
-        }
+        @@media (min-width: 768px) {
+    /* Membuat kontainer melebar penuh dan fleksibel di layar PC / Desktop HP */
+    main.max-w-md, 
+    header .max-w-md, 
+    nav .max-w-md {
+        max-width: 1280px !important; /* Diperbesar dari 900px menjadi 1280px */
+        width: 95% !important;
+    }
+    
+    /* Memperbesar tampilan kartu barang di Kasir & Stok */
+    .grid-cols-2 {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+        gap: 1rem !important;
+    }
+
+    /* Memperbesar ukuran teks dan padding agar proporsional di PC */
+    body {
+        font-size: 16px;
+    }
+}
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen pb-28" x-data="warungApp()">
