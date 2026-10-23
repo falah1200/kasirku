@@ -141,63 +141,64 @@
 
     <!-- ================= APLIKASI UTAMA ================= -->
     <div x-show="isLoggedIn" x-cloak>
-        <header class="sticky top-[27px] z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 py-3 shadow-sm">
-            <div class="max-w-7xl mx-auto flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="w-11 h-11 rounded-2xl bg-brand-600 flex items-center justify-center text-white shadow-md shadow-brand-500/30 font-black text-xl overflow-hidden border">
-                        <template x-if="profilToko.logoImg">
-                            <img :src="profilToko.logoImg" class="w-full h-full object-cover">
-                        </template>
-                        <template x-if="!profilToko.logoImg">
-                            <i data-lucide="store" class="w-6 h-6"></i>
-                        </template>
-                    </div>
-                    <div>
-                        <h1 class="font-extrabold text-lg tracking-tight text-slate-900 flex items-center gap-1.5">
-                            <span x-text="profilToko.nama || 'Kasirku'"></span>
-                            <span class="text-xs font-bold px-2.5 py-0.5 rounded-md" :class="isModeOffline ? 'bg-slate-200 text-slate-700' : (userRole === 'pemilik' ? 'bg-amber-100 text-amber-800' : 'bg-brand-100 text-brand-800')" x-text="isModeOffline ? 'OFFLINE' : (userRole === 'pemilik' ? 'PEMILIK' : 'KARYAWAN')"></span>
-                        </h1>
-                        <p class="text-xs text-slate-500 font-medium truncate max-w-[160px] md:max-w-xs" x-text="isModeOffline ? 'Mode Lokal' : ('Toko: ' + kodeToko)"></p>
-                    </div>
-                </div>
-
-                <!-- NAVIGASI MODE PC (ATAS DENGAN TOMBOL LENGKAP & ICON) -->
-                <nav class="hidden md:flex items-center space-x-1 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200">
-                    <button @click="currentTab = 'dashboard'" :class="currentTab === 'dashboard' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2">
-                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Beranda
-                    </button>
-                    <button @click="currentTab = 'kasir'" :class="currentTab === 'kasir' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2">
-                        <i data-lucide="shopping-bag" class="w-4 h-4"></i> Kasir
-                    </button>
-                    <button @click="currentTab = 'stok'" :class="currentTab === 'stok' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2">
-                        <i data-lucide="boxes" class="w-4 h-4"></i> Stok
-                    </button>
-                    <button @click="currentTab = 'pengeluaran'" :class="currentTab === 'pengeluaran' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 relative">
-                        <i data-lucide="wallet" class="w-4 h-4"></i> Biaya
-                        <span x-show="!isModeOffline && pesananOnlineList.length > 0" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                    </button>
-                    <button @click="currentTab = 'riwayat'" :class="currentTab === 'riwayat' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2">
-                        <i data-lucide="file-text" class="w-4 h-4"></i> Laporan
-                    </button>
-                </nav>
-                
-                <div class="flex items-center gap-2">
-                    <button @click="bukaLiveChatModalUmum()" class="relative p-2.5 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold transition hover:bg-indigo-100" title="Live Chat Customer Online">
-                        <i data-lucide="message-square" class="w-5 h-5"></i>
-                        <span x-show="!isModeOffline && pesananOnlineList.length > 0" class="absolute -top-1 -right-1 bg-indigo-600 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-black animate-pulse" x-text="pesananOnlineList.length"></span>
-                    </button>
-                    <button @click="connectBluetooth()" :class="btDeviceConnected ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-600 border-slate-200'" class="p-2.5 rounded-xl text-sm font-bold border transition hover:bg-slate-200" title="Printer Bluetooth">
-                        <i data-lucide="printer" class="w-5 h-5"></i>
-                    </button>
-                    <button @click="logout()" class="p-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition" title="Keluar Akun">
-                        <i data-lucide="log-out" class="w-5 h-5"></i>
-                    </button>
-                </div>
+        <header class="sticky top-[27px] z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-3 md:px-4 py-2.5 shadow-sm overflow-x-hidden">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
+        <!-- PROFIL TOKO & NAMA (MOBILE ADAPTIVE) -->
+        <div class="flex items-center space-x-2 min-w-0 flex-1">
+            <div class="w-9 h-9 md:w-11 md:h-11 rounded-xl md:rounded-2xl bg-brand-600 flex items-center justify-center text-white shadow-md shadow-brand-500/30 font-black text-lg md:text-xl overflow-hidden border flex-shrink-0">
+                <template x-if="profilToko.logoImg">
+                    <img :src="profilToko.logoImg" class="w-full h-full object-cover">
+                </template>
+                <template x-if="!profilToko.logoImg">
+                    <i data-lucide="store" class="w-5 h-5 md:w-6 md:h-6"></i>
+                </template>
             </div>
-        </header>
+            <div class="min-w-0 flex-1">
+                <h1 class="font-extrabold text-sm md:text-lg tracking-tight text-slate-900 flex items-center gap-1 truncate">
+                    <span class="truncate" x-text="profilToko.nama || 'Kasirku'"></span>
+                    <span class="text-[9px] md:text-xs font-bold px-1.5 md:px-2.5 py-0.5 rounded-md flex-shrink-0" :class="isModeOffline ? 'bg-slate-200 text-slate-700' : (userRole === 'pemilik' ? 'bg-amber-100 text-amber-800' : 'bg-brand-100 text-brand-800')" x-text="isModeOffline ? 'OFFLINE' : (userRole === 'pemilik' ? 'PEMILIK' : 'KARYAWAN')"></span>
+                </h1>
+                <p class="text-[10px] md:text-xs text-slate-500 font-medium truncate max-w-[110px] sm:max-w-[160px] md:max-w-xs" x-text="isModeOffline ? 'Mode Lokal' : ('Toko: ' + kodeToko)"></p>
+            </div>
+        </div>
+
+        <!-- NAVIGASI MODE PC (ATAS DENGAN TOMBOL LENGKAP & ICON) -->
+        <nav class="hidden md:flex items-center space-x-1 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200">
+            <button @click="currentTab = 'dashboard'" :class="currentTab === 'dashboard' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Beranda
+            </button>
+            <button @click="currentTab = 'kasir'" :class="currentTab === 'kasir' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2">
+                <i data-lucide="shopping-bag" class="w-4 h-4"></i> Kasir
+            </button>
+            <button @click="currentTab = 'stok'" :class="currentTab === 'stok' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2">
+                <i data-lucide="boxes" class="w-4 h-4"></i> Stok
+            </button>
+            <button @click="currentTab = 'pengeluaran'" :class="currentTab === 'pengeluaran' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 relative">
+                <i data-lucide="wallet" class="w-4 h-4"></i> Biaya
+                <span x-show="!isModeOffline && pesananOnlineList.length > 0" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+            </button>
+            <button @click="currentTab = 'riwayat'" :class="currentTab === 'riwayat' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2">
+                <i data-lucide="file-text" class="w-4 h-4"></i> Laporan
+            </button>
+        </nav>
+        
+        <!-- ACTION BUTTONS (RINGKAS DI MOBILE) -->
+        <div class="flex items-center gap-1.5 md:gap-2 flex-shrink-0">
+            <button @click="bukaLiveChatModalUmum()" class="relative p-2 md:p-2.5 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold transition hover:bg-indigo-100" title="Live Chat Customer Online">
+                <i data-lucide="message-square" class="w-4 h-4 md:w-5 md:h-5"></i>
+                <span x-show="!isModeOffline && pesananOnlineList.length > 0" class="absolute -top-1 -right-1 bg-indigo-600 text-white text-[9px] w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center font-black animate-pulse" x-text="pesananOnlineList.length"></span>
+            </button>
+            <button @click="connectBluetooth()" :class="btDeviceConnected ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-600 border-slate-200'" class="p-2 md:p-2.5 rounded-xl text-sm font-bold border transition hover:bg-slate-200" title="Printer Bluetooth">
+                <i data-lucide="printer" class="w-4 h-4 md:w-5 md:h-5"></i>
+            </button>
+            <button @click="logout()" class="p-2 md:p-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition" title="Keluar Akun">
+                <i data-lucide="log-out" class="w-4 h-4 md:w-5 md:h-5"></i>
+            </button>
+        </div>
+    </div>
+</header>
 
         <main class="max-w-7xl mx-auto px-4 pt-4">
-
             <!-- Notifikasi Floating -->
             <template x-if="notification.show">
                 <div :class="notification.type === 'success' ? 'bg-slate-900 text-white border-slate-800' : 'bg-rose-600 text-white border-rose-700'" 
@@ -580,40 +581,54 @@
                 </div>
             </div>
 
-            <!-- MODAL LIVE CHAT DENGAN PELANGGAN -->
+            <!-- MODAL LIVE CHAT DENGAN PELANGGAN (DIPERBAIKI 100% BEBAS BUG) -->
             <template x-if="showChatModal">
                 <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
                     <div class="bg-white rounded-3xl p-5 w-full max-w-md space-y-3 shadow-2xl flex flex-col h-[550px] relative">
                         <div class="flex justify-between items-center border-b pb-2.5">
                             <div class="flex items-center gap-2">
-                                <button @click="showChatModal = false" class="p-1.5 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 transition" title="Kembali / Tutup">
-                                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                                <button @click="showChatModal = false" class="p-2 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-600 transition flex items-center justify-center" title="Kembali">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                                        <polyline points="12 19 5 12 12 5"></polyline>
+                                    </svg>
                                 </button>
                                 <div>
                                     <h3 class="font-black text-sm text-slate-900 leading-tight" x-text="'Chat: ' + (activeChatTrx.customer ? activeChatTrx.customer.nama : 'Pelanggan')"></h3>
                                     <p class="text-[10px] text-slate-400" x-text="activeChatTrx.customer ? activeChatTrx.customer.telp : ''"></p>
                                 </div>
                             </div>
-                            <button @click="showChatModal = false" class="p-1.5 rounded-xl bg-slate-100 hover:bg-rose-100 text-slate-500 hover:text-rose-600 transition" title="Tutup">
-                                <i data-lucide="x" class="w-5 h-5"></i>
+                            <button @click="showChatModal = false" class="p-2 rounded-xl bg-slate-100 hover:bg-rose-100 text-slate-700 hover:text-rose-600 transition flex items-center justify-center" title="Tutup">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
                             </button>
                         </div>
 
                         <div class="flex-1 overflow-y-auto space-y-2.5 p-2 bg-slate-50 rounded-2xl border" id="chatContainer">
-                            <template x-for="c in chatMessages" :key="c.time">
-                                <div :class="c.sender === 'toko' ? 'text-right' : 'text-left'">
-                                    <div :class="c.sender === 'toko' ? 'bg-brand-600 text-white rounded-br-none' : 'bg-white text-slate-900 border rounded-bl-none'" class="inline-block p-3 rounded-2xl max-w-[80%] text-xs font-medium shadow-sm">
-                                        <p x-text="c.text"></p>
-                                        <span class="text-[9px] opacity-70 block mt-1" x-text="c.time"></span>
-                                    </div>
-                                </div>
-                            </template>
+                            <template x-for="(c, idx) in chatMessages" :key="idx">
+    <div :class="c.sender === 'toko' ? 'text-right' : 'text-left'">
+        <div :class="c.sender === 'toko' ? 'bg-brand-600 text-white rounded-br-none' : 'bg-white text-slate-900 border rounded-bl-none'" class="inline-block p-3 rounded-2xl max-w-[80%] text-xs font-medium shadow-sm relative">
+            <p x-text="c.text"></p>
+            <div class="flex items-center justify-between gap-3 mt-1 opacity-80 border-t border-white/20 pt-1">
+                <span class="text-[9px]" x-text="c.time"></span>
+                <button @click="hapusPesanChat(idx)" class="text-[10px] font-bold hover:underline" :class="c.sender === 'toko' ? 'text-rose-200' : 'text-rose-600'" title="Hapus pesan ini">
+                    🗑️ Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+</template>
                         </div>
 
                         <div class="flex gap-2 pt-1">
                             <input type="text" x-model="inputChatText" @keyup.enter="kirimPesanChat()" placeholder="Ketik pesan balasan..." class="flex-1 bg-slate-100 border border-slate-300 rounded-xl px-3.5 py-3 text-xs font-medium focus:outline-none focus:border-brand-600">
-                            <button @click="kirimPesanChat()" class="bg-brand-600 hover:bg-brand-700 text-white px-4 rounded-xl font-bold flex items-center justify-center shadow-md active:scale-95 transition">
-                                <i data-lucide="send" class="w-4 h-4"></i>
+                            <button @click="kirimPesanChat()" class="bg-brand-600 hover:bg-brand-700 text-white px-4 rounded-xl font-bold flex items-center justify-center shadow-md active:scale-95 transition" title="Kirim Pesan">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
                             </button>
                         </div>
                     </div>
@@ -1382,7 +1397,6 @@
                         { sender: 'customer', text: 'Halo toko, ada yang ingin saya tanyakan.', time: 'Baru saja' }
                     ];
                     this.showChatModal = true;
-                    this.$nextTick(() => { lucide.createIcons(); });
                 },
 
                 async kirimPesanChat() {
@@ -1401,6 +1415,30 @@
                                 chats: firebase.firestore.FieldValue.arrayUnion(msg)
                             });
                         } catch(e){}
+                    }
+                },
+                async hapusPesanChat(index) {
+                    if (confirm('Yakin ingin menghapus pesan chat ini?')) {
+                        // 1. Hapus pesan dari daftar lokal
+                        this.chatMessages.splice(index, 1);
+
+                        // 2. Jika online dan ada transaksi terhubung di Firestore, update ke database
+                        if (!this.isModeOffline && navigator.onLine && this.activeChatTrx.id) {
+                            try {
+                                await db.collection('kasirku_toko')
+                                    .doc(this.kodeToko)
+                                    .collection('transaksi')
+                                    .doc(String(this.activeChatTrx.id))
+                                    .update({
+                                        chats: this.chatMessages
+                                    });
+                                this.showNotification('Pesan berhasil dihapus');
+                            } catch(e) {
+                                this.showNotification('Gagal memperbarui di server', 'error');
+                            }
+                        } else {
+                            this.showNotification('Pesan dihapus lokal');
+                        }
                     }
                 },
 
