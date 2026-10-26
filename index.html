@@ -70,10 +70,12 @@
             border-top: 1px solid #e2e8f0;
         }
         .print-only { display: none; }
+        
+        /* CSS Print Dinamis Berdasarkan Ukuran Pilihan (58mm / 80mm) */
         @media print {
             body * { visibility: hidden; }
-            #printable-barcode-area, #printable-barcode-area * { visibility: visible; }
-            #printable-barcode-area { position: absolute; left: 0; top: 0; width: 100%; }
+            #printable-barcode-area, #printable-barcode-area *, #printable-laporan-area, #printable-laporan-area *, #printable-setoran-area, #printable-setoran-area * { visibility: visible; }
+            #printable-barcode-area, #printable-laporan-area, #printable-setoran-area { position: absolute; left: 0; top: 0; width: 100%; }
             .print-only, .print-only * { visibility: visible !important; }
             #print-all-container { 
                 position: absolute; left: 0; top: 0; width: 100%; display: block !important; background: white;
@@ -107,7 +109,7 @@
                     <p class="text-sm text-slate-500 font-medium">Masuk ke aplikasi Kasirku</p>
                 </div>
 
-                <!-- FORM MODE ONLINE (TERHUBUNG BOS & KARYAWAN) -->
+                <!-- FORM MODE ONLINE -->
                 <div class="space-y-4">
                     <div class="bg-blue-50 border border-blue-200 p-3.5 rounded-xl text-xs text-blue-900 font-medium">
                         <p>🔒 <strong>Mode Online:</strong> Sinkronisasi penuh dengan kasir online & customer online.</p>
@@ -141,65 +143,69 @@
 
     <!-- ================= APLIKASI UTAMA ================= -->
     <div x-show="isLoggedIn" x-cloak>
-        <header class="sticky top-[27px] z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-3 md:px-4 py-2.5 shadow-sm overflow-x-hidden">
-    <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
-        <!-- PROFIL TOKO & NAMA (MOBILE ADAPTIVE) -->
-        <div class="flex items-center space-x-2 min-w-0 flex-1">
-            <div class="w-9 h-9 md:w-11 md:h-11 rounded-xl md:rounded-2xl bg-brand-600 flex items-center justify-center text-white shadow-md shadow-brand-500/30 font-black text-lg md:text-xl overflow-hidden border flex-shrink-0">
-                <template x-if="profilToko.logoImg">
-                    <img :src="profilToko.logoImg" class="w-full h-full object-cover">
-                </template>
-                <template x-if="!profilToko.logoImg">
-                    <i data-lucide="store" class="w-5 h-5 md:w-6 md:h-6"></i>
-                </template>
-            </div>
-            <div class="min-w-0 flex-1">
-                <h1 class="font-extrabold text-sm md:text-lg tracking-tight text-slate-900 flex items-center gap-1 truncate">
-                    <span class="truncate" x-text="profilToko.nama || 'Kasirku'"></span>
-                    <span class="text-[9px] md:text-xs font-bold px-1.5 md:px-2.5 py-0.5 rounded-md flex-shrink-0" :class="isModeOffline ? 'bg-slate-200 text-slate-700' : (userRole === 'pemilik' ? 'bg-amber-100 text-amber-800' : 'bg-brand-100 text-brand-800')" x-text="isModeOffline ? 'OFFLINE' : (userRole === 'pemilik' ? 'PEMILIK' : 'KARYAWAN')"></span>
-                </h1>
-                <p class="text-[10px] md:text-xs text-slate-500 font-medium truncate max-w-[110px] sm:max-w-[160px] md:max-w-xs" x-text="isModeOffline ? 'Mode Lokal' : ('Toko: ' + kodeToko)"></p>
-            </div>
-        </div>
+        <header class="sticky top-[27px] z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-3 md:px-4 py-2.5 shadow-sm">
+            <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
+                <div class="flex items-center space-x-2 min-w-0 flex-1">
+                    <div class="w-9 h-9 md:w-11 md:h-11 rounded-xl md:rounded-2xl bg-brand-600 flex items-center justify-center text-white shadow-md shadow-brand-500/30 font-black text-lg md:text-xl overflow-hidden border flex-shrink-0">
+                        <template x-if="profilToko.logoImg">
+                            <img :src="profilToko.logoImg" class="w-full h-full object-cover">
+                        </template>
+                        <template x-if="!profilToko.logoImg">
+                            <i data-lucide="store" class="w-5 h-5 md:w-6 md:h-6"></i>
+                        </template>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <h1 class="font-extrabold text-sm md:text-lg tracking-tight text-slate-900 flex items-center gap-1 truncate">
+                            <span class="truncate" x-text="profilToko.nama || 'Kasirku'"></span>
+                            <span class="text-[9px] md:text-xs font-bold px-1.5 md:px-2.5 py-0.5 rounded-md flex-shrink-0" :class="isModeOffline ? 'bg-slate-200 text-slate-700' : (userRole === 'pemilik' ? 'bg-amber-100 text-amber-800' : 'bg-brand-100 text-brand-800')" x-text="isModeOffline ? 'OFFLINE' : (userRole === 'pemilik' ? 'PEMILIK' : 'KARYAWAN')"></span>
+                        </h1>
+                        <p class="text-[10px] md:text-xs text-slate-500 font-medium truncate max-w-[110px] sm:max-w-[160px] md:max-w-xs" x-text="isModeOffline ? 'Mode Lokal' : ('Toko: ' + kodeToko)"></p>
+                    </div>
+                </div>
 
-        <!-- NAVIGASI MODE PC (ATAS DENGAN TOMBOL LENGKAP & ICON) -->
-        <nav class="hidden md:flex items-center space-x-1 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200">
-            <button @click="currentTab = 'dashboard'" :class="currentTab === 'dashboard' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2">
-                <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Beranda
-            </button>
-            <button @click="currentTab = 'kasir'" :class="currentTab === 'kasir' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2">
-                <i data-lucide="shopping-bag" class="w-4 h-4"></i> Kasir
-            </button>
-            <button @click="currentTab = 'stok'" :class="currentTab === 'stok' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2">
-                <i data-lucide="boxes" class="w-4 h-4"></i> Stok
-            </button>
-            <button @click="currentTab = 'pengeluaran'" :class="currentTab === 'pengeluaran' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2 relative">
-                <i data-lucide="wallet" class="w-4 h-4"></i> Biaya
-                <span x-show="!isModeOffline && pesananOnlineList.length > 0" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-            </button>
-            <button @click="currentTab = 'riwayat'" :class="currentTab === 'riwayat' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-4 py-2 rounded-xl text-xs transition flex items-center gap-2">
-                <i data-lucide="file-text" class="w-4 h-4"></i> Laporan
-            </button>
-        </nav>
-        
-        <!-- ACTION BUTTONS (RINGKAS DI MOBILE) -->
-        <div class="flex items-center gap-1.5 md:gap-2 flex-shrink-0">
-            <button @click="bukaLiveChatModalUmum()" class="relative p-2 md:p-2.5 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold transition hover:bg-indigo-100" title="Live Chat Customer Online">
-                <i data-lucide="message-square" class="w-4 h-4 md:w-5 md:h-5"></i>
-                <span x-show="!isModeOffline && pesananOnlineList.length > 0" class="absolute -top-1 -right-1 bg-indigo-600 text-white text-[9px] w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center font-black animate-pulse" x-text="pesananOnlineList.length"></span>
-            </button>
-            <button @click="connectBluetooth()" :class="btDeviceConnected ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-600 border-slate-200'" class="p-2 md:p-2.5 rounded-xl text-sm font-bold border transition hover:bg-slate-200" title="Printer Bluetooth">
-                <i data-lucide="printer" class="w-4 h-4 md:w-5 md:h-5"></i>
-            </button>
-            <button @click="logout()" class="p-2 md:p-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition" title="Keluar Akun">
-                <i data-lucide="log-out" class="w-4 h-4 md:w-5 md:h-5"></i>
-            </button>
-        </div>
-    </div>
-</header>
+                <!-- NAVIGASI PC -->
+                <nav class="hidden md:flex items-center space-x-1 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200">
+                    <button @click="currentTab = 'dashboard'" :class="currentTab === 'dashboard' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5">
+                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Beranda
+                    </button>
+                    <button @click="currentTab = 'stok'" :class="currentTab === 'stok' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5">
+                        <i data-lucide="boxes" class="w-4 h-4"></i> Stok
+                    </button>
+                    <button @click="currentTab = 'pengeluaran'" :class="currentTab === 'pengeluaran' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5">
+                        <i data-lucide="wallet" class="w-4 h-4"></i> Biaya
+                    </button>
+                    <button @click="currentTab = 'kasir'" :class="currentTab === 'kasir' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-3.5 py-2 rounded-xl text-xs transition flex items-center gap-1.5">
+                        <i data-lucide="shopping-bag" class="w-4 h-4"></i> Kasir
+                    </button>
+                    <button @click="currentTab = 'keranjang_online'" :class="currentTab === 'keranjang_online' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5 relative">
+                        <i data-lucide="shopping-cart" class="w-4 h-4"></i> Keranjang Online
+                        <span x-show="!isModeOffline && pesananOnlineList.length > 0" class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                    </button>
+                    <button @click="currentTab = 'kasbon'" :class="currentTab === 'kasbon' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5 relative">
+                        <i data-lucide="book-open" class="w-4 h-4"></i> Kasbon
+                        <span x-show="totalKasbonAktif() > 0" class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                    </button>
+                    <button @click="currentTab = 'riwayat'" :class="currentTab === 'riwayat' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5">
+                        <i data-lucide="file-text" class="w-4 h-4"></i> Laporan
+                    </button>
+                </nav>
+                
+                <div class="flex items-center gap-1.5 md:gap-2 flex-shrink-0">
+                    <button @click="bukaLiveChatModalUmum()" class="relative p-2 md:p-2.5 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold transition hover:bg-indigo-100" title="Live Chat Customer Online">
+                        <i data-lucide="message-square" class="w-4 h-4 md:w-5 md:h-5"></i>
+                        <span x-show="!isModeOffline && pesananOnlineList.length > 0" class="absolute -top-1 -right-1 bg-indigo-600 text-white text-[9px] w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center font-black animate-pulse" x-text="pesananOnlineList.length"></span>
+                    </button>
+                    <button @click="connectBluetooth()" :class="btDeviceConnected ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-600 border-slate-200'" class="p-2 md:p-2.5 rounded-xl text-sm font-bold border transition hover:bg-slate-200" title="Printer Bluetooth">
+                        <i data-lucide="printer" class="w-4 h-4 md:w-5 md:h-5"></i>
+                    </button>
+                    <button @click="logout()" class="p-2 md:p-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition" title="Keluar Akun">
+                        <i data-lucide="log-out" class="w-4 h-4 md:w-5 md:h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
 
         <main class="max-w-7xl mx-auto px-4 pt-4">
-            <!-- Notifikasi Floating -->
             <template x-if="notification.show">
                 <div :class="notification.type === 'success' ? 'bg-slate-900 text-white border-slate-800' : 'bg-rose-600 text-white border-rose-700'" 
                      class="fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-sm border text-base font-semibold px-4 py-3.5 rounded-2xl shadow-xl flex items-center justify-between transition">
@@ -225,7 +231,7 @@
                         </span>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3 pt-4 border-t border-white/20">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-4 border-t border-white/20">
                         <div>
                             <p class="text-xs text-brand-100 font-medium">Laba Bersih Estimasi</p>
                             <p class="text-lg font-extrabold text-white mt-0.5" x-text="isModeOffline || userRole === 'pemilik' ? formatRupiah(keuntunganHariIni()) : '🔒 Khusus Pemilik'"></p>
@@ -234,10 +240,13 @@
                             <p class="text-xs text-brand-100 font-medium">Pengeluaran Hari Ini</p>
                             <p class="text-lg font-extrabold text-amber-200 mt-0.5" x-text="formatRupiah(pengeluaranHariIni())"></p>
                         </div>
+                        <div class="col-span-2 sm:col-span-1">
+                            <p class="text-xs text-brand-100 font-medium">Total Kasbon Belum Lunas</p>
+                            <p class="text-lg font-extrabold text-rose-200 mt-0.5" x-text="formatRupiah(totalKasbonAktif())"></p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Status Toko Buka / Tutup Sakelar -->
                 <div class="clean-card p-4 rounded-2xl flex justify-between items-center bg-slate-900 text-white">
                     <div>
                         <p class="text-xs text-slate-400 font-bold uppercase">Status Layanan Toko Online</p>
@@ -250,7 +259,6 @@
                     </button>
                 </div>
 
-                <!-- Pengaturan Profil Toko -->
                 <div x-show="isModeOffline || userRole === 'pemilik'" class="clean-card p-4.5 rounded-2xl space-y-3">
                     <div class="flex justify-between items-center border-b pb-2">
                         <h3 class="font-black text-sm text-slate-900 uppercase tracking-wider flex items-center gap-2">
@@ -306,13 +314,13 @@
                         <p class="text-xs text-slate-500 mt-1">Modal: <span class="text-slate-800 font-bold" x-text="isModeOffline || userRole === 'pemilik' ? formatRupiah(totalModalStok()) : '🔒 Rahasia'"></span></p>
                     </div>
                     
-                    <div class="clean-card p-4.5 rounded-2xl">
+                    <div @click="currentTab = 'stok'; filterStokMenipisOnly = true" class="clean-card p-4.5 rounded-2xl cursor-pointer hover:bg-amber-50/50 transition">
                         <div class="flex items-center space-x-2 text-slate-500 mb-1">
                             <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-500"></i>
                             <span class="text-xs font-bold uppercase tracking-wide">Stok Menipis</span>
                         </div>
                         <p class="text-2xl font-black" :class="stokMenipisCount() > 0 ? 'text-amber-600' : 'text-slate-900'" x-text="stokMenipisCount() + ' Produk'"></p>
-                        <p class="text-xs text-slate-500 mt-1">Sisa di bawah 5 pcs</p>
+                        <p class="text-xs text-slate-500 mt-1">Klik untuk lihat barang &le; 5 unit</p>
                     </div>
                 </div>
 
@@ -331,15 +339,13 @@
                 </div>
             </div>
 
-            <!-- TAB: KASIR / POS (LAYOUT MODEREN DUA KOLOM KHUSUS PC) -->
+            <!-- TAB: KASIR / POS -->
             <div x-show="currentTab === 'kasir'" class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-                
-                <!-- KOLOM KIRI (PC): PENCARIAN & KATALOG PRODUK -->
                 <div class="md:col-span-7 lg:col-span-8 space-y-4">
                     <div class="flex gap-2">
                         <div class="relative flex-1">
                             <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                            <input type="text" x-model="searchKasir" placeholder="Cari nama barang atau barcode..." class="w-full bg-white border border-slate-300 rounded-2xl pl-11 pr-4 py-3.5 text-base font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand-600 shadow-sm">
+                            <input type="text" x-model="searchKasir" placeholder="Cari nama barang atau barcode (ecer/dus)..." class="w-full bg-white border border-slate-300 rounded-2xl pl-11 pr-4 py-3.5 text-base font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand-600 shadow-sm">
                         </div>
                         <button @click="bukaScannerKamera()" class="bg-brand-600 hover:bg-brand-700 text-white px-4 rounded-2xl flex items-center justify-center shadow-md active:scale-95 transition" title="Scan Barcode Kamera">
                             <i data-lucide="scan-line" class="w-6 h-6"></i>
@@ -348,9 +354,8 @@
 
                     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 max-h-[550px] md:max-h-[calc(100vh-180px)] overflow-y-auto pr-1">
                         <template x-for="item in filteredStokKasir" :key="item.id">
-                            <div @click="tambahKeKeranjang(item)" 
-                                 :class="item.stok === 0 ? 'opacity-40 cursor-not-allowed bg-slate-100 border-slate-200' : 'active:scale-95 hover:border-brand-500 hover:shadow-md cursor-pointer bg-white border-slate-200 shadow-sm'" 
-                                 class="border p-3.5 rounded-2xl transition flex flex-col justify-between relative">
+                            <div class="border p-3 rounded-2xl transition flex flex-col justify-between relative bg-white border-slate-200 shadow-sm"
+                                 :class="item.stok === 0 ? 'opacity-40 bg-slate-100' : 'hover:border-brand-500 hover:shadow-md'">
                                 <div>
                                     <div class="w-full h-24 bg-slate-100 rounded-xl mb-2 overflow-hidden flex items-center justify-center border border-slate-100">
                                         <template x-if="item.gambar">
@@ -360,19 +365,54 @@
                                             <i data-lucide="image" class="w-6 h-6 text-slate-300"></i>
                                         </template>
                                     </div>
-                                    <span class="text-[10px] font-extrabold text-brand-700 bg-brand-50 px-1.5 py-0.5 rounded border border-brand-100" x-text="item.kategori"></span>
+                                    <div class="flex items-center gap-1">
+                                        <span class="text-[10px] font-extrabold text-brand-700 bg-brand-50 px-1.5 py-0.5 rounded border border-brand-100" x-text="item.kategori"></span>
+                                        <template x-if="item.tipeProduk === 'dus'">
+                                            <span class="text-[9px] font-black text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200">DUS KARTON</span>
+                                        </template>
+                                    </div>
                                     <h4 class="font-bold text-slate-900 text-sm mt-1 line-clamp-2 leading-snug" x-text="item.nama"></h4>
                                 </div>
-                                <div class="flex justify-between items-end mt-2 pt-2 border-t border-slate-100">
-                                    <span class="text-sm font-black text-brand-600" x-text="formatRupiah(item.jual)"></span>
-                                    <span class="text-xs font-bold px-2 py-0.5 rounded" :class="item.stok < 5 ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'" x-text="item.stok + ' pcs'"></span>
+
+                                <div class="mt-2 pt-2 border-t border-slate-100 space-y-1.5">
+                                    <template x-if="item.tipeProduk === 'ecer'">
+                                        <div class="space-y-1.5">
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-[11px] font-black text-brand-600" x-text="formatRupiah(item.jual)"></span>
+                                                <button @click="tambahKeKeranjang(item, 'pcs')" :disabled="item.stok <= 0" class="bg-brand-600 text-white text-[10px] font-extrabold px-2 py-1 rounded-lg hover:bg-brand-700 disabled:opacity-50">+ Ecer</button>
+                                            </div>
+                                            <template x-if="item.hargaDus > 0 && item.isiDus > 0">
+                                                <div class="flex items-center justify-between border-t border-dashed pt-1">
+                                                    <div>
+                                                        <span class="text-[10px] font-black text-indigo-700 block" x-text="formatRupiah(item.hargaDus) + '/Dus'"></span>
+                                                        <span class="text-[9px] text-slate-400" x-text="'Isi ' + item.isiDus + ' Pcs'"></span>
+                                                    </div>
+                                                    <button @click="tambahKeKeranjang(item, 'dus')" :disabled="item.stok < item.isiDus" class="bg-indigo-600 text-white text-[10px] font-extrabold px-2 py-1 rounded-lg hover:bg-indigo-700 disabled:opacity-50">+ Dus</button>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </template>
+
+                                    <template x-if="item.tipeProduk === 'dus'">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <span class="text-[11px] font-black text-amber-800 block" x-text="formatRupiah(item.jual)"></span>
+                                                <span class="text-[9px] text-slate-400 font-medium">Per Karton / Dus</span>
+                                            </div>
+                                            <button @click="tambahKeKeranjang(item, 'dus')" :disabled="item.stok <= 0" class="bg-amber-600 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-lg hover:bg-amber-700 disabled:opacity-50">+ Dus</button>
+                                        </div>
+                                    </template>
+
+                                    <div class="flex justify-between items-center text-[10px] text-slate-500 pt-0.5">
+                                        <span>Stok:</span>
+                                        <span class="font-bold px-1.5 py-0.2 rounded" :class="item.stok < 5 ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'" x-text="item.stok + (item.tipeProduk === 'dus' ? ' Dus' : ' Pcs')"></span>
+                                    </div>
                                 </div>
                             </div>
                         </template>
                     </div>
                 </div>
 
-                <!-- KOLOM KANAN (PC): KERANJANG BELANJA & PEMBAYARAN DI KANAN -->
                 <div class="md:col-span-5 lg:col-span-4 md:sticky md:top-24">
                     <div class="clean-card rounded-2xl p-4.5 space-y-4 shadow-md">
                         <div class="flex justify-between items-center border-b border-slate-200 pb-3">
@@ -382,9 +422,8 @@
                             <button @click="keranjang = []" x-show="keranjang.length > 0" class="text-xs text-rose-600 font-bold hover:underline">Kosongkan</button>
                         </div>
 
-                        <!-- LIST KERANJANG -->
                         <div class="max-h-56 md:max-h-64 overflow-y-auto space-y-2.5 pr-1 divide-y divide-slate-100">
-                            <template x-for="(cart, index) in keranjang" :key="cart.id">
+                            <template x-for="(cart, index) in keranjang" :key="index">
                                 <div class="pt-2 flex justify-between items-center text-sm">
                                     <div class="flex items-center space-x-2.5 flex-1 pr-2">
                                         <div class="w-10 h-10 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center border">
@@ -396,7 +435,10 @@
                                             </template>
                                         </div>
                                         <div class="truncate">
-                                            <p class="font-bold text-slate-900 text-sm truncate" x-text="cart.nama"></p>
+                                            <div class="flex items-center gap-1">
+                                                <p class="font-bold text-slate-900 text-sm truncate" x-text="cart.nama"></p>
+                                                <span class="text-[9px] font-black px-1.5 py-0.2 rounded" :class="cart.tipeSatuan === 'dus' ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-700'" x-text="cart.tipeSatuan === 'dus' ? 'DUS' : 'PCS'"></span>
+                                            </div>
                                             <p class="text-xs text-slate-500 font-medium" x-text="formatRupiah(cart.jual) + ' x ' + cart.qty"></p>
                                         </div>
                                     </div>
@@ -415,16 +457,16 @@
                             </template>
                         </div>
 
-                        <!-- RINGKASAN PEMBAYARAN -->
                         <div class="border-t border-slate-200 pt-3 space-y-3">
                             <div class="flex justify-between items-center bg-slate-50 p-3.5 rounded-xl border">
                                 <span class="text-xs font-bold text-slate-600 uppercase">Total Belanja</span>
                                 <span class="text-2xl font-black text-brand-600" x-text="formatRupiah(totalKeranjang())"></span>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-2">
-                                <button @click="metodeBayar = 'tunai'" :class="metodeBayar === 'tunai' ? 'bg-brand-600 text-white font-bold shadow-md' : 'bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200'" class="py-2.5 rounded-xl text-sm transition">💵 Tunai</button>
-                                <button @click="metodeBayar = 'qris'" :class="metodeBayar === 'qris' ? 'bg-brand-600 text-white font-bold shadow-md' : 'bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200'" class="py-2.5 rounded-xl text-sm transition">📱 QRIS</button>
+                            <div class="grid grid-cols-3 gap-1.5">
+                                <button @click="metodeBayar = 'tunai'" :class="metodeBayar === 'tunai' ? 'bg-brand-600 text-white font-bold shadow-md' : 'bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200'" class="py-2.5 rounded-xl text-xs transition">💵 Tunai</button>
+                                <button @click="metodeBayar = 'qris'" :class="metodeBayar === 'qris' ? 'bg-brand-600 text-white font-bold shadow-md' : 'bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200'" class="py-2.5 rounded-xl text-xs transition">📱 QRIS</button>
+                                <button @click="metodeBayar = 'kasbon'" :class="metodeBayar === 'kasbon' ? 'bg-rose-600 text-white font-bold shadow-md' : 'bg-rose-50 text-rose-700 font-semibold hover:bg-rose-100'" class="py-2.5 rounded-xl text-xs transition">📝 Kasbon</button>
                             </div>
 
                             <div x-show="metodeBayar === 'tunai'" class="space-y-3">
@@ -464,15 +506,234 @@
                                     <i data-lucide="check-circle" class="w-5 h-5"></i> Konfirmasi Pembayaran QRIS Lunas
                                 </button>
                             </div>
+
+                            <!-- OPSI KASBON -->
+                            <div x-show="metodeBayar === 'kasbon'" class="space-y-3">
+                                <div class="bg-rose-50 border border-rose-200 p-3.5 rounded-xl space-y-2.5">
+                                    <label class="text-xs font-bold text-rose-900 uppercase block">Data Pelanggan / Debitur Kasbon</label>
+                                    <div>
+                                        <input type="text" x-model="namaPelangganKasbon" placeholder="Nama Pelanggan (Contoh: Pak Budi)" class="w-full bg-white border border-rose-300 rounded-xl px-3.5 py-2.5 text-sm font-bold text-slate-900 focus:outline-none focus:border-rose-600">
+                                    </div>
+                                    <div>
+                                        <input type="text" x-model="noHpKasbon" placeholder="No HP / WhatsApp (Contoh: 08123456789)" class="w-full bg-white border border-rose-300 rounded-xl px-3.5 py-2.5 text-sm font-medium text-slate-900 focus:outline-none focus:border-rose-600">
+                                    </div>
+                                    <div>
+                                        <input type="text" x-model="alamatKasbon" placeholder="Alamat Pelanggan (Contoh: Jl. Mawar No. 5)" class="w-full bg-white border border-rose-300 rounded-xl px-3.5 py-2.5 text-sm font-medium text-slate-900 focus:outline-none focus:border-rose-600">
+                                    </div>
+                                </div>
+                                <button @click="prosesPembayaranKasbon()" :disabled="keranjang.length === 0 || !namaPelangganKasbon.trim()" 
+                                        class="w-full bg-rose-600 hover:bg-rose-700 disabled:opacity-45 text-white font-extrabold py-4 rounded-2xl text-base transition shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                                    <i data-lucide="book-open" class="w-5 h-5"></i> Simpan Catatan Kasbon (Hutang)
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB: BIAYA & KERANJANG PESANAN CUSTOMER ONLINE -->
+            <!-- TAB: KERANJANG ONLINE -->
+            <div x-show="currentTab === 'keranjang_online'" class="space-y-4 max-w-4xl mx-auto">
+                <div class="clean-card p-4.5 rounded-2xl space-y-3 bg-white border-slate-200 shadow-md">
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <div>
+                            <h3 class="font-black text-lg text-slate-900 flex items-center gap-2">
+                                <i data-lucide="shopping-cart" class="w-5 h-5 text-brand-600"></i> Keranjang Masuk Pesanan Online
+                            </h3>
+                            <p class="text-xs text-slate-500">Kelola pesanan masuk dari pembeli secara online</p>
+                        </div>
+                        <span class="text-xs font-bold bg-brand-100 text-brand-800 px-3 py-1.5 rounded-xl border border-brand-200" x-text="pesananOnlineList.length + ' Pesanan Baru'"></span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto pr-1">
+                        <template x-for="p in pesananOnlineList" :key="p.id">
+                            <div class="bg-slate-50 p-4 rounded-2xl space-y-3 border border-slate-200 shadow-sm flex flex-col justify-between hover:border-brand-300 transition">
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-start border-b pb-2">
+                                        <div>
+                                            <span class="text-[10px] text-slate-400 font-mono" x-text="p.tanggal"></span>
+                                            <h4 class="font-extrabold text-base text-slate-900" x-text="p.customer ? p.customer.nama : 'Pelanggan'"></h4>
+                                            <p class="text-xs font-bold text-brand-600" x-text="'📱 ' + (p.customer ? p.customer.telp : '-')"></p>
+                                        </div>
+                                        <span class="text-[10px] font-extrabold bg-amber-100 text-amber-800 px-2.5 py-1 rounded-lg border border-amber-200" x-text="p.status || 'Menunggu Konfirmasi'"></span>
+                                    </div>
+
+                                    <div class="text-xs text-slate-600 space-y-1">
+                                        <p><strong>Alamat Kirim:</strong> <span x-text="p.customer ? p.customer.alamat : '-'"></span></p>
+                                        <template x-if="p.customer && p.customer.lat">
+                                            <a :href="'https://www.google.com/maps?q=' + p.customer.lat + ',' + p.customer.lng" target="_blank" class="inline-flex items-center gap-1 text-brand-600 font-bold hover:underline">
+                                                <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> Buka Rute Google Maps
+                                            </a>
+                                        </template>
+                                    </div>
+
+                                    <div class="bg-white p-3 rounded-xl space-y-1 border text-xs">
+                                        <p class="font-bold text-slate-700 mb-1">Rincian Item Pesanan:</p>
+                                        <template x-for="i in p.items" :key="i.id">
+                                            <div class="flex justify-between text-slate-600">
+                                                <span x-text="i.nama + ' (' + i.qty + 'x)'"></span>
+                                                <span class="font-bold text-slate-800" x-text="formatRupiah(i.jual * i.qty)"></span>
+                                            </div>
+                                        </template>
+                                        <div class="border-t pt-1 flex justify-between font-black text-slate-900 text-sm">
+                                            <span>TOTAL TAGIHAN</span>
+                                            <span class="text-brand-600" x-text="formatRupiah(p.totalTagihan || p.total)"></span>
+                                        </div>
+                                    </div>
+
+                                    <template x-if="p.customer && p.customer.buktiImg">
+                                        <div class="space-y-1">
+                                            <p class="text-[10px] font-bold text-slate-500 uppercase">Bukti Pembayaran / Transfer:</p>
+                                            <img :src="p.customer.buktiImg" @click="window.open(p.customer.buktiImg)" class="w-full h-28 object-cover rounded-xl border cursor-pointer hover:opacity-90">
+                                        </div>
+                                    </template>
+                                </div>
+
+                                <div class="grid grid-cols-3 gap-2 pt-2 border-t">
+                                    <button @click="bukaLiveChat(p)" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 shadow-sm transition">
+                                        <i data-lucide="message-square" class="w-3.5 h-3.5"></i> Chat
+                                    </button>
+                                    <button @click="terimaPesananOnline(p)" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 shadow-sm transition">
+                                        <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Terima
+                                    </button>
+                                    <button @click="tolakPesananOnline(p)" class="bg-rose-600 hover:bg-rose-700 text-white font-extrabold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 shadow-sm transition">
+                                        <i data-lucide="x-circle" class="w-3.5 h-3.5"></i> Tolak
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                        <template x-if="pesananOnlineList.length === 0">
+                            <div class="text-center py-12 md:col-span-2">
+                                <i data-lucide="shopping-bag" class="w-12 h-12 mx-auto text-slate-300 mb-2"></i>
+                                <p class="text-slate-400 text-sm font-medium">Belum ada pesanan masuk dari keranjang online.</p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: KASBON -->
+            <div x-show="currentTab === 'kasbon'" class="space-y-4 max-w-4xl mx-auto">
+                <div class="clean-card p-4.5 rounded-2xl space-y-3">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-3 gap-2">
+                        <div>
+                            <h3 class="font-black text-lg text-slate-900 flex items-center gap-2">
+                                <i data-lucide="book-open" class="w-5 h-5 text-rose-600"></i> Buku Kasbon Pelanggan
+                            </h3>
+                            <p class="text-xs text-slate-500">Kelola catatan hutang & cicilan pelunasan pembeli</p>
+                        </div>
+                        <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+                            <div class="bg-rose-50 border border-rose-200 px-3 py-1.5 rounded-xl text-right">
+                                <span class="text-[10px] text-rose-700 font-bold uppercase block">Total Hutang Aktif</span>
+                                <span class="text-lg font-black text-rose-600" x-text="formatRupiah(totalKasbonAktif())"></span>
+                            </div>
+                            <button @click="exportCSVKasbon()" class="bg-white text-slate-800 text-xs px-3.5 py-2.5 rounded-xl font-bold border shadow-sm flex items-center gap-1.5 hover:bg-slate-50">
+                                <i data-lucide="download" class="w-4 h-4 text-brand-600"></i> <span>Export CSV</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <input type="text" x-model="searchKasbon" placeholder="Cari nama, no hp, atau alamat kasbon..." class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-medium">
+
+                    <div class="space-y-3 max-h-[500px] overflow-y-auto pr-1">
+                        <template x-for="k in filteredDaftarKasbon" :key="k.id">
+                            <div class="bg-white border rounded-2xl p-4 shadow-sm space-y-3" :class="k.sisaHutang > 0 ? 'border-rose-200' : 'border-emerald-200 bg-emerald-50/20'">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <h4 class="font-black text-base text-slate-900" x-text="k.namaPelanggan"></h4>
+                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded" :class="k.sisaHutang > 0 ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800'" x-text="k.sisaHutang > 0 ? 'Belum Lunas' : 'LUNAS'"></span>
+                                        </div>
+                                        <p class="text-xs text-slate-500 font-semibold mt-0.5" x-text="'📱 ' + (k.noHp || '-') + ' | 🏠 ' + (k.alamat || '-')"></p>
+                                        <p class="text-[10px] text-slate-400 mt-0.5" x-text="k.tanggal"></p>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="text-right">
+                                            <p class="text-xs text-slate-500">Sisa Hutang:</p>
+                                            <p class="text-lg font-black" :class="k.sisaHutang > 0 ? 'text-rose-600' : 'text-emerald-600'" x-text="formatRupiah(k.sisaHutang)"></p>
+                                        </div>
+                                        
+                                        <div x-show="isModeOffline || userRole === 'pemilik'" class="flex items-center space-x-1 pl-2 border-l border-slate-200">
+                                            <button @click="bukaModalEditKasbon(k)" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg" title="Edit Kasbon">
+                                                <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                            </button>
+                                            <button @click="hapusKasbon(k.id)" class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg" title="Hapus Kasbon">
+                                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-slate-50 p-3 rounded-xl border text-xs space-y-1">
+                                    <p class="font-bold text-slate-700">Detail Belanja:</p>
+                                    <template x-for="i in k.items" :key="i.id">
+                                        <div class="flex justify-between text-slate-600">
+                                            <span x-text="i.nama + ' (' + i.qty + 'x)'"></span>
+                                            <span class="font-medium" x-text="formatRupiah(i.jual * i.qty)"></span>
+                                        </div>
+                                    </template>
+                                    <div class="border-t pt-1 flex justify-between font-bold text-slate-900">
+                                        <span>Total Kasbon Awal</span>
+                                        <span x-text="formatRupiah(k.total)"></span>
+                                    </div>
+                                </div>
+
+                                <template x-if="k.sisaHutang > 0">
+                                    <div class="flex gap-2 pt-1">
+                                        <input type="number" min="0" x-model.number="k.inputBayar" placeholder="Nominal bayar..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold">
+                                        <button @click="bayarCicilanKasbon(k)" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold px-4 py-2 rounded-xl transition shadow-sm">
+                                            Bayar Cicilan / Pelunasan
+                                        </button>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                        <template x-if="filteredDaftarKasbon.length === 0">
+                            <p class="text-center text-xs text-slate-400 py-6">Tidak ada data kasbon ditemukan.</p>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL EDIT KASBON -->
+            <template x-if="showEditKasbonModal">
+                <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+                    <div class="bg-white border rounded-3xl p-6 w-full max-w-md space-y-4 shadow-2xl">
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <h3 class="font-black text-base text-slate-900">Edit Data Kasbon Pelanggan</h3>
+                            <button @click="showEditKasbonModal = false" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-6 h-6"></i></button>
+                        </div>
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <label class="font-bold text-slate-600 uppercase block mb-1">Nama Pelanggan</label>
+                                <input type="text" x-model="formEditKasbon.namaPelanggan" class="w-full bg-slate-50 border rounded-xl px-3.5 py-2.5 text-sm font-bold">
+                            </div>
+                            <div>
+                                <label class="font-bold text-slate-600 uppercase block mb-1">Nomor HP / WhatsApp</label>
+                                <input type="text" x-model="formEditKasbon.noHp" class="w-full bg-slate-50 border rounded-xl px-3.5 py-2.5 text-sm font-medium">
+                            </div>
+                            <div>
+                                <label class="font-bold text-slate-600 uppercase block mb-1">Alamat Pelanggan</label>
+                                <input type="text" x-model="formEditKasbon.alamat" class="w-full bg-slate-50 border rounded-xl px-3.5 py-2.5 text-sm font-medium">
+                            </div>
+                            <div>
+                                <label class="font-bold text-slate-600 uppercase block mb-1">Total Awal Kasbon (Rp)</label>
+                                <input type="number" x-model.number="formEditKasbon.total" class="w-full bg-slate-50 border rounded-xl px-3.5 py-2.5 text-sm font-bold">
+                            </div>
+                            <div>
+                                <label class="font-bold text-slate-600 uppercase block mb-1">Sisa Hutang Kasbon (Rp)</label>
+                                <input type="number" x-model.number="formEditKasbon.sisaHutang" class="w-full bg-slate-50 border rounded-xl px-3.5 py-2.5 text-sm font-bold text-rose-600">
+                            </div>
+                        </div>
+                        <div class="flex gap-2 pt-2">
+                            <button @click="simpanEditKasbon()" class="flex-1 bg-brand-600 text-white font-extrabold py-3 rounded-xl text-sm shadow-md">Simpan Perubahan</button>
+                            <button @click="showEditKasbonModal = false" class="bg-slate-100 text-slate-800 font-extrabold px-4 py-3 rounded-xl text-sm">Batal</button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- TAB: BIAYA / PENGELUARAN -->
             <div x-show="currentTab === 'pengeluaran'" class="space-y-4 max-w-4xl mx-auto">
-                
-                <!-- BIAYA OPERASIONAL FORM -->
                 <div class="clean-card p-4.5 rounded-2xl">
                     <h3 class="font-black text-sm text-slate-900 uppercase tracking-wider mb-3">Catat Biaya Operasional / Kulakan</h3>
                     <form @submit.prevent="simpanPengeluaran()" class="space-y-3">
@@ -490,81 +751,9 @@
                     </form>
                 </div>
 
-                <!-- PESANAN ONLINE CUSTOMER -->
-                <div x-show="!isModeOffline" class="clean-card p-4.5 rounded-2xl space-y-3 bg-amber-50/50 border-amber-200">
-                    <div class="flex justify-between items-center border-b border-amber-200 pb-2">
-                        <h3 class="font-black text-sm text-amber-900 uppercase tracking-wider flex items-center gap-2">
-                            <i data-lucide="shopping-bag" class="w-5 h-5 text-amber-600"></i> Keranjang Masuk Pesanan Online
-                        </h3>
-                        <span class="text-xs font-bold bg-amber-200 text-amber-900 px-2.5 py-1 rounded-lg" x-text="pesananOnlineList.length + ' Pesanan'"></span>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[400px] overflow-y-auto pr-1">
-                        <template x-for="p in pesananOnlineList" :key="p.id">
-                            <div class="bg-white p-3.5 rounded-2xl space-y-2 border shadow-sm flex flex-col justify-between">
-                                <div class="space-y-2">
-                                    <div class="flex justify-between items-start border-b pb-2">
-                                        <div>
-                                            <span class="text-[10px] text-slate-400" x-text="p.tanggal"></span>
-                                            <h4 class="font-extrabold text-sm text-slate-900" x-text="p.customer ? p.customer.nama : 'Pelanggan'"></h4>
-                                            <p class="text-xs font-bold text-brand-600" x-text="'📱 ' + (p.customer ? p.customer.telp : '-')"></p>
-                                        </div>
-                                        <span class="text-[10px] font-extrabold bg-amber-100 text-amber-800 px-2 py-0.5 rounded" x-text="p.status || 'Baru'"></span>
-                                    </div>
-
-                                    <div class="text-xs text-slate-600 space-y-1">
-                                        <p><strong>Alamat:</strong> <span x-text="p.customer ? p.customer.alamat : '-'"></span></p>
-                                        <template x-if="p.customer && p.customer.lat">
-                                            <a :href="'https://www.google.com/maps?q=' + p.customer.lat + ',' + p.customer.lng" target="_blank" class="inline-flex items-center gap-1 text-brand-600 font-bold hover:underline">
-                                                <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> Google Maps
-                                            </a>
-                                        </template>
-                                    </div>
-
-                                    <div class="bg-slate-50 p-2.5 rounded-xl space-y-1 border text-xs">
-                                        <template x-for="i in p.items" :key="i.id">
-                                            <div class="flex justify-between">
-                                                <span x-text="i.nama + ' (' + i.qty + 'x)'"></span>
-                                                <span class="font-bold" x-text="formatRupiah(i.jual * i.qty)"></span>
-                                            </div>
-                                        </template>
-                                        <div class="border-t pt-1 flex justify-between font-black text-slate-900">
-                                            <span>TOTAL</span>
-                                            <span class="text-brand-600" x-text="formatRupiah(p.totalTagihan || p.total)"></span>
-                                        </div>
-                                    </div>
-
-                                    <template x-if="p.customer && p.customer.buktiImg">
-                                        <div class="space-y-1">
-                                            <p class="text-[10px] font-bold text-slate-500 uppercase">Bukti Pembayaran:</p>
-                                            <img :src="p.customer.buktiImg" @click="window.open(p.customer.buktiImg)" class="w-full h-24 object-cover rounded-xl border cursor-pointer">
-                                        </div>
-                                    </template>
-                                </div>
-
-                                <!-- AKSI PESANAN ONLINE (CHAT, TERIMA, TOLAK) -->
-                                <div class="grid grid-cols-3 gap-2 pt-2">
-                                    <button @click="bukaLiveChat(p)" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-2 rounded-xl text-xs flex items-center justify-center gap-1">
-                                        <i data-lucide="message-square" class="w-3.5 h-3.5"></i> Chat
-                                    </button>
-                                    <button @click="terimaPesananOnline(p)" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2 rounded-xl text-xs flex items-center justify-center gap-1">
-                                        <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Terima
-                                    </button>
-                                    <button @click="tolakPesananOnline(p)" class="bg-rose-600 hover:bg-rose-700 text-white font-extrabold py-2 rounded-xl text-xs flex items-center justify-center gap-1">
-                                        <i data-lucide="x-circle" class="w-3.5 h-3.5"></i> Tolak
-                                    </button>
-                                </div>
-                            </div>
-                        </template>
-                        <template x-if="pesananOnlineList.length === 0">
-                            <p class="text-center text-xs text-slate-400 py-4 md:col-span-2">Belum ada pesanan online masuk.</p>
-                        </template>
-                    </div>
-                </div>
-
                 <div class="space-y-2.5">
                     <h3 class="text-xs font-black text-slate-500 uppercase tracking-wider">Riwayat Catatan Biaya</h3>
-                    <div class="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
+                    <div class="space-y-2.5 max-h-[350px] overflow-y-auto pr-1">
                         <template x-for="item in riwayatPengeluaran" :key="item.id">
                             <div class="clean-card p-4 rounded-2xl flex justify-between items-center">
                                 <div>
@@ -581,7 +770,7 @@
                 </div>
             </div>
 
-            <!-- MODAL LIVE CHAT DENGAN PELANGGAN (DIPERBAIKI 100% BEBAS BUG) -->
+            <!-- MODAL LIVE CHAT -->
             <template x-if="showChatModal">
                 <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
                     <div class="bg-white rounded-3xl p-5 w-full max-w-md space-y-3 shadow-2xl flex flex-col h-[550px] relative">
@@ -608,18 +797,18 @@
 
                         <div class="flex-1 overflow-y-auto space-y-2.5 p-2 bg-slate-50 rounded-2xl border" id="chatContainer">
                             <template x-for="(c, idx) in chatMessages" :key="idx">
-    <div :class="c.sender === 'toko' ? 'text-right' : 'text-left'">
-        <div :class="c.sender === 'toko' ? 'bg-brand-600 text-white rounded-br-none' : 'bg-white text-slate-900 border rounded-bl-none'" class="inline-block p-3 rounded-2xl max-w-[80%] text-xs font-medium shadow-sm relative">
-            <p x-text="c.text"></p>
-            <div class="flex items-center justify-between gap-3 mt-1 opacity-80 border-t border-white/20 pt-1">
-                <span class="text-[9px]" x-text="c.time"></span>
-                <button @click="hapusPesanChat(idx)" class="text-[10px] font-bold hover:underline" :class="c.sender === 'toko' ? 'text-rose-200' : 'text-rose-600'" title="Hapus pesan ini">
-                    🗑️ Hapus
-                </button>
-            </div>
-        </div>
-    </div>
-</template>
+                                <div :class="c.sender === 'toko' ? 'text-right' : 'text-left'">
+                                    <div :class="c.sender === 'toko' ? 'bg-brand-600 text-white rounded-br-none' : 'bg-white text-slate-900 border rounded-bl-none'" class="inline-block p-3 rounded-2xl max-w-[80%] text-xs font-medium shadow-sm relative">
+                                        <p x-text="c.text"></p>
+                                        <div class="flex items-center justify-between gap-3 mt-1 opacity-80 border-t border-white/20 pt-1">
+                                            <span class="text-[9px]" x-text="c.time"></span>
+                                            <button @click="hapusPesanChat(idx)" class="text-[10px] font-bold hover:underline" :class="c.sender === 'toko' ? 'text-rose-200' : 'text-rose-600'" title="Hapus pesan ini">
+                                                🗑️ Hapus
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
                         </div>
 
                         <div class="flex gap-2 pt-1">
@@ -639,45 +828,99 @@
             <div x-show="currentTab === 'stok'" class="space-y-4 max-w-5xl mx-auto">
                 <div x-show="isModeOffline || userRole === 'pemilik'" class="clean-card p-4.5 rounded-2xl">
                     <h3 class="font-black text-sm text-slate-900 uppercase tracking-wider mb-3 flex items-center justify-between border-b pb-2">
-                        <span x-text="isEditing ? 'Edit Data Barang' : 'Tambah Produk Baru'"></span>
+                        <span x-text="isEditing ? 'Edit Data Produk' : 'Tambah Produk Baru'"></span>
                         <button x-show="isEditing" @click="batalEdit()" class="text-xs text-amber-700 font-bold">Batal Edit</button>
                     </h3>
 
                     <form @submit.prevent="simpanBarang()" class="space-y-3">
+                        <!-- SAKLAR MODE PILIHAN TERPISAH DUS VS ECER -->
+                        <div class="bg-slate-100 p-2 rounded-xl flex gap-2">
+                            <label class="flex-1 text-center py-2.5 rounded-lg text-xs font-extrabold cursor-pointer transition" :class="formBarang.tipeProduk === 'ecer' ? 'bg-brand-600 text-white shadow' : 'text-slate-600 hover:bg-slate-200'">
+                                <input type="radio" value="ecer" x-model="formBarang.tipeProduk" class="sr-only">
+                                🛒 Produk Eceran (Bisa Opsi Dus)
+                            </label>
+                            <label class="flex-1 text-center py-2.5 rounded-lg text-xs font-extrabold cursor-pointer transition" :class="formBarang.tipeProduk === 'dus' ? 'bg-amber-600 text-white shadow' : 'text-slate-600 hover:bg-slate-200'">
+                                <input type="radio" value="dus" x-model="formBarang.tipeProduk" class="sr-only">
+                                📦 Produk Dus Saja (Kartonan Murni)
+                            </label>
+                        </div>
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
                                 <label class="text-xs font-bold text-slate-600 uppercase">Nama Produk</label>
-                                <input type="text" x-model="formBarang.nama" required placeholder="misal: Beras Ramos 5kg" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-medium">
+                                <input type="text" x-model="formBarang.nama" required :placeholder="formBarang.tipeProduk === 'dus' ? 'misal: Minyak Goreng Kita (1 Dus)' : 'misal: Sabun Mandi Lifebuoy'" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-medium">
                             </div>
                             <div>
                                 <div class="flex justify-between items-center">
-                                    <label class="text-xs font-bold text-slate-600 uppercase">Kode Barcode / SKU</label>
+                                    <label class="text-xs font-bold text-slate-600 uppercase" x-text="formBarang.tipeProduk === 'dus' ? 'Kode Barcode / SKU Dus' : 'Kode Barcode / SKU Eceran'"></label>
                                     <button type="button" @click="generateRandomSku()" class="text-[11px] text-brand-600 font-bold hover:underline">✨ Generate Otomatis</button>
                                 </div>
                                 <input type="text" x-model="formBarang.sku" @input="previewBarcode()" required placeholder="Contoh: 899600123" class="w-full mt-1 bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold">
                                 
                                 <div class="mt-2 text-center bg-slate-50 p-2.5 rounded-xl border" x-show="formBarang.sku">
-                                    <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Preview Barcode Stiker:</p>
+                                    <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Preview Barcode Utama:</p>
                                     <svg id="preview-barcode-svg" class="mx-auto"></svg>
                                 </div>
                             </div>
                             <div>
                                 <label class="text-xs font-bold text-slate-600 uppercase">Kategori</label>
-                                <input type="text" x-model="formBarang.kategori" required placeholder="Sembako" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-medium">
+                                <input type="text" x-model="formBarang.kategori" required placeholder="Sembako / Sabun" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-medium">
                             </div>
                             <div>
-                                <label class="text-xs font-bold text-slate-600 uppercase">Jumlah Stok</label>
+                                <label class="text-xs font-bold text-slate-600 uppercase" x-text="formBarang.tipeProduk === 'dus' ? 'Jumlah Stok (Satuan Dus/Karton)' : 'Jumlah Stok (Satuan Ecer / Pcs)'"></label>
                                 <input type="number" min="0" x-model.number="formBarang.stok" required placeholder="0" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold">
                             </div>
-                            <div>
-                                <label class="text-xs font-bold text-slate-600 uppercase">Harga Modal (Rp)</label>
-                                <input type="number" min="0" x-model.number="formBarang.modal" required placeholder="0" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold">
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-slate-600 uppercase">Harga Jual (Rp)</label>
-                                <input type="number" min="0" x-model.number="formBarang.jual" required placeholder="0" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold text-brand-600">
+
+                            <!-- INPUT KHUSUS ECERAN -->
+                            <template x-if="formBarang.tipeProduk === 'ecer'">
+                                <div class="contents">
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-600 uppercase">Harga Modal Eceran (Rp)</label>
+                                        <input type="number" min="0" x-model.number="formBarang.modal" required placeholder="0" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-slate-600 uppercase">Harga Jual Eceran / Pcs (Rp)</label>
+                                        <input type="number" min="0" x-model.number="formBarang.jual" required placeholder="0" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold text-brand-600">
+                                    </div>
+                                </div>
+                            </template>
+
+                            <!-- INPUT KHUSUS DUS SUSAH / KARTONAN MURNI -->
+                            <template x-if="formBarang.tipeProduk === 'dus'">
+                                <div class="contents">
+                                    <div>
+                                        <label class="text-xs font-bold text-amber-800 uppercase">Harga Modal Per Dus (Rp)</label>
+                                        <input type="number" min="0" x-model.number="formBarang.modal" required placeholder="0" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs font-bold text-amber-800 uppercase">Harga Jual Per Dus (Rp)</label>
+                                        <input type="number" min="0" x-model.number="formBarang.jual" required placeholder="0" class="w-full bg-white border border-amber-300 rounded-xl px-3.5 py-3 text-base font-bold text-amber-800">
+                                    </div>
+                                </div>
+                            </template>
+
+                            <!-- PENGATURAN KONVERSI GROSIR HANYA UNTUK PROD ECERAN -->
+                            <div x-show="formBarang.tipeProduk === 'ecer'" class="bg-indigo-50/70 border border-indigo-200 p-3 rounded-xl col-span-1 md:col-span-2 space-y-2">
+                                <p class="text-xs font-bold text-indigo-900 uppercase flex items-center gap-1">
+                                    <i data-lucide="box" class="w-4 h-4 text-indigo-600"></i> Opsi Kartonan / Grosir (Hasil Dari Eceran)
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    <div>
+                                        <label class="text-[11px] font-bold text-slate-600 uppercase">Isi Pcs Dalam 1 Dus</label>
+                                        <input type="number" min="0" x-model.number="formBarang.isiDus" placeholder="misal: 24 atau 48" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold">
+                                    </div>
+                                    <div>
+                                        <label class="text-[11px] font-bold text-slate-600 uppercase">Harga Jual Per Dus (Rp)</label>
+                                        <input type="number" min="0" x-model.number="formBarang.hargaDus" placeholder="misal: 120000" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-sm font-bold text-indigo-700">
+                                    </div>
+                                    <div>
+                                        <label class="text-[11px] font-bold text-slate-600 uppercase">Barcode Khusus Dus (Pabrik)</label>
+                                        <input type="text" x-model="formBarang.barcodeDus" placeholder="Scan/isi barcode dus..." class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-sm font-bold text-indigo-700">
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
                         <div>
                             <label class="text-xs font-bold text-slate-600 uppercase">Upload Gambar Produk</label>
                             <input type="file" accept="image/*" @change="handleFileUpload($event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 mt-1">
@@ -687,7 +930,7 @@
                                 <button type="button" @click="formBarang.gambar = ''" class="text-xs text-rose-600 font-bold ml-auto">Hapus</button>
                             </div>
                         </div>
-                        <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-extrabold py-3.5 rounded-xl text-base transition shadow-md" x-text="isEditing ? 'Simpan Perubahan' : '+ Tambah ke Stok Barang'"></button>
+                        <button type="submit" class="w-full text-white font-extrabold py-3.5 rounded-xl text-base transition shadow-md" :class="formBarang.tipeProduk === 'dus' ? 'bg-amber-600 hover:bg-amber-700' : 'bg-brand-600 hover:bg-brand-700'" x-text="isEditing ? 'Simpan Perubahan' : '+ Tambah ke Stok Barang'"></button>
                     </form>
                 </div>
 
@@ -697,11 +940,18 @@
                 </div>
 
                 <div class="space-y-2.5">
-                    <div class="flex gap-2">
+                    <div class="flex flex-col sm:flex-row gap-2">
                         <input type="text" x-model="searchStok" placeholder="Cari barang di daftar stok..." class="w-full bg-white border border-slate-300 rounded-2xl px-4 py-3 text-base font-medium">
-                        <button @click="cetakSemuaBarcode()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 rounded-2xl flex items-center justify-center shadow-md text-xs font-bold gap-1.5 whitespace-nowrap active:scale-95 transition" title="Cetak Semua Barcode Massal">
-                            <i data-lucide="printer" class="w-4 h-4"></i> Cetak Semua
-                        </button>
+                        
+                        <div class="flex gap-2">
+                            <button @click="filterStokMenipisOnly = !filterStokMenipisOnly" :class="filterStokMenipisOnly ? 'bg-amber-500 text-slate-900 font-extrabold ring-2 ring-amber-300' : 'bg-slate-100 text-slate-700 font-bold hover:bg-slate-200'" class="px-3.5 py-2.5 rounded-2xl flex items-center justify-center text-xs gap-1.5 whitespace-nowrap transition">
+                                <i data-lucide="alert-triangle" class="w-4 h-4"></i> Stok Menipis (klik cek)
+                            </button>
+
+                            <button @click="cetakSemuaBarcode()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 rounded-2xl flex items-center justify-center shadow-md text-xs font-bold gap-1.5 whitespace-nowrap active:scale-95 transition" title="Cetak Semua Barcode Massal">
+                                <i data-lucide="printer" class="w-4 h-4"></i> Cetak Semua (All)
+                            </button>
+                        </div>
                     </div>
 
                     <div class="space-y-2.5 max-h-[450px] overflow-y-auto pr-1">
@@ -719,17 +969,28 @@
                                     <div class="space-y-1">
                                         <div class="flex items-center gap-2">
                                             <span class="text-[10px] bg-slate-100 text-slate-600 font-extrabold px-2 py-0.5 rounded" x-text="item.kategori"></span>
-                                            <span class="text-[10px] font-mono font-bold text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded" x-text="item.sku || 'No SKU'"></span>
+                                            <span class="text-[10px] font-mono font-bold text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded" x-text="'SKU: ' + (item.sku || '-')"></span>
+                                            <span x-show="item.barcodeDus" class="text-[10px] font-mono font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded" x-text="'Dus SKU: ' + item.barcodeDus"></span>
+                                            <span x-show="item.tipeProduk === 'dus'" class="text-[10px] font-mono font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded">DUS MANDIRI</span>
                                         </div>
                                         <h4 class="font-extrabold text-slate-900 text-base" x-text="item.nama"></h4>
-                                        <div class="text-sm text-slate-500 flex items-center gap-3">
+                                        <div class="text-xs text-slate-500 flex flex-wrap items-center gap-3">
                                             <span x-show="isModeOffline || userRole === 'pemilik'">Modal: <strong class="text-slate-800" x-text="formatRupiah(item.modal)"></strong></span>
-                                            <span>Jual: <strong class="text-brand-600 font-bold" x-text="formatRupiah(item.jual)"></strong></span>
+                                            <span x-show="item.tipeProduk !== 'dus'">Jual Ecer: <strong class="text-brand-600 font-bold" x-text="formatRupiah(item.jual)"></strong></span>
+                                            <span x-show="item.tipeProduk === 'dus'">Jual Per Dus: <strong class="text-amber-700 font-bold" x-text="formatRupiah(item.jual)"></strong></span>
+                                            <template x-if="item.tipeProduk !== 'dus' && item.hargaDus > 0">
+                                                <span class="text-indigo-700 font-bold" x-text="'Dus: ' + formatRupiah(item.hargaDus) + ' (' + item.isiDus + ' Pcs)'"></span>
+                                            </template>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="flex w-full sm:w-auto justify-between sm:flex-col items-center sm:items-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                                    <span :class="item.stok < 5 ? 'bg-amber-100 text-amber-800 border-amber-300' : 'bg-slate-100 text-slate-800 border-slate-200'" class="text-sm font-black px-3 py-1 rounded-lg border" x-text="item.stok + ' pcs'"></span>
+                                    <div class="text-right">
+                                        <span :class="item.stok < 5 ? 'bg-amber-100 text-amber-800 border-amber-300' : 'bg-slate-100 text-slate-800 border-slate-200'" class="text-sm font-black px-3 py-1 rounded-lg border block" x-text="item.stok + (item.tipeProduk === 'dus' ? ' Dus' : ' Pcs')"></span>
+                                        <template x-if="item.tipeProduk !== 'dus' && item.isiDus > 0">
+                                            <span class="text-[10px] text-slate-400 font-bold block mt-0.5" x-text="'≈ ' + (item.stok / item.isiDus).toFixed(1) + ' Dus'"></span>
+                                        </template>
+                                    </div>
                                     
                                     <div class="flex items-center space-x-1.5">
                                         <button @click="bukaModalCetakStiker(item)" class="p-2 bg-indigo-50 hover:bg-indigo-100 rounded-lg text-indigo-600" title="Cetak Stiker Barcode"><i data-lucide="printer" class="w-4 h-4"></i></button>
@@ -743,61 +1004,107 @@
                                 </div>
                             </div>
                         </template>
+                        <template x-if="filteredStokBarang.length === 0">
+                            <p class="text-center text-xs text-slate-400 py-8">Tidak ada produk ditemukan.</p>
+                        </template>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB: LAPORAN -->
+            <!-- TAB: LAPORAN (DENGAN FITUR SETORAN KARYAWAN KE BOS) -->
             <div x-show="currentTab === 'riwayat'" class="space-y-4 max-w-5xl mx-auto">
-                <div class="clean-card p-4 rounded-2xl space-y-3">
-                    <h3 class="font-black text-xs text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                        <i data-lucide="bar-chart-3" class="w-4 h-4 text-brand-600"></i> Ringkasan Keuangan
-                    </h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs border-collapse">
-                            <thead>
-                                <tr class="bg-slate-100 border-b border-slate-200">
-                                    <th class="p-2.5 font-bold text-slate-700">Keterangan</th>
-                                    <th class="p-2.5 font-bold text-slate-700 text-right">Hari Kemarin</th>
-                                    <th class="p-2.5 font-bold text-brand-700 text-right bg-brand-50">Hari Ini</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100 font-medium">
-                                <tr>
-                                    <td class="p-2.5 font-bold text-slate-800">💵 Omset</td>
-                                    <td class="p-2.5 text-right font-bold text-slate-600" x-text="formatRupiah(ringkasanKeuangan().kemarin.omset)"></td>
-                                    <td class="p-2.5 text-right font-black text-brand-600 bg-brand-50/50" x-text="formatRupiah(ringkasanKeuangan().hariIni.omset)"></td>
-                                </tr>
-                                <tr>
-                                    <td class="p-2.5 font-bold text-slate-800">📈 Laba Bersih</td>
-                                    <td class="p-2.5 text-right font-bold text-emerald-600" x-text="isModeOffline || userRole === 'pemilik' ? formatRupiah(ringkasanKeuangan().kemarin.laba) : '🔒'"></td>
-                                    <td class="p-2.5 text-right font-black text-emerald-600 bg-brand-50/50" x-text="isModeOffline || userRole === 'pemilik' ? formatRupiah(ringkasanKeuangan().hariIni.laba) : '🔒'"></td>
-                                </tr>
-                                <tr>
-                                    <td class="p-2.5 font-bold text-slate-800">📉 Pengeluaran</td>
-                                    <td class="p-2.5 text-right font-bold text-amber-600" x-text="formatRupiah(ringkasanKeuangan().kemarin.pengeluaran)"></td>
-                                    <td class="p-2.5 text-right font-black text-amber-600 bg-brand-50/50" x-text="formatRupiah(ringkasanKeuangan().hariIni.pengeluaran)"></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <div class="clean-card p-4.5 rounded-2xl space-y-3">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <h3 class="font-black text-xs text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                            <i data-lucide="bar-chart-3" class="w-4 h-4 text-brand-600"></i> Ringkasan Keuangan Hari Ini
+                        </h3>
+                        <div class="flex gap-2">
+                            <button @click="exportCSV()" class="bg-white text-slate-800 text-xs px-3 py-1.5 rounded-xl font-bold border shadow-sm flex items-center gap-1 hover:bg-slate-50">
+                                <i data-lucide="download" class="w-3.5 h-3.5 text-brand-600"></i> <span>Export CSV</span>
+                            </button>
+                            <button @click="cetakLaporanPDF()" class="bg-indigo-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold shadow-sm flex items-center gap-1 hover:bg-indigo-700">
+                                <i data-lucide="file-text" class="w-3.5 h-3.5"></i> <span>Export PDF</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+                        <div class="bg-slate-50 border p-3 rounded-2xl">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Omset</span>
+                            <p class="text-base sm:text-lg font-black text-brand-600 mt-1" x-text="formatRupiah(ringkasanKeuangan().hariIni.omset)"></p>
+                        </div>
+                        <div class="bg-slate-50 border p-3 rounded-2xl">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Laba Bersih</span>
+                            <p class="text-base sm:text-lg font-black text-emerald-600 mt-1" x-text="isModeOffline || userRole === 'pemilik' ? formatRupiah(ringkasanKeuangan().hariIni.laba) : '🔒'"></p>
+                        </div>
+                        <div class="bg-slate-50 border p-3 rounded-2xl">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pengeluaran Biaya</span>
+                            <p class="text-base sm:text-lg font-black text-amber-600 mt-1" x-text="formatRupiah(ringkasanKeuangan().hariIni.pengeluaran)"></p>
+                        </div>
+                        <div class="bg-slate-50 border p-3 rounded-2xl">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Kasbon Aktif</span>
+                            <p class="text-base sm:text-lg font-black text-rose-600 mt-1" x-text="formatRupiah(totalKasbonAktif())"></p>
+                        </div>
                     </div>
                 </div>
 
-                <div class="flex justify-between items-center">
-                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-wider">Laporan Penjualan (Terakhir)</h3>
-                    <button @click="exportCSV()" class="bg-white text-slate-800 text-sm px-4 py-2.5 rounded-xl font-bold border shadow-sm flex items-center gap-2">
-                        <i data-lucide="download" class="w-4 h-4 text-brand-600"></i> <span>Export CSV</span>
-                    </button>
+                <!-- KARTU FITUR SETORAN KARYAWAN KE BOS -->
+                <div class="bg-gradient-to-r from-slate-900 to-indigo-950 text-white p-5 rounded-2xl shadow-lg space-y-3">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-3">
+                        <div>
+                            <span class="text-xs uppercase font-extrabold text-amber-400 tracking-wider">Formulir Tutup Toko & Setoran</span>
+                            <h4 class="text-lg font-black text-white">Laporan Setoran Keuangan Karyawan / Admin ke Bos</h4>
+                        </div>
+                        <button @click="bukaModalSetoran()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs px-4 py-2.5 rounded-xl shadow transition flex items-center gap-1.5">
+                            <i data-lucide="file-text" class="w-4 h-4"></i> Cetak / Lihat Struk Setoran
+                        </button>
+                    </div>
+                    <p class="text-xs text-slate-300">
+                        Gunakan fitur ini saat tutup toko untuk membuat rincian omset tunai, kasbon hari ini, pembayaran kasbon/cicilan hari ini, pengeluaran, dan total uang bersih setoran ke pemilik (bos).
+                    </p>
                 </div>
 
-                <div class="space-y-3 max-h-[440px] overflow-y-auto pr-1">
+                <!-- SUB LAPORAN KASBON -->
+                <div class="clean-card p-4.5 rounded-2xl space-y-3">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <h3 class="font-black text-xs text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                            <i data-lucide="book-open" class="w-4 h-4 text-rose-600"></i> Laporan Rekapitulasi Kasbon Pelanggan
+                        </h3>
+                        <button @click="exportCSVKasbon()" class="text-xs text-brand-600 font-bold hover:underline">Download CSV Kasbon</button>
+                    </div>
+                    <div class="max-h-40 overflow-y-auto divide-y text-xs">
+                        <template x-for="k in daftarKasbon" :key="k.id">
+                            <div class="py-2 flex justify-between items-center">
+                                <div>
+                                    <p class="font-bold text-slate-900" x-text="k.namaPelanggan + ' (' + (k.noHp || '-') + ')'"></p>
+                                    <p class="text-[10px] text-slate-400" x-text="k.tanggal"></p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="font-bold" :class="k.sisaHutang > 0 ? 'text-rose-600' : 'text-emerald-600'" x-text="formatRupiah(k.sisaHutang)"></span>
+                                    <span class="text-[9px] block text-slate-400" x-text="k.sisaHutang > 0 ? 'Belum Lunas' : 'LUNAS'"></span>
+                                </div>
+                            </div>
+                        </template>
+                        <template x-if="daftarKasbon.length === 0">
+                            <p class="text-center text-slate-400 py-3">Belum ada catatan laporan kasbon.</p>
+                        </template>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center pt-2">
+                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-wider">Riwayat Penjualan & Transaksi</h3>
+                </div>
+
+                <div class="space-y-3 max-h-[380px] overflow-y-auto pr-1">
                     <template x-for="trx in riwayatTransaksi" :key="trx.id">
                         <div class="clean-card p-4 rounded-2xl space-y-2.5">
                             <div class="flex justify-between items-start border-b pb-3">
                                 <div>
                                     <span class="text-xs text-slate-400 font-medium" x-text="trx.tanggal"></span>
                                     <p class="text-lg font-black text-brand-600 mt-0.5" x-text="formatRupiah(trx.total)"></p>
-                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded mt-1 inline-block" :class="trx.metode === 'qris' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-slate-100 text-slate-700'" x-text="'Metode: ' + (trx.metode || 'Tunai').toUpperCase()"></span>
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded mt-1 inline-block" 
+                                          :class="trx.metode === 'kasbon' ? 'bg-rose-50 text-rose-700 border border-rose-200' : (trx.metode === 'qris' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-slate-100 text-slate-700')" 
+                                          x-text="'Metode: ' + (trx.metode || 'Tunai').toUpperCase() + (trx.namaPelanggan ? ' ('+trx.namaPelanggan+')' : '')"></span>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <button @click="bukaStokStruk(trx)" class="text-brand-700 bg-brand-50 text-xs px-3 py-2 rounded-xl font-bold border flex items-center gap-1.5">
@@ -822,26 +1129,67 @@
                             <button @click="tutupScannerKamera()" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-6 h-6"></i></button>
                         </div>
                         <div id="reader" class="w-full overflow-hidden rounded-2xl border bg-slate-900"></div>
-                        <p class="text-xs text-center text-slate-500 font-medium">Arahkan kamera ke barcode produk (SKU / EAN)</p>
+                        <p class="text-xs text-center text-slate-500 font-medium">Arahkan kamera ke barcode eceran atau barcode dus</p>
                         <button @click="tutupScannerKamera()" class="w-full bg-slate-100 text-slate-800 font-extrabold py-3 rounded-xl text-sm">Tutup Scanner</button>
                     </div>
                 </div>
             </template>
 
-            <!-- MODAL CETAK STIKER BARCODE -->
+            <!-- MODAL CETAK STIKER BARCODE (DENGAN PILIHAN UKURAN 58MM / 80MM) -->
             <template x-if="showStikerModal">
                 <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-                    <div class="bg-white border rounded-3xl p-6 w-full max-w-xs space-y-4 shadow-2xl text-center">
-                        <h3 class="font-black text-base text-slate-900 uppercase">Cetak Stiker Barcode</h3>
-                        <div id="printable-barcode-area" class="bg-white border-2 border-dashed border-slate-300 p-4 rounded-2xl space-y-2 inline-block w-full">
-                            <p class="font-extrabold text-sm text-slate-900" x-text="selectedItemStiker.nama"></p>
-                            <svg id="modal-barcode-svg" class="mx-auto"></svg>
-                            <p class="font-black text-brand-600 text-base" x-text="formatRupiah(selectedItemStiker.jual)"></p>
-                            <p class="text-[10px] text-slate-400 uppercase tracking-widest" x-text="profilToko.nama"></p>
+                    <div class="bg-white border rounded-3xl p-6 w-full max-w-md space-y-4 shadow-2xl text-center max-h-[90vh] overflow-y-auto">
+                        <h3 class="font-black text-base text-slate-900 uppercase">Cetak Stiker Barcode Produk</h3>
+                        
+                        <div class="bg-slate-50 p-3 rounded-xl border text-left space-y-3">
+                            <div>
+                                <label class="text-xs font-bold text-slate-600 uppercase block mb-1">Ukuran Kertas Printer Thermal</label>
+                                <select x-model="ukuranKertasBarcode" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold text-slate-900">
+                                    <option value="58mm">Kertas Stiker 58mm (Kecil)</option>
+                                    <option value="80mm">Kertas Stiker 80mm (Sedang)</option>
+                                    <option value="custom">Ukuran Bebas (Full Lebar)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-slate-600 uppercase block mb-1">Jenis Barcode yang Dicetak</label>
+                                <select x-model="jenisCetakBarcode" @change="renderPreviewBarcodesModal()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold text-slate-900">
+                                    <template x-if="selectedItemStiker.tipeProduk !== 'dus'">
+                                        <option value="ecer">Barcode Eceran (SKU)</option>
+                                    </template>
+                                    <template x-if="selectedItemStiker.tipeProduk === 'dus' || selectedItemStiker.barcodeDus || selectedItemStiker.hargaDus > 0">
+                                        <option value="dus">Barcode Dus / Karton</option>
+                                    </template>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-slate-600 uppercase block mb-1">Jumlah Lembar Stiker Barcode</label>
+                                <div class="flex gap-2 items-center">
+                                    <input type="number" min="1" x-model.number="jumlahCetakBarcode" @input="renderPreviewBarcodesModal()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-base font-extrabold text-slate-900">
+                                    <button type="button" @click="jumlahCetakBarcode = selectedItemStiker.stok || 1; renderPreviewBarcodesModal()" class="text-[10px] bg-brand-50 text-brand-700 font-bold px-2.5 py-2.5 rounded-xl border border-brand-200 whitespace-nowrap">
+                                        Sesuai Stok (<span x-text="selectedItemStiker.stok"></span>)
+                                    </button>
+                                </div>
+                            </div>
                         </div>
+
+                        <div id="printable-barcode-area" class="bg-white border-2 border-dashed border-slate-300 p-4 rounded-2xl space-y-3" :style="ukuranKertasBarcode === '58mm' ? 'width: 58mm; margin: 0 auto;' : (ukuranKertasBarcode === '80mm' ? 'width: 80mm; margin: 0 auto;' : 'width: 100%')">
+                            <p class="font-extrabold text-sm text-slate-900" x-text="selectedItemStiker.nama + ((jenisCetakBarcode === 'dus' || selectedItemStiker.tipeProduk === 'dus') ? ' [DUS]' : '')"></p>
+                            
+                            <div class="flex flex-wrap gap-2 justify-center max-h-48 overflow-y-auto p-1">
+                                <template x-for="n in Number(jumlahCetakBarcode || 1)" :key="n">
+                                    <div class="border border-slate-200 p-2 rounded-lg text-center bg-white min-w-[120px]">
+                                        <svg :id="'stiker-svg-' + n" class="mx-auto"></svg>
+                                        <p class="font-black text-brand-600 text-xs" x-text="formatRupiah(selectedItemStiker.tipeProduk === 'dus' ? selectedItemStiker.jual : (jenisCetakBarcode === 'dus' ? selectedItemStiker.hargaDus : selectedItemStiker.jual))"></p>
+                                        <p class="text-[8px] text-slate-400 uppercase tracking-widest" x-text="profilToko.nama"></p>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
                         <div class="space-y-2 pt-2">
-                            <button @click="cetakStikerLangsung()" class="w-full bg-brand-600 text-white font-extrabold py-3.5 rounded-xl text-sm flex items-center justify-center gap-2 shadow-lg">
-                                <i data-lucide="printer" class="w-4 h-4"></i> Cetak Stiker Sekarang
+                            <button @click="cetakStikerLangsung()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-extrabold py-3.5 px-3 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-lg transition">
+                                <i data-lucide="printer" class="w-4 h-4 flex-shrink-0"></i>
+                                <span class="truncate">Cetak <span x-text="jumlahCetakBarcode"></span> Stiker (<span x-text="ukuranKertasBarcode.toUpperCase()"></span>)</span>
                             </button>
                             <button @click="showStikerModal = false" class="w-full bg-slate-100 text-slate-800 font-extrabold py-3 rounded-xl text-sm">Tutup</button>
                         </div>
@@ -849,10 +1197,122 @@
                 </div>
             </template>
 
+            <!-- MODAL SETORAN KARYAWAN KE BOS (DENGAN REKAP KASBON & CICILAN) -->
+            <template x-if="showSetoranModal">
+                <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm">
+                    <div class="bg-white border rounded-3xl p-6 w-full max-w-md space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <h3 class="font-black text-base text-slate-900 uppercase">Rincian Setoran Karyawan ke Bos</h3>
+                            <button @click="showSetoranModal = false" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-6 h-6"></i></button>
+                        </div>
+
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <label class="font-bold text-slate-600 uppercase block mb-1">Nama Karyawan / Admin yang Bertugas</label>
+                                <input type="text" x-model="formSetoran.namaKaryawan" placeholder="Contoh: Budi (Kasir Shift 1)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-bold text-slate-900">
+                            </div>
+                            <div>
+                                <label class="font-bold text-slate-600 uppercase block mb-1">Catatan Tambahan / Pesan untuk Bos</label>
+                                <input type="text" x-model="formSetoran.catatan" placeholder="Contoh: Tutup toko lancar, stok aman" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium text-slate-900">
+                            </div>
+                        </div>
+
+                        <!-- AREA PREVIEW STRUK SETORAN UNTUK DI PRINT -->
+                        <div id="printable-setoran-area" class="bg-slate-50 border p-4 rounded-2xl space-y-2 text-xs font-mono text-slate-800">
+                            <div class="text-center border-b pb-2">
+                                <p class="font-black text-sm uppercase" x-text="profilToko.nama"></p>
+                                <p class="font-bold">LAPORAN SETORAN KEUANGAN KE BOS</p>
+                                <p class="text-[10px] text-slate-500" x-text="new Date().toLocaleString('id-ID')"></p>
+                            </div>
+                            <div class="space-y-1.5 pt-1">
+                                <p><strong>Admin / Karyawan :</strong> <span x-text="formSetoran.namaKaryawan || '-'"></span></p>
+                                <hr class="border-dashed my-1">
+                                <div class="flex justify-between">
+                                    <span>Total Omset Toko (Hari Ini):</span>
+                                    <strong x-text="formatRupiah(ringkasanKeuangan().hariIni.omset)"></strong>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Kasbon Baru Dibuat (Hari Ini):</span>
+                                    <strong class="text-rose-600" x-text="formatRupiah(hitungKasbonHariIni())"></strong>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Pembayaran Cicilan/Pelunasan Kasbon (Hari Ini):</span>
+                                    <strong class="text-emerald-600" x-text="formatRupiah(hitungCicilanKasbonHariIni())"></strong>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Total Pengeluaran Biaya:</span>
+                                    <strong class="text-amber-600" x-text="formatRupiah(ringkasanKeuangan().hariIni.pengeluaran)"></strong>
+                                </div>
+                                <hr class="border-dashed my-1">
+                                <div class="flex justify-between text-sm font-black bg-emerald-100 p-2 rounded">
+                                    <span>TOTAL UANG SETORAN (CASH):</span>
+                                    <span class="text-emerald-700" x-text="formatRupiah(hitungTotalSetoranBersih())"></span>
+                                </div>
+                            </div>
+                            <p class="text-[10px] text-slate-500 italic text-center pt-2" x-text="'Catatan: ' + (formSetoran.catatan || '-')"></p>
+                        </div>
+
+                        <div class="flex gap-2 pt-2">
+                            <button @click="cetakStrukSetoran()" class="flex-1 bg-brand-600 hover:bg-brand-700 text-white font-extrabold py-3.5 rounded-xl text-sm shadow-md flex items-center justify-center gap-2">
+                                <i data-lucide="printer" class="w-4 h-4"></i> Cetak Struk Setoran
+                            </button>
+                            <button @click="showSetoranModal = false" class="bg-slate-100 text-slate-800 font-extrabold px-4 py-3 rounded-xl text-sm">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- AREA CETAK LAPORAN PDF TERSEMBUNYI -->
+            <div id="printable-laporan-area" class="print-only p-6">
+                <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
+                    <h1 style="font-size: 22px; font-weight: bold; margin: 0;" x-text="profilToko.nama || 'KASIRKU'"></h1>
+                    <p style="font-size: 12px; margin: 2px 0;" x-text="profilToko.alamat"></p>
+                    <p style="font-size: 12px; margin: 2px 0;" x-text="'Telp: ' + profilToko.telp"></p>
+                    <h3 style="font-size: 16px; font-weight: bold; margin-top: 10px; text-transform: uppercase;">LAPORAN KEUANGAN & PENJUALAN TOKO</h3>
+                </div>
+
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 12px;">
+                    <tr style="background: #f1f5f9;">
+                        <th style="border: 1px solid #cbd5e1; padding: 8px; text-align: left;">OMSET HARI INI</th>
+                        <th style="border: 1px solid #cbd5e1; padding: 8px; text-align: left;">LABA BERSIH</th>
+                        <th style="border: 1px solid #cbd5e1; padding: 8px; text-align: left;">PENGELUARAN BIAYA</th>
+                        <th style="border: 1px solid #cbd5e1; padding: 8px; text-align: left;">TOTAL KASBON AKTIF</th>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #cbd5e1; padding: 8px; font-weight: bold;" x-text="formatRupiah(ringkasanKeuangan().hariIni.omset)"></td>
+                        <td style="border: 1px solid #cbd5e1; padding: 8px; font-weight: bold; color: green;" x-text="formatRupiah(ringkasanKeuangan().hariIni.laba)"></td>
+                        <td style="border: 1px solid #cbd5e1; padding: 8px; font-weight: bold; color: orange;" x-text="formatRupiah(ringkasanKeuangan().hariIni.pengeluaran)"></td>
+                        <td style="border: 1px solid #cbd5e1; padding: 8px; font-weight: bold; color: red;" x-text="formatRupiah(totalKasbonAktif())"></td>
+                    </tr>
+                </table>
+
+                <h4 style="font-size: 14px; font-weight: bold; margin-bottom: 8px;">Daftar Transaksi Terakhir</h4>
+                <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                    <thead>
+                        <tr style="background: #e2e8f0;">
+                            <th style="border: 1px solid #cbd5e1; padding: 6px;">ID / Tanggal</th>
+                            <th style="border: 1px solid #cbd5e1; padding: 6px;">Metode</th>
+                            <th style="border: 1px solid #cbd5e1; padding: 6px;">Pelanggan</th>
+                            <th style="border: 1px solid #cbd5e1; padding: 6px;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="t in riwayatTransaksi" :key="t.id">
+                            <tr>
+                                <td style="border: 1px solid #cbd5e1; padding: 6px;" x-text="t.tanggal"></td>
+                                <td style="border: 1px solid #cbd5e1; padding: 6px;" x-text="(t.metode || 'Tunai').toUpperCase()"></td>
+                                <td style="border: 1px solid #cbd5e1; padding: 6px;" x-text="t.namaPelanggan || '-'"></td>
+                                <td style="border: 1px solid #cbd5e1; padding: 6px; font-weight: bold;" x-text="formatRupiah(t.total)"></td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+
             <!-- AREA CETAK MASSAL TERSEMBUNYI -->
             <div id="print-all-container" class="print-only">
                 <div style="padding: 10px;">
-                    <h2 style="text-align: center; font-family: sans-serif; font-weight: bold; margin-bottom: 20px;">LABEL BARCODE - <span x-text="profilToko.nama"></span></h2>
+                    <h2 style="text-align: center; font-family: sans-serif; font-weight: bold; margin-bottom: 20px;">LABEL BARCODE SEMUA PRODUK (ALL) - <span x-text="profilToko.nama"></span></h2>
                     <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
                         <template x-for="(item, idx) in stokBarang" :key="item.id">
                             <div style="border: 1px dashed #94a3b8; padding: 12px; border-radius: 8px; width: 220px; text-align: center; background: white; margin-bottom: 10px; page-break-inside: avoid;">
@@ -882,7 +1342,7 @@
                             <template x-if="selectedTrx && selectedTrx.items">
                                 <template x-for="item in selectedTrx.items" :key="item.id">
                                     <div class="flex justify-between">
-                                        <span class="font-bold" x-text="item.nama + ' (' + item.qty + 'x)'"></span>
+                                        <span class="font-bold" x-text="item.nama + ' (' + item.qty + ' ' + (item.tipeSatuan === 'dus' ? 'Dus' : 'x') + ')'"></span>
                                         <span class="font-black" x-text="formatRupiah(item.qty * item.jual)"></span>
                                     </div>
                                 </template>
@@ -914,33 +1374,44 @@
             </template>
         </main>
 
-        <!-- Navigasi Bawah (Khusus Tampilan HP / Mobile) -->
-        <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 clean-nav py-2.5 px-3">
-            <div class="max-w-md mx-auto grid grid-cols-5 gap-1">
+        <!-- NAVIGASI BAWAH MOBILE -->
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 clean-nav py-2 px-1">
+            <div class="max-w-md mx-auto grid grid-cols-7 gap-0.5 text-center items-center">
                 <button @click="currentTab = 'dashboard'" :class="currentTab === 'dashboard' ? 'text-brand-600 font-extrabold' : 'text-slate-400'" class="flex flex-col items-center py-1">
-                    <i data-lucide="layout-dashboard" class="w-6 h-6 mb-1"></i><span class="text-xs">Beranda</span>
+                    <i data-lucide="layout-dashboard" class="w-4 h-4 mb-0.5"></i><span class="text-[9px]">Beranda</span>
                 </button>
-                <button @click="currentTab = 'stok'" :class="currentTab === 'stok' ? 'text-brand-600 font-extrabold' : 'text-slate-400'" class="flex flex-col items-center py-1 relative">
-                    <i data-lucide="boxes" class="w-6 h-6 mb-1"></i><span class="text-xs">Stok</span>
+                <button @click="currentTab = 'stok'" :class="currentTab === 'stok' ? 'text-brand-600 font-extrabold' : 'text-slate-400'" class="flex flex-col items-center py-1">
+                    <i data-lucide="boxes" class="w-4 h-4 mb-0.5"></i><span class="text-[9px]">Stok</span>
                 </button>
-                <button @click="currentTab = 'kasir'" class="flex flex-col items-center -mt-6">
-                    <div class="w-14 h-14 rounded-2xl bg-brand-600 text-white flex items-center justify-center shadow-md">
-                        <i data-lucide="shopping-bag" class="w-7 h-7"></i>
+                
+                <button @click="currentTab = 'pengeluaran'" :class="currentTab === 'pengeluaran' ? 'text-brand-600 font-extrabold' : 'text-slate-400'" class="flex flex-col items-center py-1">
+                    <i data-lucide="wallet" class="w-4 h-4 mb-0.5"></i><span class="text-[9px]">Biaya</span>
+                </button>
+
+                <button @click="currentTab = 'kasir'" class="flex flex-col items-center -mt-5">
+                    <div class="w-11 h-11 rounded-2xl bg-brand-600 text-white flex items-center justify-center shadow-lg border-2 border-white">
+                        <i data-lucide="shopping-bag" class="w-5 h-5"></i>
                     </div>
-                    <span class="text-xs font-extrabold mt-1 text-brand-600">Kasir</span>
+                    <span class="text-[9px] font-extrabold mt-0.5 text-brand-600">Kasir</span>
                 </button>
-                <button @click="currentTab = 'pengeluaran'" :class="currentTab === 'pengeluaran' ? 'text-brand-600 font-extrabold' : 'text-slate-400'" class="flex flex-col items-center py-1 relative">
-                    <i data-lucide="wallet" class="w-6 h-6 mb-1"></i><span class="text-xs">Biaya</span>
-                    <span x-show="!isModeOffline && pesananOnlineList.length > 0" class="absolute top-1 right-3 bg-amber-500 w-2.5 h-2.5 rounded-full"></span>
+
+                <button @click="currentTab = 'keranjang_online'" :class="currentTab === 'keranjang_online' ? 'text-brand-600 font-extrabold' : 'text-slate-400'" class="flex flex-col items-center py-1 relative">
+                    <i data-lucide="shopping-cart" class="w-4 h-4 mb-0.5"></i><span class="text-[8px] leading-none">Online</span>
+                    <span x-show="!isModeOffline && pesananOnlineList.length > 0" class="absolute top-0 right-1 bg-rose-500 w-2 h-2 rounded-full animate-ping"></span>
+                </button>
+
+                <button @click="currentTab = 'kasbon'" :class="currentTab === 'kasbon' ? 'text-brand-600 font-extrabold' : 'text-slate-400'" class="flex flex-col items-center py-1 relative">
+                    <i data-lucide="book-open" class="w-4 h-4 mb-0.5"></i><span class="text-[9px]">Kasbon</span>
+                    <span x-show="totalKasbonAktif() > 0" class="absolute top-0 right-1 bg-rose-500 w-1.5 h-1.5 rounded-full"></span>
                 </button>
                 <button @click="currentTab = 'riwayat'" :class="currentTab === 'riwayat' ? 'text-brand-600 font-extrabold' : 'text-slate-400'" class="flex flex-col items-center py-1">
-                    <i data-lucide="file-text" class="w-6 h-6 mb-1"></i><span class="text-xs">Laporan</span>
+                    <i data-lucide="file-text" class="w-4 h-4 mb-0.5"></i><span class="text-[9px]">Laporan</span>
                 </button>
             </div>
         </nav>
     </div>
 
-    <!-- Script Logika -->
+    <!-- Script Logika JavaScript -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyC5f-UcmOC4NmDiWJiP1bS0U7PAJAQQL-s",
@@ -962,9 +1433,7 @@
         
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then((reg) => { console.log('Service Worker berhasil didaftarkan: ', reg.scope); })
-                    .catch((err) => { console.log('Pendaftaran Service Worker gagal: ', err); });
+                navigator.serviceWorker.register('./sw.js').catch(() => {});
             });
         }
 
@@ -978,7 +1447,6 @@
                 isOnlineNetwork: navigator.onLine,
                 offlineQueue: JSON.parse(localStorage.getItem('warung_offline_queue') || '[]'),
 
-                appMode: 'online',
                 loginKodeToko: '',
                 loginRole: 'karyawan',
                 loginPassword: '',
@@ -987,16 +1455,26 @@
                 currentTab: 'dashboard',
                 searchStok: '',
                 searchKasir: '',
+                searchKasbon: '',
+                filterStokMenipisOnly: false,
                 isEditing: false,
                 editId: null,
                 uangBayar: null,
+                namaPelangganKasbon: '',
+                noHpKasbon: '',
+                alamatKasbon: '',
                 metodeBayar: 'tunai',
                 showStrukModal: false,
                 showScannerModal: false,
                 showStikerModal: false,
                 showChatModal: false,
+                showEditKasbonModal: false,
+                showSetoranModal: false,
                 selectedTrx: null,
                 selectedItemStiker: {},
+                jumlahCetakBarcode: 1,
+                ukuranKertasBarcode: '58mm',
+                jenisCetakBarcode: 'ecer',
                 html5QrCode: null,
                 notification: { show: false, message: '', type: 'success' },
 
@@ -1017,14 +1495,17 @@
                 keranjang: [],
                 riwayatTransaksi: [],
                 riwayatPengeluaran: [],
+                daftarKasbon: [],
                 pesananOnlineList: [],
                 activeChatTrx: {},
                 chatMessages: [],
                 inputChatText: '',
                 lastPesananCount: 0,
 
-                formBarang: { nama: '', sku: '', kategori: '', modal: '', jual: '', stok: '', gambar: '' },
+                formBarang: { nama: '', sku: '', kategori: '', modal: '', jual: '', stok: '', gambar: '', isiDus: '', hargaDus: '', barcodeDus: '', tipeProduk: 'ecer' },
                 formPengeluaran: { keterangan: '', jumlah: '' },
+                formEditKasbon: { id: null, namaPelanggan: '', noHp: '', alamat: '', total: 0, sisaHutang: 0 },
+                formSetoran: { namaKaryawan: '', catatan: '' },
 
                 init() {
                     this.$nextTick(() => { lucide.createIcons(); });
@@ -1065,11 +1546,13 @@
                         const cTrx = localStorage.getItem('cache_trx_' + this.kodeToko);
                         const cBiaya = localStorage.getItem('cache_biaya_' + this.kodeToko);
                         const cProfil = localStorage.getItem('cache_profil_' + this.kodeToko);
+                        const cKasbon = localStorage.getItem('cache_kasbon_' + this.kodeToko);
 
                         if (cStok) this.stokBarang = JSON.parse(cStok);
                         if (cTrx) this.riwayatTransaksi = JSON.parse(cTrx);
                         if (cBiaya) this.riwayatPengeluaran = JSON.parse(cBiaya);
                         if (cProfil) this.profilToko = JSON.parse(cProfil);
+                        if (cKasbon) this.daftarKasbon = JSON.parse(cKasbon);
                     } catch(e) {}
                 },
 
@@ -1080,6 +1563,7 @@
                         localStorage.setItem('cache_trx_' + this.kodeToko, JSON.stringify(this.riwayatTransaksi));
                         localStorage.setItem('cache_biaya_' + this.kodeToko, JSON.stringify(this.riwayatPengeluaran));
                         localStorage.setItem('cache_profil_' + this.kodeToko, JSON.stringify(this.profilToko));
+                        localStorage.setItem('cache_kasbon_' + this.kodeToko, JSON.stringify(this.daftarKasbon));
                     } catch(e) {}
                 },
 
@@ -1094,6 +1578,8 @@
                                 await tokoRef.collection('produk').doc(String(item.data.id)).set(item.payload, { merge: true });
                             } else if (item.type === 'pengeluaran') {
                                 await tokoRef.collection('pengeluaran').doc(String(item.data.id)).set(item.data);
+                            } else if (item.type === 'kasbon') {
+                                await tokoRef.collection('kasbon').doc(String(item.data.id)).set(item.data, { merge: true });
                             }
                         }
                         this.offlineQueue = [];
@@ -1168,29 +1654,66 @@
                            date1.getDate() === date2.getDate();
                 },
 
-                isYesterday(dCheck, dBase = new Date()) {
-                    if (!dCheck) return false;
-                    const check = new Date(dCheck);
-                    const yesterday = new Date(dBase);
-                    yesterday.setDate(yesterday.getDate() - 1);
-                    return check.getFullYear() === yesterday.getFullYear() &&
-                           check.getMonth() === yesterday.getMonth() &&
-                           check.getDate() === yesterday.getDate();
+                totalKasbonAktif() {
+                    return (this.daftarKasbon || []).reduce((acc, k) => acc + (Number(k.sisaHutang) || 0), 0);
+                },
+
+                hitungKasbonHariIni() {
+                    const skrg = new Date();
+                    return (this.daftarKasbon || []).filter(k => this.isSameDay(k.timestamp || k.id, skrg)).reduce((acc, k) => acc + Number(k.total || 0), 0);
+                },
+
+                hitungCicilanKasbonHariIni() {
+                    const skrg = new Date();
+                    let totalCicilanHariIni = 0;
+                    (this.daftarKasbon || []).forEach(k => {
+                        if (k.riwayatBayar && Array.isArray(k.riwayatBayar)) {
+                            k.riwayatBayar.forEach(r => {
+                                if (r.tanggal) {
+                                    const tglBayar = new Date(r.timestamp || r.tanggal);
+                                    if (this.isSameDay(tglBayar, skrg) || (new Date(r.tanggal).toDateString() === skrg.toDateString())) {
+                                        totalCicilanHariIni += Number(r.jumlah || 0);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                    return totalCicilanHariIni;
+                },
+
+                hitungTotalSetoranBersih() {
+                    const omset = this.ringkasanKeuangan().hariIni.omset;
+                    const kasbonHariIni = this.hitungKasbonHariIni();
+                    const cicilanHariIni = this.hitungCicilanKasbonHariIni();
+                    const pengeluaran = this.ringkasanKeuangan().hariIni.pengeluaran;
+                    return Math.max(0, omset - kasbonHariIni + cicilanHariIni - pengeluaran);
+                },
+
+                bukaModalSetoran() {
+                    this.showSetoranModal = true;
+                },
+
+                cetakStrukSetoran() {
+                    window.print();
+                },
+
+                get filteredDaftarKasbon() {
+                    if (!this.searchKasbon) return this.daftarKasbon || [];
+                    const q = this.searchKasbon.toLowerCase();
+                    return (this.daftarKasbon || []).filter(k => 
+                        (k.namaPelanggan && k.namaPelanggan.toLowerCase().includes(q)) ||
+                        (k.noHp && k.noHp.toLowerCase().includes(q)) ||
+                        (k.alamat && k.alamat.toLowerCase().includes(q))
+                    );
                 },
 
                 ringkasanKeuangan() {
                     const skrg = new Date();
                     const trxHariIni = (this.riwayatTransaksi || []).filter(t => this.isSameDay(t.timestamp || t.id, skrg));
-                    const trxKemarin = (this.riwayatTransaksi || []).filter(t => this.isYesterday(t.timestamp || t.id, skrg));
-
                     const pengeluaranHariIni = (this.riwayatPengeluaran || []).filter(p => this.isSameDay(p.timestamp || p.id, skrg));
-                    const pengeluaranKemarin = (this.riwayatPengeluaran || []).filter(p => this.isYesterday(p.timestamp || p.id, skrg));
 
                     const omsetHariIni = trxHariIni.reduce((acc, t) => acc + Number(t.total || 0), 0);
-                    const omsetKemarin = trxKemarin.reduce((acc, t) => acc + Number(t.total || 0), 0);
-
                     const totalPengeluaranHariIni = pengeluaranHariIni.reduce((acc, p) => acc + Number(p.jumlah || 0), 0);
-                    const totalPengeluaranKemarin = pengeluaranKemarin.reduce((acc, p) => acc + Number(p.jumlah || 0), 0);
 
                     let labaHariIni = 0;
                     trxHariIni.forEach(t => {
@@ -1201,18 +1724,8 @@
                     });
                     labaHariIni -= totalPengeluaranHariIni;
 
-                    let labaKemarin = 0;
-                    trxKemarin.forEach(t => {
-                        (t.items || []).forEach(i => {
-                            const modal = i.modal !== undefined ? Number(i.modal) : (this.stokBarang.find(x => String(x.id) === String(i.id))?.modal || 0);
-                            labaKemarin += (Number(i.jual || 0) - modal) * Number(i.qty || 1);
-                        });
-                    });
-                    labaKemarin -= totalPengeluaranKemarin;
-
                     return {
-                        hariIni: { omset: omsetHariIni, laba: labaHariIni, pengeluaran: totalPengeluaranHariIni },
-                        kemarin: { omset: omsetKemarin, laba: labaKemarin, pengeluaran: totalPengeluaranKemarin }
+                        hariIni: { omset: omsetHariIni, laba: labaHariIni, pengeluaran: totalPengeluaranHariIni }
                     };
                 },
 
@@ -1240,7 +1753,7 @@
                         this.kodeToko = kodeRaw.toLowerCase();
                         this.muatDataCacheLokal();
                         this.isLoadingLogin = false;
-                        this.showNotification('Login Offline (Mode Terhubung) Berhasil!');
+                        this.showNotification('Login Offline Berhasil!');
                         this.$nextTick(() => { lucide.createIcons(); });
                         return;
                     }
@@ -1361,12 +1874,20 @@
                         this.simpanDataCacheLokal();
                     }, () => {});
                     unsubs.push(u4);
+
+                    const u5 = tokoRef.collection('kasbon').orderBy('timestamp', 'desc').onSnapshot((snap) => {
+                        const listK = [];
+                        snap.forEach(doc => { listK.push({ id: doc.id, ...doc.data() }); });
+                        this.daftarKasbon = listK;
+                        this.simpanDataCacheLokal();
+                    }, () => {});
+                    unsubs.push(u5);
                 },
 
                 async simpanProfilToko() {
                     this.simpanDataCacheLokal();
                     if (!navigator.onLine) {
-                        this.showNotification('Tersimpan offline (Akan disinkron saat online)');
+                        this.showNotification('Tersimpan offline');
                         return;
                     }
                     try {
@@ -1417,27 +1938,15 @@
                         } catch(e){}
                     }
                 },
+
                 async hapusPesanChat(index) {
                     if (confirm('Yakin ingin menghapus pesan chat ini?')) {
-                        // 1. Hapus pesan dari daftar lokal
                         this.chatMessages.splice(index, 1);
-
-                        // 2. Jika online dan ada transaksi terhubung di Firestore, update ke database
                         if (!this.isModeOffline && navigator.onLine && this.activeChatTrx.id) {
                             try {
-                                await db.collection('kasirku_toko')
-                                    .doc(this.kodeToko)
-                                    .collection('transaksi')
-                                    .doc(String(this.activeChatTrx.id))
-                                    .update({
-                                        chats: this.chatMessages
-                                    });
+                                await db.collection('kasirku_toko').doc(this.kodeToko).collection('transaksi').doc(String(this.activeChatTrx.id)).update({ chats: this.chatMessages });
                                 this.showNotification('Pesan berhasil dihapus');
-                            } catch(e) {
-                                this.showNotification('Gagal memperbarui di server', 'error');
-                            }
-                        } else {
-                            this.showNotification('Pesan dihapus lokal');
+                            } catch(e) {}
                         }
                     }
                 },
@@ -1463,12 +1972,7 @@
                                     status: 'Ditolak'
                                 });
                                 this.showNotification('Pesanan berhasil ditolak.', 'error');
-                            } catch(e){
-                                this.showNotification('Gagal menolak pesanan', 'error');
-                            }
-                        } else {
-                            this.pesananOnlineList = this.pesananOnlineList.filter(x => x.id !== p.id);
-                            this.showNotification('Pesanan ditolak (Mode offline)', 'error');
+                            } catch(e){}
                         }
                     }
                 },
@@ -1482,7 +1986,7 @@
                     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(angka || 0);
                 },
 
-                stokMenipisCount() { return (this.stokBarang || []).filter(i => (i.stok || 0) < 5).length; },
+                stokMenipisCount() { return (this.stokBarang || []).filter(i => (i.stok || 0) <= 5).length; },
                 totalModalStok() { return (this.stokBarang || []).reduce((acc, item) => acc + ((item.modal || 0) * (item.stok || 0)), 0); },
                 
                 riwayatTransaksiHariIni() {
@@ -1494,12 +1998,17 @@
                 keuntunganHariIni() { return this.ringkasanKeuangan().hariIni.laba; },
 
                 get filteredStokBarang() {
-                    if (!this.searchStok) return this.stokBarang || [];
+                    let list = this.stokBarang || [];
+                    if (this.filterStokMenipisOnly) {
+                        list = list.filter(i => (i.stok || 0) <= 5);
+                    }
+                    if (!this.searchStok) return list;
                     const q = this.searchStok.toLowerCase();
-                    return (this.stokBarang || []).filter(i => 
+                    return list.filter(i => 
                         (i.nama && i.nama.toLowerCase().includes(q)) || 
                         (i.kategori && i.kategori.toLowerCase().includes(q)) || 
-                        (i.sku && i.sku.toLowerCase().includes(q))
+                        (i.sku && i.sku.toLowerCase().includes(q)) ||
+                        (i.barcodeDus && i.barcodeDus.toLowerCase().includes(q))
                     );
                 },
 
@@ -1560,11 +2069,17 @@
 
                 async simpanBarang() {
                     const docId = this.isEditing ? String(this.editId) : String(Date.now());
+                    const isDusMandiri = !!(this.formBarang.tipeProduk === 'dus');
+                    
                     const payload = JSON.parse(JSON.stringify({
                         ...this.formBarang,
+                        isDusMandiri: isDusMandiri,
                         modal: Number(this.formBarang.modal || 0),
                         jual: Number(this.formBarang.jual || 0),
-                        stok: Number(this.formBarang.stok || 0)
+                        stok: Number(this.formBarang.stok || 0),
+                        isiDus: isDusMandiri ? 0 : Number(this.formBarang.isiDus || 0),
+                        hargaDus: isDusMandiri ? Number(this.formBarang.jual || 0) : Number(this.formBarang.hargaDus || 0),
+                        barcodeDus: isDusMandiri ? (this.formBarang.sku ? this.formBarang.sku.trim() : '') : (this.formBarang.barcodeDus ? this.formBarang.barcodeDus.trim() : '')
                     }));
 
                     if (this.isEditing) {
@@ -1573,14 +2088,14 @@
                         this.batalEdit();
                     } else {
                         this.stokBarang.push({ id: docId, ...payload });
-                        this.formBarang = { nama: '', sku: '', kategori: '', modal: '', jual: '', stok: '', gambar: '' };
+                        this.formBarang = { nama: '', sku: '', kategori: '', modal: '', jual: '', stok: '', gambar: '', isiDus: '', hargaDus: '', barcodeDus: '', tipeProduk: 'ecer' };
                     }
                     this.simpanDataCacheLokal();
 
                     if (!navigator.onLine) {
                         this.offlineQueue.push({ type: 'produk', data: { id: docId }, payload });
                         localStorage.setItem('warung_offline_queue', JSON.stringify(this.offlineQueue));
-                        this.showNotification('Tersimpan offline (Akan disinkron saat online)');
+                        this.showNotification('Tersimpan offline');
                         return;
                     }
 
@@ -1588,21 +2103,33 @@
                         await db.collection('kasirku_toko').doc(this.kodeToko).collection('produk').doc(docId).set(payload, { merge: true });
                         this.showNotification('Produk berhasil disimpan!');
                     } catch (e) {
-                        this.showNotification('Gagal sinkron produk ke server', 'error');
+                        this.showNotification('Gagal sinkron produk', 'error');
                     }
                 },
 
                 editItem(item) {
                     this.isEditing = true;
                     this.editId = item.id;
-                    this.formBarang = { ...item };
+                    this.formBarang = { 
+                        nama: item.nama || '', 
+                        sku: item.sku || '', 
+                        kategori: item.kategori || '', 
+                        modal: item.modal || '', 
+                        jual: item.jual || '', 
+                        stok: item.stok || '', 
+                        gambar: item.gambar || '', 
+                        isiDus: item.isiDus || '', 
+                        hargaDus: item.hargaDus || '', 
+                        barcodeDus: item.barcodeDus || '',
+                        tipeProduk: item.tipeProduk || (item.isDusMandiri ? 'dus' : 'ecer')
+                    };
                     this.previewBarcode();
                 },
 
                 batalEdit() {
                     this.isEditing = false;
                     this.editId = null;
-                    this.formBarang = { nama: '', sku: '', kategori: '', modal: '', jual: '', stok: '', gambar: '' };
+                    this.formBarang = { nama: '', sku: '', kategori: '', modal: '', jual: '', stok: '', gambar: '', isiDus: '', hargaDus: '', barcodeDus: '', tipeProduk: 'ecer' };
                 },
 
                 async hapusBarang(id) {
@@ -1620,26 +2147,57 @@
 
                 bukaModalCetakStiker(item) {
                     this.selectedItemStiker = item;
+                    this.jumlahCetakBarcode = item.stok || 1;
+                    this.jenisCetakBarcode = item.tipeProduk === 'dus' ? 'dus' : 'ecer';
                     this.showStikerModal = true;
-                    setTimeout(() => {
-                        try {
-                            JsBarcode("#modal-barcode-svg", item.sku || item.id.toString(), { format: "CODE128", width: 2, height: 50, displayValue: true, fontSize: 14 });
-                        } catch(e){}
-                    }, 50);
+                    this.renderPreviewBarcodesModal();
+                },
+
+                renderPreviewBarcodesModal() {
+                    this.$nextTick(() => {
+                        setTimeout(() => {
+                            const total = Number(this.jumlahCetakBarcode) || 1;
+                            let kodeTarget = '';
+                            
+                            if (this.selectedItemStiker.tipeProduk === 'dus') {
+                                kodeTarget = this.selectedItemStiker.sku || this.selectedItemStiker.id.toString();
+                            } else if (this.jenisCetakBarcode === 'dus') {
+                                kodeTarget = this.selectedItemStiker.barcodeDus || this.selectedItemStiker.sku || this.selectedItemStiker.id.toString();
+                            } else {
+                                kodeTarget = this.selectedItemStiker.sku || this.selectedItemStiker.id.toString();
+                            }
+
+                            for (let i = 1; i <= total; i++) {
+                                try {
+                                    JsBarcode("#stiker-svg-" + i, kodeTarget, { format: "CODE128", width: 1.5, height: 40, displayValue: true, fontSize: 11 });
+                                } catch(e){}
+                            }
+                        }, 80);
+                    });
                 },
 
                 cetakStikerLangsung() { window.print(); },
 
                 cetakSemuaBarcode() {
-                    this.$nextTick(() => {
-                        setTimeout(() => {
-                            this.stokBarang.forEach((item, idx) => {
-                                try {
-                                    JsBarcode("#mass-barcode-" + idx, item.sku || item.id.toString(), { format: "CODE128", width: 2, height: 45, displayValue: true, fontSize: 13 });
-                                } catch(e) {}
-                            });
-                            setTimeout(() => { window.print(); }, 150);
-                        }, 50);
+                    this.showNotification('Menyiapkan semua barcode...');
+                    this.$nextTick(async () => {
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                        this.stokBarang.forEach((item, idx) => {
+                            try {
+                                const targetId = "#mass-barcode-" + idx;
+                                const svgEl = document.querySelector(targetId);
+                                if (svgEl) {
+                                    JsBarcode(targetId, item.sku || String(item.id), { 
+                                        format: "CODE128", 
+                                        width: 2, 
+                                        height: 45, 
+                                        displayValue: true, 
+                                        fontSize: 13 
+                                    });
+                                }
+                            } catch(e) {}
+                        });
+                        setTimeout(() => { window.print(); }, 400);
                     });
                 },
 
@@ -1655,12 +2213,20 @@
                                 (decodedText) => {
                                     this.bunyiBeep();
                                     this.searchKasir = decodedText;
-                                    const found = this.stokBarang.find(i => i.sku === decodedText || (i.nama && i.nama.toLowerCase().includes(decodedText.toLowerCase())));
-                                    if (found) {
-                                        this.tambahKeKeranjang(found);
-                                        this.showNotification('Barang ditemukan: ' + found.nama);
+                                    
+                                    // Deteksi apakah barcode yang di-scan adalah Barcode Dus atau Ecer
+                                    const foundDus = this.stokBarang.find(i => (i.barcodeDus && i.barcodeDus.trim() === decodedText.trim()) || (i.tipeProduk === 'dus' && i.sku === decodedText.trim()));
+                                    if (foundDus) {
+                                        this.tambahKeKeranjang(foundDus, 'dus');
+                                        this.showNotification('Dus ditemukan: ' + foundDus.nama);
                                     } else {
-                                        this.showNotification('Barcode: ' + decodedText, 'error');
+                                        const foundEcer = this.stokBarang.find(i => i.sku === decodedText || (i.nama && i.nama.toLowerCase().includes(decodedText.toLowerCase())));
+                                        if (foundEcer) {
+                                            this.tambahKeKeranjang(foundEcer, foundEcer.tipeProduk === 'dus' ? 'dus' : 'pcs');
+                                            this.showNotification('Barang ditemukan: ' + foundEcer.nama);
+                                        } else {
+                                            this.showNotification('Barcode tidak terdaftar: ' + decodedText, 'error');
+                                        }
                                     }
                                     this.tutupScannerKamera();
                                 },
@@ -1686,25 +2252,51 @@
                     return (this.stokBarang || []).filter(i => 
                         (i.nama && i.nama.toLowerCase().includes(q)) || 
                         (i.kategori && i.kategori.toLowerCase().includes(q)) || 
-                        (i.sku && i.sku.toLowerCase().includes(q))
+                        (i.sku && i.sku.toLowerCase().includes(q)) ||
+                        (i.barcodeDus && i.barcodeDus.toLowerCase().includes(q))
                     );
                 },
 
-                tambahKeKeranjang(item) {
-                    if (item.stok <= 0) { this.showNotification('Stok habis!', 'error'); return; }
-                    const exist = this.keranjang.find(c => c.id === item.id);
+                tambahKeKeranjang(item, tipeSatuan = 'pcs') {
+                    if (item.tipeProduk === 'dus') tipeSatuan = 'dus';
+                    
+                    const isiRasio = (item.tipeProduk !== 'dus' && tipeSatuan === 'dus' && item.isiDus > 0) ? item.isiDus : 1;
+                    if (item.stok < (item.tipeProduk === 'dus' ? 1 : isiRasio)) { 
+                        this.showNotification('Stok tidak cukup untuk pembelian ini!', 'error'); 
+                        return; 
+                    }
+
+                    const hargaJual = item.tipeProduk === 'dus' ? item.jual : ((tipeSatuan === 'dus' && item.hargaDus > 0) ? item.hargaDus : item.jual);
+                    const modalItem = item.tipeProduk === 'dus' ? item.modal : ((tipeSatuan === 'dus' && item.isiDus > 0) ? (item.modal * item.isiDus) : item.modal);
+
+                    const exist = this.keranjang.find(c => c.id === item.id && c.tipeSatuan === tipeSatuan);
                     if (exist) {
-                        if (exist.qty < item.stok) exist.qty++;
+                        const totalKebutuhanStok = item.tipeProduk === 'dus' ? (exist.qty + 1) : ((exist.qty + 1) * isiRasio);
+                        if (totalKebutuhanStok <= item.stok) exist.qty++;
                         else this.showNotification('Batas stok tercapai!', 'error');
                     } else {
-                        this.keranjang.push({ ...item, modal: item.modal || 0, qty: 1 });
+                        this.keranjang.push({ 
+                            ...item, 
+                            tipeSatuan: tipeSatuan,
+                            isiRasio: item.tipeProduk === 'dus' ? 1 : isiRasio,
+                            jual: hargaJual,
+                            modal: modalItem || 0, 
+                            qty: 1 
+                        });
                     }
                 },
 
                 tambahQtyKeranjang(index) {
                     const c = this.keranjang[index];
                     const b = this.stokBarang.find(x => x.id === c.id);
-                    if (b && c.qty < b.stok) c.qty++; else this.showNotification('Stok kurang!', 'error');
+                    if (b) {
+                        const rasio = c.isiRasio || 1;
+                        if ((c.qty + 1) * rasio <= b.stok) {
+                            c.qty++;
+                        } else {
+                            this.showNotification('Stok tidak cukup!', 'error');
+                        }
+                    }
                 },
 
                 kurangiQtyKeranjang(index) {
@@ -1721,7 +2313,8 @@
 
                     for (let c of this.keranjang) {
                         const b = this.stokBarang.find(x => x.id === c.id);
-                        if (!b || b.stok < c.qty) {
+                        const butuhStok = c.qty * (c.isiRasio || 1);
+                        if (!b || b.stok < butuhStok) {
                             this.showNotification(`Stok barang '${c.nama}' tidak mencukupi!`, 'error');
                             return;
                         }
@@ -1732,7 +2325,7 @@
                         id: now,
                         timestamp: now,
                         tanggal: new Date().toLocaleString('id-ID'),
-                        items: this.keranjang.map(i => ({ id: i.id, nama: i.nama, jual: Number(i.jual || 0), modal: Number(i.modal || 0), qty: Number(i.qty || 1) })),
+                        items: this.keranjang.map(i => ({ id: i.id, nama: i.nama, jual: Number(i.jual || 0), modal: Number(i.modal || 0), qty: Number(i.qty || 1), tipeSatuan: i.tipeSatuan || 'pcs', isiRasio: i.isiRasio || 1 })),
                         total: total,
                         bayar: Number(this.uangBayar),
                         kembali: Number(this.hitungKembalian()),
@@ -1741,10 +2334,9 @@
 
                     this.keranjang.forEach(c => {
                         const b = this.stokBarang.find(x => x.id === c.id);
-                        if (b) b.stok -= c.qty;
+                        if (b) b.stok -= (c.qty * (c.isiRasio || 1));
                     });
                     this.riwayatTransaksi.unshift(transaksiBaru);
-
                     this.simpanDataCacheLokal();
 
                     if (!navigator.onLine) {
@@ -1754,7 +2346,7 @@
                         this.showStrukModal = true;
                         this.keranjang = [];
                         this.uangBayar = null;
-                        this.showNotification('Transaksi dicatat offline (Sinkron otomatis saat online)');
+                        this.showNotification('Transaksi dicatat offline');
                         return;
                     }
 
@@ -1764,7 +2356,7 @@
                         batch.set(tokoRef.collection('transaksi').doc(String(transaksiBaru.id)), transaksiBaru);
                         this.keranjang.forEach(c => {
                             batch.update(tokoRef.collection('produk').doc(String(c.id)), {
-                                stok: firebase.firestore.FieldValue.increment(-c.qty)
+                                stok: firebase.firestore.FieldValue.increment(-(c.qty * (c.isiRasio || 1)))
                             });
                         });
                         await batch.commit();
@@ -1781,7 +2373,7 @@
                         this.showStrukModal = true;
                         this.keranjang = [];
                         this.uangBayar = null;
-                        this.showNotification('Tersimpan offline (Jaringan bermasalah)');
+                        this.showNotification('Tersimpan offline');
                     }
                 },
 
@@ -1789,7 +2381,8 @@
                     const total = this.totalKeranjang();
                     for (let c of this.keranjang) {
                         const b = this.stokBarang.find(x => x.id === c.id);
-                        if (!b || b.stok < c.qty) {
+                        const butuhStok = c.qty * (c.isiRasio || 1);
+                        if (!b || b.stok < butuhStok) {
                             this.showNotification(`Stok barang '${c.nama}' tidak mencukupi!`, 'error');
                             return;
                         }
@@ -1800,7 +2393,7 @@
                         id: now,
                         timestamp: now,
                         tanggal: new Date().toLocaleString('id-ID'),
-                        items: this.keranjang.map(i => ({ id: i.id, nama: i.nama, jual: Number(i.jual || 0), modal: Number(i.modal || 0), qty: Number(i.qty || 1) })),
+                        items: this.keranjang.map(i => ({ id: i.id, nama: i.nama, jual: Number(i.jual || 0), modal: Number(i.modal || 0), qty: Number(i.qty || 1), tipeSatuan: i.tipeSatuan || 'pcs', isiRasio: i.isiRasio || 1 })),
                         total: total,
                         bayar: total,
                         kembali: 0,
@@ -1809,10 +2402,9 @@
 
                     this.keranjang.forEach(c => {
                         const b = this.stokBarang.find(x => x.id === c.id);
-                        if (b) b.stok -= c.qty;
+                        if (b) b.stok -= (c.qty * (c.isiRasio || 1));
                     });
                     this.riwayatTransaksi.unshift(transaksiBaru);
-
                     this.simpanDataCacheLokal();
 
                     if (!navigator.onLine) {
@@ -1821,7 +2413,7 @@
                         this.selectedTrx = transaksiBaru;
                         this.showStrukModal = true;
                         this.keranjang = [];
-                        this.showNotification('QRIS dicatat offline (Sinkron saat online)');
+                        this.showNotification('QRIS dicatat offline');
                         return;
                     }
 
@@ -1831,7 +2423,7 @@
                         batch.set(tokoRef.collection('transaksi').doc(String(transaksiBaru.id)), transaksiBaru);
                         this.keranjang.forEach(c => {
                             batch.update(tokoRef.collection('produk').doc(String(c.id)), {
-                                stok: firebase.firestore.FieldValue.increment(-c.qty)
+                                stok: firebase.firestore.FieldValue.increment(-(c.qty * (c.isiRasio || 1)))
                             });
                         });
                         await batch.commit();
@@ -1850,6 +2442,219 @@
                     }
                 },
 
+                async prosesPembayaranKasbon() {
+                    if (!this.namaPelangganKasbon.trim()) {
+                        this.showNotification('Isi Nama Pelanggan Kasbon!', 'error');
+                        return;
+                    }
+
+                    const total = this.totalKeranjang();
+                    for (let c of this.keranjang) {
+                        const b = this.stokBarang.find(x => x.id === c.id);
+                        const butuhStok = c.qty * (c.isiRasio || 1);
+                        if (!b || b.stok < butuhStok) {
+                            this.showNotification(`Stok barang '${c.nama}' tidak mencukupi!`, 'error');
+                            return;
+                        }
+                    }
+
+                    const now = Date.now();
+                    const kasbonBaru = {
+                        id: now,
+                        timestamp: now,
+                        tanggal: new Date().toLocaleString('id-ID'),
+                        namaPelanggan: this.namaPelangganKasbon.trim(),
+                        noHp: this.noHpKasbon.trim() || '-',
+                        alamat: this.alamatKasbon.trim() || '-',
+                        items: this.keranjang.map(i => ({ id: i.id, nama: i.nama, jual: Number(i.jual || 0), modal: Number(i.modal || 0), qty: Number(i.qty || 1), tipeSatuan: i.tipeSatuan || 'pcs', isiRasio: i.isiRasio || 1 })),
+                        total: total,
+                        sisaHutang: total,
+                        riwayatBayar: []
+                    };
+
+                    const transaksiBaru = {
+                        ...kasbonBaru,
+                        bayar: 0,
+                        kembali: 0,
+                        metode: 'kasbon'
+                    };
+
+                    this.keranjang.forEach(c => {
+                        const b = this.stokBarang.find(x => x.id === c.id);
+                        if (b) b.stok -= (c.qty * (c.isiRasio || 1));
+                    });
+
+                    this.daftarKasbon.unshift(kasbonBaru);
+                    this.riwayatTransaksi.unshift(transaksiBaru);
+                    this.simpanDataCacheLokal();
+
+                    if (!navigator.onLine) {
+                        this.offlineQueue.push({ type: 'kasbon', data: kasbonBaru });
+                        this.offlineQueue.push({ type: 'transaksi', data: transaksiBaru });
+                        localStorage.setItem('warung_offline_queue', JSON.stringify(this.offlineQueue));
+                        this.selectedTrx = transaksiBaru;
+                        this.showStrukModal = true;
+                        this.keranjang = [];
+                        this.namaPelangganKasbon = '';
+                        this.noHpKasbon = '';
+                        this.alamatKasbon = '';
+                        this.showNotification('Kasbon dicatat offline');
+                        return;
+                    }
+
+                    try {
+                        const batch = db.batch();
+                        const tokoRef = db.collection('kasirku_toko').doc(this.kodeToko);
+                        batch.set(tokoRef.collection('kasbon').doc(String(kasbonBaru.id)), kasbonBaru);
+                        batch.set(tokoRef.collection('transaksi').doc(String(transaksiBaru.id)), transaksiBaru);
+                        this.keranjang.forEach(c => {
+                            batch.update(tokoRef.collection('produk').doc(String(c.id)), {
+                                stok: firebase.firestore.FieldValue.increment(-(c.qty * (c.isiRasio || 1)))
+                            });
+                        });
+                        await batch.commit();
+
+                        this.selectedTrx = transaksiBaru;
+                        this.showStrukModal = true;
+                        this.keranjang = [];
+                        this.namaPelangganKasbon = '';
+                        this.noHpKasbon = '';
+                        this.alamatKasbon = '';
+                        this.showNotification('Kasbon Pelanggan Berhasil Dicatat!');
+                    } catch (e) {
+                        this.offlineQueue.push({ type: 'kasbon', data: kasbonBaru });
+                        localStorage.setItem('warung_offline_queue', JSON.stringify(this.offlineQueue));
+                        this.selectedTrx = transaksiBaru;
+                        this.showStrukModal = true;
+                        this.keranjang = [];
+                        this.namaPelangganKasbon = '';
+                        this.noHpKasbon = '';
+                        this.alamatKasbon = '';
+                        this.showNotification('Tersimpan offline');
+                    }
+                },
+
+                bukaModalEditKasbon(k) {
+                    this.formEditKasbon = { ...k };
+                    this.showEditKasbonModal = true;
+                },
+
+                async simpanEditKasbon() {
+                    const idx = this.daftarKasbon.findIndex(x => String(x.id) === String(this.formEditKasbon.id));
+                    if (idx !== -1) {
+                        this.daftarKasbon[idx] = { ...this.formEditKasbon };
+                        this.simpanDataCacheLokal();
+
+                        if (!this.isModeOffline && navigator.onLine) {
+                            try {
+                                await db.collection('kasirku_toko').doc(this.kodeToko).collection('kasbon').doc(String(this.formEditKasbon.id)).update({
+                                    namaPelanggan: this.formEditKasbon.namaPelanggan,
+                                    noHp: this.formEditKasbon.noHp,
+                                    alamat: this.formEditKasbon.alamat,
+                                    total: Number(this.formEditKasbon.total),
+                                    sisaHutang: Number(this.formEditKasbon.sisaHutang)
+                                });
+                            } catch(e){}
+                        }
+                        this.showNotification('Data kasbon diperbarui!');
+                    }
+                    this.showEditKasbonModal = false;
+                },
+
+                async hapusKasbon(id) {
+                    if (confirm('Yakin ingin menghapus catatan kasbon ini?')) {
+                        this.daftarKasbon = this.daftarKasbon.filter(x => String(x.id) !== String(id));
+                        this.simpanDataCacheLokal();
+                        if (!this.isModeOffline && navigator.onLine) {
+                            try {
+                                await db.collection('kasirku_toko').doc(this.kodeToko).collection('kasbon').doc(String(id)).delete();
+                            } catch(e){}
+                        }
+                        this.showNotification('Catatan kasbon dihapus', 'error');
+                    }
+                },
+
+                async bayarCicilanKasbon(k) {
+                    const bayar = Number(k.inputBayar || 0);
+                    if (bayar <= 0) {
+                        this.showNotification('Masukkan nominal bayar yang valid!', 'error');
+                        return;
+                    }
+
+                    const sisaBaru = Math.max(0, k.sisaHutang - bayar);
+                    const riwayat = k.riwayatBayar || [];
+                    const waktuSekarang = new Date();
+                    const timestampNow = waktuSekarang.getTime();
+                    
+                    const dataBayarBaru = {
+                        timestamp: timestampNow,
+                        tanggal: waktuSekarang.toLocaleString('id-ID'),
+                        jumlah: bayar
+                    };
+                    
+                    riwayat.push(dataBayarBaru);
+
+                    k.sisaHutang = sisaBaru;
+                    k.riwayatBayar = riwayat;
+                    const nominalDibayar = k.inputBayar;
+                    k.inputBayar = null;
+
+                    const transaksiKasbonTrx = {
+                        id: 'kasbon_' + timestampNow,
+                        timestamp: timestampNow,
+                        tanggal: waktuSekarang.toLocaleString('id-ID'),
+                        items: [
+                            { 
+                                id: k.id, 
+                                nama: `Pelunasan/Cicilan Kasbon: ${k.namaPelanggan}`, 
+                                jual: Number(nominalDibayar), 
+                                modal: 0, 
+                                qty: 1, 
+                                tipeSatuan: 'pcs', 
+                                isiRasio: 1 
+                            }
+                        ],
+                        total: Number(nominalDibayar),
+                        bayar: Number(nominalDibayar),
+                        kembali: 0,
+                        metode: 'cicilan kasbon',
+                        namaPelanggan: k.namaPelanggan
+                    };
+
+                    this.riwayatTransaksi.unshift(transaksiKasbonTrx);
+                    this.simpanDataCacheLokal();
+
+                    if (!navigator.onLine) {
+                        this.offlineQueue.push({ type: 'kasbon', data: k });
+                        this.offlineQueue.push({ type: 'transaksi', data: transaksiKasbonTrx });
+                        localStorage.setItem('warung_offline_queue', JSON.stringify(this.offlineQueue));
+                        
+                        this.selectedTrx = transaksiKasbonTrx;
+                        this.showStrukModal = true;
+                        this.showNotification('Pelunasan kasbon dicatat offline & struk disiapkan');
+                        return;
+                    }
+
+                    try {
+                        const batch = db.batch();
+                        const tokoRef = db.collection('kasirku_toko').doc(this.kodeToko);
+                        
+                        batch.update(tokoRef.collection('kasbon').doc(String(k.id)), {
+                            sisaHutang: sisaBaru,
+                            riwayatBayar: riwayat
+                        });
+                        
+                        batch.set(tokoRef.collection('transaksi').doc(String(transaksiKasbonTrx.id)), transaksiKasbonTrx);
+                        await batch.commit();
+
+                        this.selectedTrx = transaksiKasbonTrx;
+                        this.showStrukModal = true;
+                        this.showNotification('Pembayaran Kasbon Berhasil & Struk Disiapkan!');
+                    } catch (e) {
+                        this.showNotification('Gagal memperbarui ke server', 'error');
+                    }
+                },
+
                 bukaStokStruk(trx) { this.selectedTrx = trx; this.showStrukModal = true; },
 
                 async simpanPengeluaran() {
@@ -1864,8 +2669,8 @@
 
                     this.riwayatPengeluaran.unshift(p);
                     this.formPengeluaran = { keterangan: '', jumlah: '' };
-
                     this.simpanDataCacheLokal();
+
                     if (!navigator.onLine) {
                         this.offlineQueue.push({ type: 'pengeluaran', data: p });
                         localStorage.setItem('warung_offline_queue', JSON.stringify(this.offlineQueue));
@@ -1916,8 +2721,23 @@
                     });
                     const link = document.createElement("a");
                     link.setAttribute("href", encodeURI("data:text/csv;charset=utf-8," + csv));
-                    link.setAttribute("download", "Laporan_Toko.csv");
+                    link.setAttribute("download", "Laporan_Transaksi_Toko.csv");
                     document.body.appendChild(link); link.click(); document.body.removeChild(link);
+                },
+
+                exportCSVKasbon() {
+                    let csv = "ID,Tanggal,Nama Pelanggan,No HP/WA,Alamat,Total Hutang,Sisa Hutang\n";
+                    (this.daftarKasbon || []).forEach(k => {
+                        csv += `"${k.id}","${k.tanggal}","${k.namaPelanggan}","${k.noHp || '-'}","${k.alamat || '-'}","${k.total}","${k.sisaHutang}"\n`;
+                    });
+                    const link = document.createElement("a");
+                    link.setAttribute("href", encodeURI("data:text/csv;charset=utf-8," + csv));
+                    link.setAttribute("download", "Laporan_Kasbon_Pelanggan.csv");
+                    document.body.appendChild(link); link.click(); document.body.removeChild(link);
+                },
+
+                cetakLaporanPDF() {
+                    window.print();
                 },
 
                 async connectBluetooth() {
@@ -1949,8 +2769,11 @@
 
                         (trx.items || []).forEach(i => { text += `${i.nama}\n  ${i.qty} x ${i.jual} = ${i.qty*i.jual}\n`; });
                         text += `--------------------------------\nTOTAL: Rp ${trx.total}\n`;
-                        if (trx.metode !== 'qris') {
+                        if (trx.metode !== 'qris' && trx.metode !== 'kasbon') {
                             text += `BAYAR: Rp ${trx.bayar}\nKEMBALI: Rp ${trx.kembali}\n`;
+                        }
+                        if (trx.metode === 'kasbon') {
+                            text += `PELANGGAN: ${trx.namaPelanggan || '-'}\nNO HP: ${trx.noHp || '-'}\nSTATUS: KASBON\n`;
                         }
                         text += `\nTerimakasih!\n\n\n`;
 
