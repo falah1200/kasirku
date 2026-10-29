@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kasirku - Aplikasi Pembukuan & Stok Toko</title>
+    <title>Kasirku - Aplikasi Pembukuan & Stok Toko Pro</title>
     <!-- Manifest & PWA Meta Tags -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2563eb">
@@ -71,11 +71,15 @@
         }
         .print-only { display: none; }
         
-        /* CSS Print Dinamis Berdasarkan Ukuran Pilihan (58mm / 80mm) */
         @media print {
             body * { visibility: hidden; }
-            #printable-barcode-area, #printable-barcode-area *, #printable-laporan-area, #printable-laporan-area *, #printable-setoran-area, #printable-setoran-area * { visibility: visible; }
-            #printable-barcode-area, #printable-laporan-area, #printable-setoran-area { position: absolute; left: 0; top: 0; width: 100%; }
+            #printable-struk-area, #printable-struk-area *, 
+            #printable-barcode-area, #printable-barcode-area *, 
+            #printable-laporan-area, #printable-laporan-area *, 
+            #printable-setoran-area, #printable-setoran-area * { visibility: visible; }
+            #printable-struk-area, #printable-barcode-area, #printable-laporan-area, #printable-setoran-area { 
+                position: absolute; left: 0; top: 0; width: 100%; 
+            }
             .print-only, .print-only * { visibility: visible !important; }
             #print-all-container { 
                 position: absolute; left: 0; top: 0; width: 100%; display: block !important; background: white;
@@ -97,7 +101,7 @@
         </div>
     </div>
 
-    <!-- ================= HALAMAN PEMILIHAN MODE / LOGIN ================= -->
+    <!-- ================= HALAMAN LOGIN ================= -->
     <template x-if="!isLoggedIn">
         <div class="min-h-[92vh] flex items-center justify-center p-4 bg-slate-900">
             <div class="bg-white rounded-3xl p-6 w-full max-w-sm space-y-5 shadow-2xl">
@@ -109,7 +113,6 @@
                     <p class="text-sm text-slate-500 font-medium">Masuk ke aplikasi Kasirku</p>
                 </div>
 
-                <!-- FORM MODE ONLINE -->
                 <div class="space-y-4">
                     <div class="bg-blue-50 border border-blue-200 p-3.5 rounded-xl text-xs text-blue-900 font-medium">
                         <p>🔒 <strong>Mode Online:</strong> Sinkronisasi penuh dengan kasir online & customer online.</p>
@@ -117,12 +120,12 @@
                     </div>
                     <div>
                         <label class="text-xs font-bold text-slate-600 uppercase">Kode Toko / Cabang</label>
-                        <input type="text" x-model="loginKodeToko" placeholder="Contoh: Toko-FK-01" class="w-full mt-1 bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-3.5 text-base font-bold text-slate-900 focus:outline-none focus:border-brand-600 uppercase">
+                        <input type="text" x-model="loginKodeToko" placeholder="Contoh: Toko-FK-01" class="w-full mt-1 bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold text-slate-900 focus:outline-none focus:border-brand-600 uppercase">
                     </div>
 
                     <div>
                         <label class="text-xs font-bold text-slate-600 uppercase">Login Sebagai</label>
-                        <select x-model="loginRole" class="w-full mt-1 bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-3.5 text-base font-bold text-slate-900 focus:outline-none focus:border-brand-600">
+                        <select x-model="loginRole" class="w-full mt-1 bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold text-slate-900 focus:outline-none focus:border-brand-600">
                             <option value="pemilik">👑 Pemilik (Admin Utama)</option>
                             <option value="karyawan">🧑‍💼 Karyawan / Kasir</option>
                         </select>
@@ -130,7 +133,7 @@
 
                     <div>
                         <label class="text-xs font-bold text-slate-600 uppercase">Password Lisensi / Akses</label>
-                        <input type="password" x-model="loginPassword" placeholder="Masukkan password..." class="w-full mt-1 bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-3.5 text-base font-bold text-slate-900 focus:outline-none focus:border-brand-600">
+                        <input type="password" x-model="loginPassword" placeholder="Masukkan password..." class="w-full mt-1 bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold text-slate-900 focus:outline-none focus:border-brand-600">
                     </div>
 
                     <button @click="prosesLoginOnline()" :disabled="isLoadingLogin" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-extrabold py-4 rounded-xl text-base transition shadow-lg shadow-brand-600/20 active:scale-95 disabled:opacity-50">
@@ -143,7 +146,7 @@
 
     <!-- ================= APLIKASI UTAMA ================= -->
     <div x-show="isLoggedIn" x-cloak>
-        <header class="sticky top-[27px] z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-3 md:px-4 py-2.5 shadow-sm">
+        <header class="sticky top-[27px] z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-3 md:px-6 py-2.5 shadow-sm">
             <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
                 <div class="flex items-center space-x-2 min-w-0 flex-1">
                     <div class="w-9 h-9 md:w-11 md:h-11 rounded-xl md:rounded-2xl bg-brand-600 flex items-center justify-center text-white shadow-md shadow-brand-500/30 font-black text-lg md:text-xl overflow-hidden border flex-shrink-0">
@@ -163,29 +166,29 @@
                     </div>
                 </div>
 
-                <!-- NAVIGASI PC -->
-                <nav class="hidden md:flex items-center space-x-1 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200">
-                    <button @click="currentTab = 'dashboard'" :class="currentTab === 'dashboard' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5">
+                <!-- NAVIGASI PC / DESKTOP -->
+                <nav class="hidden md:flex items-center space-x-1 bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200 shadow-inner">
+                    <button @click="currentTab = 'dashboard'" :class="currentTab === 'dashboard' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 font-semibold'" class="px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5">
                         <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Beranda
                     </button>
-                    <button @click="currentTab = 'stok'" :class="currentTab === 'stok' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5">
+                    <button @click="currentTab = 'stok'" :class="currentTab === 'stok' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 font-semibold'" class="px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5">
                         <i data-lucide="boxes" class="w-4 h-4"></i> Stok
                     </button>
-                    <button @click="currentTab = 'pengeluaran'" :class="currentTab === 'pengeluaran' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5">
+                    <button @click="currentTab = 'pengeluaran'" :class="currentTab === 'pengeluaran' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 font-semibold'" class="px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5">
                         <i data-lucide="wallet" class="w-4 h-4"></i> Biaya
                     </button>
-                    <button @click="currentTab = 'kasir'" :class="currentTab === 'kasir' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-3.5 py-2 rounded-xl text-xs transition flex items-center gap-1.5">
-                        <i data-lucide="shopping-bag" class="w-4 h-4"></i> Kasir
+                    <button @click="currentTab = 'kasir'" :class="currentTab === 'kasir' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 font-semibold'" class="px-3.5 py-2 rounded-xl text-xs transition flex items-center gap-1.5">
+                        <i data-lucide="shopping-bag" class="w-4 h-4"></i> Kasir POS
                     </button>
-                    <button @click="currentTab = 'keranjang_online'" :class="currentTab === 'keranjang_online' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5 relative">
-                        <i data-lucide="shopping-cart" class="w-4 h-4"></i> Keranjang Online
-                        <span x-show="!isModeOffline && pesananOnlineList.length > 0" class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
-                    </button>
-                    <button @click="currentTab = 'kasbon'" :class="currentTab === 'kasbon' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5 relative">
+                    <!-- TAB MEMBER & POIN -->
+                    <button @click="currentTab = 'member'" :class="currentTab === 'member' ? 'bg-amber-500 text-slate-950 shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 font-semibold'" class="px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5">
+                        <i data-lucide="award" class="w-4 h-4 text-amber-600"></i> Member Poin
+                    </button>                    
+                    <button @click="currentTab = 'kasbon'" :class="currentTab === 'kasbon' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 font-semibold'" class="px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5 relative">
                         <i data-lucide="book-open" class="w-4 h-4"></i> Kasbon
                         <span x-show="totalKasbonAktif() > 0" class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
                     </button>
-                    <button @click="currentTab = 'riwayat'" :class="currentTab === 'riwayat' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-semibold'" class="px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5">
+                    <button @click="currentTab = 'riwayat'" :class="currentTab === 'riwayat' ? 'bg-brand-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 font-semibold'" class="px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5">
                         <i data-lucide="file-text" class="w-4 h-4"></i> Laporan
                     </button>
                 </nav>
@@ -195,8 +198,9 @@
                         <i data-lucide="message-square" class="w-4 h-4 md:w-5 md:h-5"></i>
                         <span x-show="!isModeOffline && pesananOnlineList.length > 0" class="absolute -top-1 -right-1 bg-indigo-600 text-white text-[9px] w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center font-black animate-pulse" x-text="pesananOnlineList.length"></span>
                     </button>
-                    <button @click="connectBluetooth()" :class="btDeviceConnected ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-600 border-slate-200'" class="p-2 md:p-2.5 rounded-xl text-sm font-bold border transition hover:bg-slate-200" title="Printer Bluetooth">
+                    <button @click="connectBluetooth()" :class="btDeviceConnected ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-600 border-slate-200'" class="p-2 md:p-2.5 rounded-xl text-sm font-bold border transition hover:bg-slate-200 flex items-center gap-1" title="Printer Bluetooth">
                         <i data-lucide="printer" class="w-4 h-4 md:w-5 md:h-5"></i>
+                        <span class="hidden lg:inline text-xs" x-text="btDeviceConnected ? 'BT Terhubung' : 'BT Printer'"></span>
                     </button>
                     <button @click="logout()" class="p-2 md:p-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition" title="Keluar Akun">
                         <i data-lucide="log-out" class="w-4 h-4 md:w-5 md:h-5"></i>
@@ -218,12 +222,12 @@
             </template>
 
             <!-- TAB: DASHBOARD -->
-            <div x-show="currentTab === 'dashboard'" class="space-y-4 max-w-4xl mx-auto">
+            <div x-show="currentTab === 'dashboard'" class="space-y-4 max-w-5xl mx-auto">
                 <div class="bg-gradient-to-br from-brand-600 via-brand-700 to-indigoBrand-700 p-6 rounded-3xl text-white shadow-xl shadow-brand-600/20">
                     <div class="flex justify-between items-start mb-4">
                         <div>
                             <span class="text-xs text-brand-100 font-bold uppercase tracking-wider">Omset Hari Ini</span>
-                            <h2 class="text-3xl font-black text-white mt-1 tracking-tight" x-text="formatRupiah(pendapatanHariIni())"></h2>
+                            <h2 class="text-3xl md:text-4xl font-black text-white mt-1 tracking-tight" x-text="formatRupiah(pendapatanHariIni())"></h2>
                         </div>
                         <span class="bg-white/20 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 border border-white/20">
                             <i data-lucide="trending-up" class="w-4 h-4"></i>
@@ -231,18 +235,22 @@
                         </span>
                     </div>
 
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-4 border-t border-white/20">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-white/20">
                         <div>
                             <p class="text-xs text-brand-100 font-medium">Laba Bersih Estimasi</p>
-                            <p class="text-lg font-extrabold text-white mt-0.5" x-text="isModeOffline || userRole === 'pemilik' ? formatRupiah(keuntunganHariIni()) : '🔒 Khusus Pemilik'"></p>
+                            <p class="text-lg md:text-xl font-extrabold text-white mt-0.5" x-text="isModeOffline || userRole === 'pemilik' ? formatRupiah(keuntunganHariIni()) : '🔒 Khusus Pemilik'"></p>
                         </div>
                         <div>
                             <p class="text-xs text-brand-100 font-medium">Pengeluaran Hari Ini</p>
-                            <p class="text-lg font-extrabold text-amber-200 mt-0.5" x-text="formatRupiah(pengeluaranHariIni())"></p>
+                            <p class="text-lg md:text-xl font-extrabold text-amber-200 mt-0.5" x-text="formatRupiah(pengeluaranHariIni())"></p>
                         </div>
-                        <div class="col-span-2 sm:col-span-1">
-                            <p class="text-xs text-brand-100 font-medium">Total Kasbon Belum Lunas</p>
-                            <p class="text-lg font-extrabold text-rose-200 mt-0.5" x-text="formatRupiah(totalKasbonAktif())"></p>
+                        <div>
+                            <p class="text-xs text-brand-100 font-medium">Kasbon Belum Lunas</p>
+                            <p class="text-lg md:text-xl font-extrabold text-rose-200 mt-0.5" x-text="formatRupiah(totalKasbonAktif())"></p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-brand-100 font-medium">Total Member Toko</p>
+                            <p class="text-lg md:text-xl font-extrabold text-emerald-200 mt-0.5" x-text="daftarMember.length + ' Member'"></p>
                         </div>
                     </div>
                 </div>
@@ -257,6 +265,28 @@
                             class="px-4 py-2 rounded-xl font-black text-xs transition text-white shadow-md">
                         <span x-text="profilToko.isBuka ? 'Tutup Toko' : 'Buka Toko'"></span>
                     </button>
+                </div>
+
+                <!-- PENGATURAN SISTEM POIN MEMBER (ALFAMART SYNC) -->
+                <div x-show="isModeOffline || userRole === 'pemilik'" class="clean-card p-4.5 rounded-2xl space-y-3 bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
+                    <div class="flex justify-between items-center border-b border-amber-200 pb-2">
+                        <h3 class="font-black text-sm text-amber-900 uppercase tracking-wider flex items-center gap-2">
+                            <i data-lucide="award" class="w-4 h-4 text-amber-600"></i> Pengaturan Sistem Poin Member (Ala Alfamart)
+                        </h3>
+                        <button @click="simpanProfilToko()" class="text-xs bg-amber-600 text-white font-bold px-3 py-1.5 rounded-lg hover:bg-amber-700">Simpan Aturan</button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                        <div>
+                            <label class="font-bold text-slate-700 uppercase">Kelipatan Belanja Untuk 1 Poin (Rp)</label>
+                            <input type="number" min="1000" x-model.number="profilToko.rasioPoin" placeholder="Contoh: 10000" class="w-full mt-1 bg-white border border-amber-300 rounded-xl px-3 py-2 text-sm font-bold text-slate-900">
+                            <span class="text-[10px] text-slate-500">Pelanggan mendapat 1 Poin setiap belanja kelipatan nominal ini.</span>
+                        </div>
+                        <div>
+                            <label class="font-bold text-slate-700 uppercase">Nilai Tukar 1 Poin Menjadi Rupiah (Rp)</label>
+                            <input type="number" min="1" x-model.number="profilToko.nilaiSatuPoin" placeholder="Contoh: 100" class="w-full mt-1 bg-white border border-amber-300 rounded-xl px-3 py-2 text-sm font-bold text-amber-800">
+                            <span class="text-[10px] text-slate-500">Nilai potongan harga tunai di kasir untuk per 1 poin member.</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div x-show="isModeOffline || userRole === 'pemilik'" class="clean-card p-4.5 rounded-2xl space-y-3">
@@ -331,7 +361,7 @@
                             <span>Buka Mesin Kasir POS</span>
                             <i data-lucide="arrow-right" class="w-5 h-5"></i>
                         </h3>
-                        <p class="text-xs text-slate-400 mt-0.5">Layani pembeli & catat transaksi instan</p>
+                        <p class="text-xs text-slate-400 mt-0.5">Layani pembeli, tukar poin member & catat transaksi instan</p>
                     </div>
                     <div class="w-12 h-12 rounded-2xl bg-brand-600 flex items-center justify-center text-white font-bold text-xl shadow-md">
                         <i data-lucide="shopping-bag" class="w-6 h-6"></i>
@@ -340,8 +370,9 @@
             </div>
 
             <!-- TAB: KASIR / POS -->
-            <div x-show="currentTab === 'kasir'" class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-                <div class="md:col-span-7 lg:col-span-8 space-y-4">
+            <div x-show="currentTab === 'kasir'" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                <!-- BAGIAN KIRI: SEARCH & LIST BARANG -->
+                <div class="lg:col-span-7 xl:col-span-8 space-y-4">
                     <div class="flex gap-2">
                         <div class="relative flex-1">
                             <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
@@ -352,10 +383,10 @@
                         </button>
                     </div>
 
-                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 max-h-[550px] md:max-h-[calc(100vh-180px)] overflow-y-auto pr-1">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 max-h-[580px] lg:max-h-[calc(100vh-210px)] overflow-y-auto pr-1">
                         <template x-for="item in filteredStokKasir" :key="item.id">
-                            <div class="border p-3 rounded-2xl transition flex flex-col justify-between relative bg-white border-slate-200 shadow-sm"
-                                 :class="item.stok === 0 ? 'opacity-40 bg-slate-100' : 'hover:border-brand-500 hover:shadow-md'">
+                            <div class="border p-3 rounded-2xl transition flex flex-col justify-between relative bg-white border-slate-200 shadow-sm hover:border-brand-500 hover:shadow-md"
+                                 :class="item.stok === 0 ? 'opacity-40 bg-slate-100' : ''">
                                 <div>
                                     <div class="w-full h-24 bg-slate-100 rounded-xl mb-2 overflow-hidden flex items-center justify-center border border-slate-100">
                                         <template x-if="item.gambar">
@@ -413,7 +444,41 @@
                     </div>
                 </div>
 
-                <div class="md:col-span-5 lg:col-span-4 md:sticky md:top-24">
+                <!-- BAGIAN KANAN: KERANJANG & INPUT MEMBER -->
+                <div class="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-24 space-y-3">
+                    <!-- SELEKSI MEMBER PELANGGAN (FITUR POIN) -->
+                    <div class="clean-card rounded-2xl p-3.5 bg-gradient-to-r from-amber-50/80 to-orange-50/80 border-amber-200">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="text-xs font-black text-amber-900 uppercase flex items-center gap-1">
+                                <i data-lucide="user-check" class="w-4 h-4 text-amber-600"></i> Member Pelanggan (Poin)
+                            </label>
+                            <button @click="currentTab = 'member'" class="text-[10px] text-amber-700 font-bold hover:underline">+ Member Baru</button>
+                        </div>
+                        <select x-model="selectedMemberId" @change="pilihMemberKasir()" class="w-full bg-white border border-amber-300 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-600">
+                            <option value="">-- Non Member (Pembeli Umum) --</option>
+                            <template x-for="m in daftarMember" :key="m.id">
+                                <option :value="m.id" x-text="m.nama + ' (' + m.noHp + ') - Poin: ' + (m.poin || 0)"></option>
+                            </template>
+                        </select>
+
+                        <!-- INDIKATOR MEMBER TERPILIH -->
+                        <template x-if="activeMemberKasir">
+                            <div class="mt-2.5 pt-2 border-t border-amber-200 flex justify-between items-center text-xs">
+                                <div>
+                                    <p class="font-black text-slate-900" x-text="activeMemberKasir.nama"></p>
+                                    <p class="text-[10px] text-amber-800 font-bold" x-text="'⭐ Saldo Poin: ' + activeMemberKasir.poin + ' Poin'"></p>
+                                </div>
+                                <div class="text-right">
+                                    <label class="flex items-center gap-1.5 cursor-pointer text-slate-800 font-bold text-[11px]">
+                                        <input type="checkbox" x-model="tukarPoinKasir" class="rounded text-amber-600">
+                                        <span>Tukar Poin</span>
+                                    </label>
+                                    <span x-show="tukarPoinKasir" class="text-[9px] font-bold text-emerald-600 block" x-text="'- ' + formatRupiah(hitungPotonganPoin())"></span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
                     <div class="clean-card rounded-2xl p-4.5 space-y-4 shadow-md">
                         <div class="flex justify-between items-center border-b border-slate-200 pb-3">
                             <h3 class="font-black text-base text-slate-900 uppercase tracking-wider flex items-center gap-2">
@@ -422,7 +487,7 @@
                             <button @click="keranjang = []" x-show="keranjang.length > 0" class="text-xs text-rose-600 font-bold hover:underline">Kosongkan</button>
                         </div>
 
-                        <div class="max-h-56 md:max-h-64 overflow-y-auto space-y-2.5 pr-1 divide-y divide-slate-100">
+                        <div class="max-h-52 overflow-y-auto space-y-2.5 pr-1 divide-y divide-slate-100">
                             <template x-for="(cart, index) in keranjang" :key="index">
                                 <div class="pt-2 flex justify-between items-center text-sm">
                                     <div class="flex items-center space-x-2.5 flex-1 pr-2">
@@ -443,24 +508,41 @@
                                         </div>
                                     </div>
                                     <div class="flex items-center space-x-1.5">
-                                        <button @click="kurangiQtyKeranjang(index)" class="w-7 h-7 bg-slate-100 hover:bg-slate-200 rounded-lg font-black text-sm transition">-</button>
-                                        <span class="text-sm font-black w-6 text-center" x-text="cart.qty"></span>
-                                        <button @click="tambahQtyKeranjang(index)" class="w-7 h-7 bg-slate-100 hover:bg-slate-200 rounded-lg font-black text-sm transition">+</button>
-                                    </div>
+    <button @click="kurangiQtyKeranjang(index)" class="w-7 h-7 bg-slate-100 hover:bg-slate-200 rounded-lg font-black text-sm transition">-</button>
+    
+    <!-- Diubah menjadi input number agar bisa diketik manual -->
+    <input type="number" min="1" 
+           x-model.number="cart.qty" 
+           @change="updateQtyManual(index)" 
+           class="w-12 text-center text-sm font-black bg-slate-50 border border-slate-300 rounded-lg py-1 focus:outline-none focus:border-brand-600">
+           
+    <button @click="tambahQtyKeranjang(index)" class="w-7 h-7 bg-slate-100 hover:bg-slate-200 rounded-lg font-black text-sm transition">+</button>
+</div>
                                 </div>
                             </template>
                             <template x-if="keranjang.length === 0">
-                                <div class="text-center py-8">
-                                    <i data-lucide="shopping-bag" class="w-10 h-10 mx-auto text-slate-300 mb-2"></i>
-                                    <p class="text-slate-400 text-sm">Keranjang belanja masih kosong</p>
+                                <div class="text-center py-6">
+                                    <i data-lucide="shopping-bag" class="w-8 h-8 mx-auto text-slate-300 mb-1"></i>
+                                    <p class="text-slate-400 text-xs">Keranjang belanja masih kosong</p>
                                 </div>
                             </template>
                         </div>
 
                         <div class="border-t border-slate-200 pt-3 space-y-3">
-                            <div class="flex justify-between items-center bg-slate-50 p-3.5 rounded-xl border">
-                                <span class="text-xs font-bold text-slate-600 uppercase">Total Belanja</span>
-                                <span class="text-2xl font-black text-brand-600" x-text="formatRupiah(totalKeranjang())"></span>
+                            <div class="space-y-1 bg-slate-50 p-3.5 rounded-xl border">
+                                <div class="flex justify-between items-center text-xs text-slate-500 font-medium" x-show="tukarPoinKasir && hitungPotonganPoin() > 0">
+                                    <span>Subtotal Belanja</span>
+                                    <span class="line-through" x-text="formatRupiah(totalKeranjangKotor())"></span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs text-emerald-600 font-bold" x-show="tukarPoinKasir && hitungPotonganPoin() > 0">
+                                    <span>Potongan Poin Member</span>
+                                    <span x-text="'- ' + formatRupiah(hitungPotonganPoin())"></span>
+                                </div>
+                                <div class="flex justify-between items-center pt-1 border-t border-slate-200">
+                                    <span class="text-xs font-bold text-slate-600 uppercase">Total Tagihan</span>
+                                    <span class="text-2xl font-black text-brand-600" x-text="formatRupiah(totalKeranjang())"></span>
+                                </div>
+                                <div x-show="activeMemberKasir" class="text-[10px] text-amber-800 font-bold text-right pt-0.5" x-text="'+ Est. Poin Baru: ' + hitungEstimasiPoinDiperoleh() + ' Poin'"></div>
                             </div>
 
                             <div class="grid grid-cols-3 gap-1.5">
@@ -492,7 +574,7 @@
                                 <div class="bg-slate-50 p-4 rounded-2xl border space-y-2">
                                     <p class="text-xs font-bold text-slate-500 uppercase">Scan QRIS untuk Pembayaran</p>
                                     <template x-if="profilToko.qrisImg">
-                                        <img :src="profilToko.qrisImg" class="w-48 h-48 mx-auto object-contain bg-white p-2 rounded-xl border shadow-sm">
+                                        <img :src="profilToko.qrisImg" class="w-44 h-44 mx-auto object-contain bg-white p-2 rounded-xl border shadow-sm">
                                     </template>
                                     <template x-if="!profilToko.qrisImg">
                                         <div class="p-6 bg-amber-50 text-amber-800 rounded-xl border border-amber-200 text-xs font-medium">
@@ -527,6 +609,69 @@
                                 </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: MASTER MEMBER & POIN PELANGGAN -->
+            <div x-show="currentTab === 'member'" class="space-y-4 max-w-5xl mx-auto">
+                <div class="clean-card p-4.5 rounded-2xl">
+                    <h3 class="font-black text-sm text-slate-900 uppercase tracking-wider mb-3 border-b pb-2 flex items-center gap-2">
+                        <i data-lucide="award" class="w-5 h-5 text-amber-500"></i> Pendaftaran Member Pelanggan Baru
+                    </h3>
+                    <form @submit.prevent="simpanMemberBaru()" class="space-y-3">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div>
+                                <label class="text-xs font-bold text-slate-600 uppercase">Nama Lengkap Member</label>
+                                <input type="text" x-model="formMember.nama" required placeholder="misal: Pak Hendra" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-bold">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-slate-600 uppercase">Nomor HP / WhatsApp (ID Member)</label>
+                                <input type="text" x-model="formMember.noHp" required placeholder="misal: 08123456789" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-bold">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-slate-600 uppercase">Alamat Domisili</label>
+                                <input type="text" x-model="formMember.alamat" placeholder="misal: RT 02 / RW 05" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-medium">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-black py-3 rounded-xl text-sm transition shadow-md flex items-center justify-center gap-1.5">
+                            <i data-lucide="user-plus" class="w-4 h-4"></i> Simpan Member Baru
+                        </button>
+                    </form>
+                </div>
+
+                <div class="clean-card p-4.5 rounded-2xl space-y-3">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-3 gap-2">
+                        <div>
+                            <h3 class="font-black text-lg text-slate-900 flex items-center gap-2">
+                                <i data-lucide="users" class="w-5 h-5 text-amber-600"></i> Daftar Member & Saldo Poin
+                            </h3>
+                            <p class="text-xs text-slate-500">Kelola database member & reward poin pelanggan toko Anda</p>
+                        </div>
+                        <input type="text" x-model="searchMember" @keyup.enter="pilihMemberPencarianPertama()" placeholder="Cari nama atau no HP member..." class="w-full sm:w-64 bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-medium">
+                    </div>
+
+                    <div class="space-y-2.5 max-h-[450px] overflow-y-auto pr-1">
+                        <template x-for="m in filteredMember" :key="m.id">
+                            <div @click="pilihMemberDanKeKasir(m.id)" class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 cursor-pointer hover:border-amber-500 hover:bg-amber-50/20 transition">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <h4 class="font-black text-base text-slate-900" x-text="m.nama"></h4>
+                                        <span class="text-[10px] font-extrabold bg-amber-100 text-amber-900 px-2 py-0.5 rounded border border-amber-200" x-text="'⭐ ' + (m.poin || 0) + ' Poin'"></span>
+                                    </div>
+                                    <p class="text-xs text-slate-500 font-semibold mt-0.5" x-text="'📱 WA: ' + m.noHp + ' | 🏠 Alamat: ' + (m.alamat || '-')"></p>
+                                    <p class="text-[10px] text-slate-400 mt-0.5" x-text="'Estimasi Potongan Tunai: ' + formatRupiah((m.poin || 0) * (profilToko.nilaiSatuPoin || 100))"></p>
+                                </div>
+                                <div class="flex items-center gap-2 w-full sm:w-auto justify-end" @click.stop >
+                                    <button @click="hapusMember(m.id)" x-show="isModeOffline || userRole === 'pemilik'" class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl transition" title="Hapus Member">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                        <template x-if="filteredMember.length === 0">
+                            <p class="text-center text-xs text-slate-400 py-8">Belum ada member terdaftar.</p>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -833,11 +978,10 @@
                     </h3>
 
                     <form @submit.prevent="simpanBarang()" class="space-y-3">
-                        <!-- SAKLAR MODE PILIHAN TERPISAH DUS VS ECER -->
                         <div class="bg-slate-100 p-2 rounded-xl flex gap-2">
                             <label class="flex-1 text-center py-2.5 rounded-lg text-xs font-extrabold cursor-pointer transition" :class="formBarang.tipeProduk === 'ecer' ? 'bg-brand-600 text-white shadow' : 'text-slate-600 hover:bg-slate-200'">
                                 <input type="radio" value="ecer" x-model="formBarang.tipeProduk" class="sr-only">
-                                🛒 Produk Eceran (Bisa Opsi Dus)
+                                🛒 Produk 
                             </label>
                             <label class="flex-1 text-center py-2.5 rounded-lg text-xs font-extrabold cursor-pointer transition" :class="formBarang.tipeProduk === 'dus' ? 'bg-amber-600 text-white shadow' : 'text-slate-600 hover:bg-slate-200'">
                                 <input type="radio" value="dus" x-model="formBarang.tipeProduk" class="sr-only">
@@ -852,7 +996,7 @@
                             </div>
                             <div>
                                 <div class="flex justify-between items-center">
-                                    <label class="text-xs font-bold text-slate-600 uppercase" x-text="formBarang.tipeProduk === 'dus' ? 'Kode Barcode / SKU Dus' : 'Kode Barcode / SKU Eceran'"></label>
+                                    <label class="text-xs font-bold text-slate-600 uppercase" x-text="formBarang.tipeProduk === 'dus' ? 'Kode Barcode / SKU Dus' : 'Kode Barcode '"></label>
                                     <button type="button" @click="generateRandomSku()" class="text-[11px] text-brand-600 font-bold hover:underline">✨ Generate Otomatis</button>
                                 </div>
                                 <input type="text" x-model="formBarang.sku" @input="previewBarcode()" required placeholder="Contoh: 899600123" class="w-full mt-1 bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold">
@@ -867,25 +1011,23 @@
                                 <input type="text" x-model="formBarang.kategori" required placeholder="Sembako / Sabun" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-medium">
                             </div>
                             <div>
-                                <label class="text-xs font-bold text-slate-600 uppercase" x-text="formBarang.tipeProduk === 'dus' ? 'Jumlah Stok (Satuan Dus/Karton)' : 'Jumlah Stok (Satuan Ecer / Pcs)'"></label>
+                                <label class="text-xs font-bold text-slate-600 uppercase" x-text="formBarang.tipeProduk === 'dus' ? 'Jumlah Stok (Satuan Dus/Karton)' : 'Jumlah Stok'"></label>
                                 <input type="number" min="0" x-model.number="formBarang.stok" required placeholder="0" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold">
                             </div>
 
-                            <!-- INPUT KHUSUS ECERAN -->
                             <template x-if="formBarang.tipeProduk === 'ecer'">
                                 <div class="contents">
                                     <div>
-                                        <label class="text-xs font-bold text-slate-600 uppercase">Harga Modal Eceran (Rp)</label>
+                                        <label class="text-xs font-bold text-slate-600 uppercase">Harga Modal (Rp)</label>
                                         <input type="number" min="0" x-model.number="formBarang.modal" required placeholder="0" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold">
                                     </div>
                                     <div>
-                                        <label class="text-xs font-bold text-slate-600 uppercase">Harga Jual Eceran / Pcs (Rp)</label>
+                                        <label class="text-xs font-bold text-slate-600 uppercase">Harga Jual  (Rp)</label>
                                         <input type="number" min="0" x-model.number="formBarang.jual" required placeholder="0" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold text-brand-600">
                                     </div>
                                 </div>
                             </template>
 
-                            <!-- INPUT KHUSUS DUS SUSAH / KARTONAN MURNI -->
                             <template x-if="formBarang.tipeProduk === 'dus'">
                                 <div class="contents">
                                     <div>
@@ -894,33 +1036,11 @@
                                     </div>
                                     <div>
                                         <label class="text-xs font-bold text-amber-800 uppercase">Harga Jual Per Dus (Rp)</label>
-                                        <input type="number" min="0" x-model.number="formBarang.jual" required placeholder="0" class="w-full bg-white border border-amber-300 rounded-xl px-3.5 py-3 text-base font-bold text-amber-800">
+                                        <input type="number" min="0" x-model.number="formBarang.jual" required placeholder="0" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold text-amber-800">
                                     </div>
                                 </div>
-                            </template>
-
-                            <!-- PENGATURAN KONVERSI GROSIR HANYA UNTUK PROD ECERAN -->
-                            <div x-show="formBarang.tipeProduk === 'ecer'" class="bg-indigo-50/70 border border-indigo-200 p-3 rounded-xl col-span-1 md:col-span-2 space-y-2">
-                                <p class="text-xs font-bold text-indigo-900 uppercase flex items-center gap-1">
-                                    <i data-lucide="box" class="w-4 h-4 text-indigo-600"></i> Opsi Kartonan / Grosir (Hasil Dari Eceran)
-                                </p>
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                    <div>
-                                        <label class="text-[11px] font-bold text-slate-600 uppercase">Isi Pcs Dalam 1 Dus</label>
-                                        <input type="number" min="0" x-model.number="formBarang.isiDus" placeholder="misal: 24 atau 48" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold">
-                                    </div>
-                                    <div>
-                                        <label class="text-[11px] font-bold text-slate-600 uppercase">Harga Jual Per Dus (Rp)</label>
-                                        <input type="number" min="0" x-model.number="formBarang.hargaDus" placeholder="misal: 120000" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-sm font-bold text-indigo-700">
-                                    </div>
-                                    <div>
-                                        <label class="text-[11px] font-bold text-slate-600 uppercase">Barcode Khusus Dus (Pabrik)</label>
-                                        <input type="text" x-model="formBarang.barcodeDus" placeholder="Scan/isi barcode dus..." class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-sm font-bold text-indigo-700">
-                                    </div>
-                                </div>
-                            </div>
+                            </template>                            
                         </div>
-
                         <div>
                             <label class="text-xs font-bold text-slate-600 uppercase">Upload Gambar Produk</label>
                             <input type="file" accept="image/*" @change="handleFileUpload($event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 mt-1">
@@ -1011,7 +1131,7 @@
                 </div>
             </div>
 
-            <!-- TAB: LAPORAN (DENGAN FITUR SETORAN KARYAWAN KE BOS) -->
+            <!-- TAB: LAPORAN & SETORAN KARYAWAN -->
             <div x-show="currentTab === 'riwayat'" class="space-y-4 max-w-5xl mx-auto">
                 <div class="clean-card p-4.5 rounded-2xl space-y-3">
                     <div class="flex justify-between items-center border-b pb-2">
@@ -1102,9 +1222,14 @@
                                 <div>
                                     <span class="text-xs text-slate-400 font-medium" x-text="trx.tanggal"></span>
                                     <p class="text-lg font-black text-brand-600 mt-0.5" x-text="formatRupiah(trx.total)"></p>
-                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded mt-1 inline-block" 
-                                          :class="trx.metode === 'kasbon' ? 'bg-rose-50 text-rose-700 border border-rose-200' : (trx.metode === 'qris' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-slate-100 text-slate-700')" 
-                                          x-text="'Metode: ' + (trx.metode || 'Tunai').toUpperCase() + (trx.namaPelanggan ? ' ('+trx.namaPelanggan+')' : '')"></span>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded" 
+                                              :class="trx.metode === 'kasbon' ? 'bg-rose-50 text-rose-700 border border-rose-200' : (trx.metode === 'qris' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-slate-100 text-slate-700')" 
+                                              x-text="'Metode: ' + (trx.metode || 'Tunai').toUpperCase() + (trx.namaPelanggan ? ' ('+trx.namaPelanggan+')' : '')"></span>
+                                        <template x-if="trx.member">
+                                            <span class="text-[9px] font-extrabold bg-amber-100 text-amber-900 px-2 py-0.5 rounded border border-amber-200" x-text="'⭐ Member: ' + trx.member.nama + ' (' + trx.member.poinDiperoleh + ' Poin)'"></span>
+                                        </template>
+                                    </div>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <button @click="bukaStokStruk(trx)" class="text-brand-700 bg-brand-50 text-xs px-3 py-2 rounded-xl font-bold border flex items-center gap-1.5">
@@ -1135,7 +1260,7 @@
                 </div>
             </template>
 
-            <!-- MODAL CETAK STIKER BARCODE (DENGAN PILIHAN UKURAN 58MM / 80MM) -->
+            <!-- MODAL CETAK STIKER BARCODE -->
             <template x-if="showStikerModal">
                 <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
                     <div class="bg-white border rounded-3xl p-6 w-full max-w-md space-y-4 shadow-2xl text-center max-h-[90vh] overflow-y-auto">
@@ -1197,7 +1322,7 @@
                 </div>
             </template>
 
-            <!-- MODAL SETORAN KARYAWAN KE BOS (DENGAN REKAP KASBON & CICILAN) -->
+            <!-- MODAL SETORAN KARYAWAN KE BOS -->
             <template x-if="showSetoranModal">
                 <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm">
                     <div class="bg-white border rounded-3xl p-6 w-full max-w-md space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
@@ -1217,7 +1342,7 @@
                             </div>
                         </div>
 
-                        <!-- AREA PREVIEW STRUK SETORAN UNTUK DI PRINT -->
+                        <!-- AREA PREVIEW STRUK SETORAN -->
                         <div id="printable-setoran-area" class="bg-slate-50 border p-4 rounded-2xl space-y-2 text-xs font-mono text-slate-800">
                             <div class="text-center border-b pb-2">
                                 <p class="font-black text-sm uppercase" x-text="profilToko.nama"></p>
@@ -1262,7 +1387,7 @@
                 </div>
             </template>
 
-            <!-- AREA CETAK LAPORAN PDF TERSEMBUNYI -->
+            <!-- AREA CETAK LAPORAN PDF -->
             <div id="printable-laporan-area" class="print-only p-6">
                 <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
                     <h1 style="font-size: 22px; font-weight: bold; margin: 0;" x-text="profilToko.nama || 'KASIRKU'"></h1>
@@ -1301,7 +1426,7 @@
                             <tr>
                                 <td style="border: 1px solid #cbd5e1; padding: 6px;" x-text="t.tanggal"></td>
                                 <td style="border: 1px solid #cbd5e1; padding: 6px;" x-text="(t.metode || 'Tunai').toUpperCase()"></td>
-                                <td style="border: 1px solid #cbd5e1; padding: 6px;" x-text="t.namaPelanggan || '-'"></td>
+                                <td style="border: 1px solid #cbd5e1; padding: 6px;" x-text="t.namaPelanggan || (t.member ? t.member.nama : '-')"></td>
                                 <td style="border: 1px solid #cbd5e1; padding: 6px; font-weight: bold;" x-text="formatRupiah(t.total)"></td>
                             </tr>
                         </template>
@@ -1309,7 +1434,7 @@
                 </table>
             </div>
 
-            <!-- AREA CETAK MASSAL TERSEMBUNYI -->
+            <!-- AREA CETAK MASSAL -->
             <div id="print-all-container" class="print-only">
                 <div style="padding: 10px;">
                     <h2 style="text-align: center; font-family: sans-serif; font-weight: bold; margin-bottom: 20px;">LABEL BARCODE SEMUA PRODUK (ALL) - <span x-text="profilToko.nama"></span></h2>
@@ -1330,42 +1455,69 @@
             <template x-if="showStrukModal">
                 <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
                     <div class="bg-white border rounded-3xl p-6 w-full max-w-xs space-y-4 shadow-2xl">
-                        <div class="text-center border-b border-dashed pb-3">
-                            <h2 class="font-black text-xl tracking-wider uppercase text-slate-900" x-text="profilToko.nama || 'KASIRKU'"></h2>
-                            <p class="text-xs text-slate-600 font-medium leading-snug mt-1" x-text="profilToko.alamat || 'Jl. Contoh Alamat No. 123'"></p>
-                            <p class="text-xs text-slate-500 mt-0.5" x-text="'Telp: ' + (profilToko.telp || '08123456789')"></p>
-                            <div class="border-t border-slate-200 my-2"></div>
-                            <p class="text-xs text-slate-400" x-text="selectedTrx ? selectedTrx.tanggal : ''"></p>
-                            <span class="text-[10px] font-bold px-2 py-0.5 bg-brand-50 text-brand-700 rounded mt-1 inline-block" x-text="'Pembayaran: ' + (selectedTrx && selectedTrx.metode ? selectedTrx.metode : 'Tunai').toUpperCase()"></span>
-                        </div>
-                        <div class="space-y-2 max-h-48 overflow-y-auto text-sm pr-1">
-                            <template x-if="selectedTrx && selectedTrx.items">
-                                <template x-for="item in selectedTrx.items" :key="item.id">
-                                    <div class="flex justify-between">
-                                        <span class="font-bold" x-text="item.nama + ' (' + item.qty + ' ' + (item.tipeSatuan === 'dus' ? 'Dus' : 'x') + ')'"></span>
-                                        <span class="font-black" x-text="formatRupiah(item.qty * item.jual)"></span>
-                                    </div>
-                                </template>
-                            </template>
-                        </div>
-                        <div class="border-t border-dashed pt-3 space-y-1.5 text-sm">
-                            <div class="flex justify-between font-black text-base">
-                                <span>TOTAL</span><span class="text-brand-600" x-text="formatRupiah(selectedTrx ? selectedTrx.total : 0)"></span>
-                            </div>
-                            <template x-if="selectedTrx && selectedTrx.metode === 'tunai'">
-                                <div>
-                                    <div class="flex justify-between text-slate-500">
-                                        <span>BAYAR</span><span x-text="formatRupiah(selectedTrx.bayar)"></span>
-                                    </div>
-                                    <div class="flex justify-between text-slate-500">
-                                        <span>KEMBALI</span><span x-text="formatRupiah(selectedTrx.kembali)"></span>
-                                    </div>
+                        <div id="printable-struk-area" class="text-center border-b border-dashed pb-3 text-slate-900 font-mono">
+                            <h2 class="font-black text-xl tracking-wider uppercase" x-text="profilToko.nama || 'KASIRKU'"></h2>
+                            <p class="text-xs font-medium leading-snug mt-1" x-text="profilToko.alamat || 'Jl. Utama'"></p>
+                            <p class="text-xs mt-0.5" x-text="'Telp: ' + (profilToko.telp || '-')"></p>
+                            <div class="border-t border-slate-300 my-2"></div>
+                            <p class="text-[11px] text-slate-500" x-text="selectedTrx ? selectedTrx.tanggal : ''"></p>
+                            <span class="text-[10px] font-bold px-2 py-0.5 bg-brand-50 text-brand-700 rounded my-1 inline-block" x-text="'Metode: ' + (selectedTrx && selectedTrx.metode ? selectedTrx.metode : 'Tunai').toUpperCase()"></span>
+                            
+                            <template x-if="selectedTrx && selectedTrx.member">
+                                <div class="bg-amber-50 p-1 rounded text-[10px] font-bold text-amber-900 my-1">
+                                    <p x-text="'Member: ' + selectedTrx.member.nama"></p>
+                                    <p x-text="'+ Poin Diperoleh: ' + selectedTrx.member.poinDiperoleh + ' Poin'"></p>
                                 </div>
                             </template>
+
+                            <div class="space-y-1 text-xs text-left my-3 border-t border-b border-dashed py-2">
+                                <template x-if="selectedTrx && selectedTrx.items">
+                                    <template x-for="item in selectedTrx.items" :key="item.id">
+                                        <div>
+                                            <p class="font-bold" x-text="item.nama"></p>
+                                            <div class="flex justify-between text-[11px] text-slate-600">
+                                                <span x-text="item.qty + ' x ' + formatRupiah(item.jual)"></span>
+                                                <span class="font-black" x-text="formatRupiah(item.qty * item.jual)"></span>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </template>
+                            </div>
+
+                            <div class="space-y-1 text-xs text-left font-mono">
+                                <template x-if="selectedTrx && selectedTrx.potonganPoin > 0">
+                                    <div class="flex justify-between text-emerald-600 font-bold">
+                                        <span>Potongan Poin:</span>
+                                        <span x-text="'- ' + formatRupiah(selectedTrx.potonganPoin)"></span>
+                                    </div>
+                                </template>
+                                <div class="flex justify-between font-black text-sm pt-1 border-t">
+                                    <span>TOTAL:</span>
+                                    <span class="text-brand-600" x-text="formatRupiah(selectedTrx ? selectedTrx.total : 0)"></span>
+                                </div>
+                                <template x-if="selectedTrx && selectedTrx.metode === 'tunai'">
+                                    <div>
+                                        <div class="flex justify-between text-slate-500">
+                                            <span>BAYAR:</span><span x-text="formatRupiah(selectedTrx.bayar)"></span>
+                                        </div>
+                                        <div class="flex justify-between text-slate-500">
+                                            <span>KEMBALI:</span><span x-text="formatRupiah(selectedTrx.kembali)"></span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <div class="pt-3 text-[10px] text-slate-500 italic">
+                                Terima kasih atas kunjungan Anda!
+                            </div>
                         </div>
+
                         <div class="pt-2 space-y-2">
-                            <button @click="cetakStrukBluetooth(selectedTrx)" class="w-full bg-brand-600 text-white font-extrabold py-3.5 rounded-xl text-sm flex items-center justify-center gap-2">
+                            <button @click="cetakStrukBluetooth(selectedTrx)" class="w-full bg-brand-600 text-white font-extrabold py-3.5 rounded-xl text-sm flex items-center justify-center gap-2 shadow-md">
                                 <i data-lucide="printer" class="w-4 h-4"></i> Cetak Struk Bluetooth
+                            </button>
+                            <button @click="window.print()" class="w-full bg-slate-800 text-white font-extrabold py-3.5 rounded-xl text-sm flex items-center justify-center gap-2 shadow-md">
+                                <i data-lucide="file-text" class="w-4 h-4"></i> Cetak Struk Web / PDF
                             </button>
                             <button @click="showStrukModal = false" class="w-full bg-slate-100 text-slate-800 font-extrabold py-3 rounded-xl text-sm">Tutup</button>
                         </div>
@@ -1384,8 +1536,8 @@
                     <i data-lucide="boxes" class="w-4 h-4 mb-0.5"></i><span class="text-[9px]">Stok</span>
                 </button>
                 
-                <button @click="currentTab = 'pengeluaran'" :class="currentTab === 'pengeluaran' ? 'text-brand-600 font-extrabold' : 'text-slate-400'" class="flex flex-col items-center py-1">
-                    <i data-lucide="wallet" class="w-4 h-4 mb-0.5"></i><span class="text-[9px]">Biaya</span>
+                <button @click="currentTab = 'member'" :class="currentTab === 'member' ? 'text-amber-600 font-extrabold' : 'text-slate-400'" class="flex flex-col items-center py-1">
+                    <i data-lucide="award" class="w-4 h-4 mb-0.5"></i><span class="text-[9px]">Member</span>
                 </button>
 
                 <button @click="currentTab = 'kasir'" class="flex flex-col items-center -mt-5">
@@ -1395,10 +1547,9 @@
                     <span class="text-[9px] font-extrabold mt-0.5 text-brand-600">Kasir</span>
                 </button>
 
-                <button @click="currentTab = 'keranjang_online'" :class="currentTab === 'keranjang_online' ? 'text-brand-600 font-extrabold' : 'text-slate-400'" class="flex flex-col items-center py-1 relative">
-                    <i data-lucide="shopping-cart" class="w-4 h-4 mb-0.5"></i><span class="text-[8px] leading-none">Online</span>
-                    <span x-show="!isModeOffline && pesananOnlineList.length > 0" class="absolute top-0 right-1 bg-rose-500 w-2 h-2 rounded-full animate-ping"></span>
-                </button>
+                <button @click="currentTab = 'pengeluaran'" :class="currentTab === 'pengeluaran' ? 'text-brand-600 font-extrabold' : 'text-slate-400'" class="flex flex-col items-center py-1 relative">
+    <i data-lucide="wallet" class="w-4 h-4 mb-0.5"></i><span class="text-[9px]">Biaya</span>
+</button>
 
                 <button @click="currentTab = 'kasbon'" :class="currentTab === 'kasbon' ? 'text-brand-600 font-extrabold' : 'text-slate-400'" class="flex flex-col items-center py-1 relative">
                     <i data-lucide="book-open" class="w-4 h-4 mb-0.5"></i><span class="text-[9px]">Kasbon</span>
@@ -1411,7 +1562,7 @@
         </nav>
     </div>
 
-    <!-- Script Logika JavaScript -->
+    <!-- SCRIPT LOGIKA JAVASCRIPT -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyC5f-UcmOC4NmDiWJiP1bS0U7PAJAQQL-s",
@@ -1456,6 +1607,7 @@
                 searchStok: '',
                 searchKasir: '',
                 searchKasbon: '',
+                searchMember: '',
                 filterStokMenipisOnly: false,
                 isEditing: false,
                 editId: null,
@@ -1488,7 +1640,9 @@
                     rekening: '',
                     qrisImg: '',
                     logoImg: '',
-                    isBuka: true
+                    isBuka: true,
+                    rasioPoin: 10000,
+                    nilaiSatuPoin: 100
                 },
 
                 stokBarang: [],
@@ -1496,16 +1650,23 @@
                 riwayatTransaksi: [],
                 riwayatPengeluaran: [],
                 daftarKasbon: [],
+                daftarMember: [],
                 pesananOnlineList: [],
                 activeChatTrx: {},
                 chatMessages: [],
                 inputChatText: '',
                 lastPesananCount: 0,
 
+                // MEMBER KASIR POS
+                selectedMemberId: '',
+                activeMemberKasir: null,
+                tukarPoinKasir: false,
+
                 formBarang: { nama: '', sku: '', kategori: '', modal: '', jual: '', stok: '', gambar: '', isiDus: '', hargaDus: '', barcodeDus: '', tipeProduk: 'ecer' },
                 formPengeluaran: { keterangan: '', jumlah: '' },
                 formEditKasbon: { id: null, namaPelanggan: '', noHp: '', alamat: '', total: 0, sisaHutang: 0 },
                 formSetoran: { namaKaryawan: '', catatan: '' },
+                formMember: { nama: '', noHp: '', alamat: '' },
 
                 init() {
                     this.$nextTick(() => { lucide.createIcons(); });
@@ -1547,12 +1708,14 @@
                         const cBiaya = localStorage.getItem('cache_biaya_' + this.kodeToko);
                         const cProfil = localStorage.getItem('cache_profil_' + this.kodeToko);
                         const cKasbon = localStorage.getItem('cache_kasbon_' + this.kodeToko);
+                        const cMember = localStorage.getItem('cache_member_' + this.kodeToko);
 
                         if (cStok) this.stokBarang = JSON.parse(cStok);
                         if (cTrx) this.riwayatTransaksi = JSON.parse(cTrx);
                         if (cBiaya) this.riwayatPengeluaran = JSON.parse(cBiaya);
-                        if (cProfil) this.profilToko = JSON.parse(cProfil);
+                        if (cProfil) this.profilToko = { ...this.profilToko, ...JSON.parse(cProfil) };
                         if (cKasbon) this.daftarKasbon = JSON.parse(cKasbon);
+                        if (cMember) this.daftarMember = JSON.parse(cMember);
                     } catch(e) {}
                 },
 
@@ -1564,6 +1727,7 @@
                         localStorage.setItem('cache_biaya_' + this.kodeToko, JSON.stringify(this.riwayatPengeluaran));
                         localStorage.setItem('cache_profil_' + this.kodeToko, JSON.stringify(this.profilToko));
                         localStorage.setItem('cache_kasbon_' + this.kodeToko, JSON.stringify(this.daftarKasbon));
+                        localStorage.setItem('cache_member_' + this.kodeToko, JSON.stringify(this.daftarMember));
                     } catch(e) {}
                 },
 
@@ -1580,6 +1744,8 @@
                                 await tokoRef.collection('pengeluaran').doc(String(item.data.id)).set(item.data);
                             } else if (item.type === 'kasbon') {
                                 await tokoRef.collection('kasbon').doc(String(item.data.id)).set(item.data, { merge: true });
+                            } else if (item.type === 'member') {
+                                await tokoRef.collection('member').doc(String(item.data.id)).set(item.data, { merge: true });
                             }
                         }
                         this.offlineQueue = [];
@@ -1689,13 +1855,8 @@
                     return Math.max(0, omset - kasbonHariIni + cicilanHariIni - pengeluaran);
                 },
 
-                bukaModalSetoran() {
-                    this.showSetoranModal = true;
-                },
-
-                cetakStrukSetoran() {
-                    window.print();
-                },
+                bukaModalSetoran() { this.showSetoranModal = true; },
+                cetakStrukSetoran() { window.print(); },
 
                 get filteredDaftarKasbon() {
                     if (!this.searchKasbon) return this.daftarKasbon || [];
@@ -1705,6 +1866,115 @@
                         (k.noHp && k.noHp.toLowerCase().includes(q)) ||
                         (k.alamat && k.alamat.toLowerCase().includes(q))
                     );
+                },
+
+                get filteredMember() {
+                    if (!this.searchMember) return this.daftarMember || [];
+                    const q = this.searchMember.toLowerCase();
+                    return (this.daftarMember || []).filter(m => 
+                        (m.nama && m.nama.toLowerCase().includes(q)) ||
+                        (m.noHp && m.noHp.toLowerCase().includes(q)) ||
+                        (m.alamat && m.alamat.toLowerCase().includes(q))
+                    );
+                },
+
+                async simpanMemberBaru() {
+                    if (!this.formMember.nama.trim() || !this.formMember.noHp.trim()) {
+                        this.showNotification('Lengkapi nama dan nomor HP member!', 'error');
+                        return;
+                    }
+
+                    const docId = String(Date.now());
+                    const newMember = {
+                        id: docId,
+                        nama: this.formMember.nama.trim(),
+                        noHp: this.formMember.noHp.trim(),
+                        alamat: this.formMember.alamat.trim() || '-',
+                        poin: 0,
+                        createdDate: new Date().toLocaleString('id-ID')
+                    };
+
+                    this.daftarMember.unshift(newMember);
+                    this.formMember = { nama: '', noHp: '', alamat: '' };
+                    this.simpanDataCacheLokal();
+
+                    if (!navigator.onLine || this.isModeOffline) {
+                        this.offlineQueue.push({ type: 'member', data: newMember });
+                        localStorage.setItem('warung_offline_queue', JSON.stringify(this.offlineQueue));
+                        this.showNotification('Member baru tersimpan offline');
+                        return;
+                    }
+
+                    try {
+                        await db.collection('kasirku_toko').doc(this.kodeToko).collection('member').doc(docId).set(newMember);
+                        this.showNotification('Member baru berhasil ditambahkan!');
+                    } catch(e) {
+                        this.showNotification('Gagal menyimpan member', 'error');
+                    }
+                },
+
+                async hapusMember(id) {
+                    if (confirm('Yakin ingin menghapus member ini?')) {
+                        this.daftarMember = this.daftarMember.filter(m => String(m.id) !== String(id));
+                        this.simpanDataCacheLokal();
+                        if (navigator.onLine && !this.isModeOffline) {
+                            try {
+                                await db.collection('kasirku_toko').doc(this.kodeToko).collection('member').doc(String(id)).delete();
+                            } catch(e){}
+                        }
+                        this.showNotification('Member berhasil dihapus', 'error');
+                    }
+                },
+
+                pilihMemberKasir() {
+            if (!this.selectedMemberId) {
+                this.activeMemberKasir = null;
+                this.tukarPoinKasir = false;
+                return;
+            }
+            this.activeMemberKasir = this.daftarMember.find(m => String(m.id) === String(this.selectedMemberId)) || null;
+        },
+        pilihMemberPencarianPertama() {
+            const hasil = this.filteredMember;
+            if (hasil.length > 0) {
+                this.pilihMemberDanKeKasir(hasil[0].id);
+            } else {
+                this.showNotification('Member tidak ditemukan', 'error');
+            }
+        },
+
+        // --- TAMBAHKAN FUNGSI INI DI SINI ---
+        pilihMemberDanKeKasir(memberId) {
+            this.selectedMemberId = memberId;
+            this.pilihMemberKasir();
+            this.currentTab = 'kasir';
+            this.showNotification('Member dipilih untuk transaksi');
+        },
+        // -----------------------------------
+
+        totalKeranjangKotor() {
+            return this.keranjang.reduce((acc, c) => acc + ((c.jual || 0) * c.qty), 0);
+        },
+
+                hitungPotonganPoin() {
+                    if (!this.activeMemberKasir || !this.tukarPoinKasir) return 0;
+                    const poinMember = Number(this.activeMemberKasir.poin || 0);
+                    const nilaiPoin = Number(this.profilToko.nilaiSatuPoin || 100);
+                    const totalRupiahPoin = poinMember * nilaiPoin;
+                    return Math.min(totalRupiahPoin, this.totalKeranjangKotor());
+                },
+
+                totalKeranjang() {
+                    const totalKotor = this.totalKeranjangKotor();
+                    const potongan = this.hitungPotonganPoin();
+                    return Math.max(0, totalKotor - potongan);
+                },
+
+                hitungEstimasiPoinDiperoleh() {
+                    const totalNetto = this.totalKeranjang();
+                    const rasio = Number(this.profilToko.rasioPoin || 10000);
+                    if (rasio <= 0) return 0;
+                    return Math.floor(totalNetto / rasio);
                 },
 
                 ringkasanKeuangan() {
@@ -1730,86 +2000,91 @@
                 },
 
                 async prosesLoginOnline() {
-                    this.inisiarkanAudio();
-                    const kodeRaw = this.loginKodeToko ? this.loginKodeToko.trim() : '';
-                    const passRaw = this.loginPassword ? this.loginPassword.trim() : '';
+    this.inisiarkanAudio();
+    const kodeRaw = this.loginKodeToko ? this.loginKodeToko.trim() : '';
+    const passRaw = this.loginPassword ? this.loginPassword.trim() : '';
+    
+    if (!kodeRaw || !passRaw) {
+        this.showNotification('Masukkan Kode Toko dan Password!', 'error');
+        return;
+    }
+    
+    this.isLoadingLogin = true;
 
-                    if (!kodeRaw || !passRaw) {
-                        this.showNotification('Masukkan Kode Toko dan Password!', 'error');
-                        return;
-                    }
+    // JIKA BENAR-BENAR TIDAK ADA KONEKSI INTERNET SAMA SEKALI
+    if (!navigator.onLine) {
+        this.prosesLoginOfflineCache(kodeRaw, passRaw);
+        return;
+    }
 
-                    this.isLoadingLogin = true;
+    try {
+        let licenseDoc = await db.collection('developer_licenses').doc(kodeRaw).get();
+        if (!licenseDoc.exists) {
+            licenseDoc = await db.collection('developer_licenses').doc(kodeRaw.toLowerCase()).get();
+        }
 
-                    if (!navigator.onLine) {
-                        localStorage.setItem('warung_login', 'true');
-                        localStorage.setItem('warung_mode_offline', 'false');
-                        localStorage.setItem('warung_role', this.loginRole);
-                        localStorage.setItem('warung_kode_toko', kodeRaw.toLowerCase());
+        if (!licenseDoc.exists) {
+            this.showNotification('❌ Lisensi tidak terdaftar!', 'error');
+            this.isLoadingLogin = false;
+            return;
+        }
 
-                        this.isLoggedIn = true;
-                        this.isModeOffline = false;
-                        this.userRole = this.loginRole;
-                        this.kodeToko = kodeRaw.toLowerCase();
-                        this.muatDataCacheLokal();
-                        this.isLoadingLogin = false;
-                        this.showNotification('Login Offline Berhasil!');
-                        this.$nextTick(() => { lucide.createIcons(); });
-                        return;
-                    }
+        const licenseData = licenseDoc.data() || {};
+        const passExpected = this.loginRole === 'pemilik' ? licenseData.passwordPemilik : licenseData.passwordKaryawan;
 
-                    try {
-                        let licenseDoc = await db.collection('developer_licenses').doc(kodeRaw).get();
-                        if (!licenseDoc.exists) {
-                            licenseDoc = await db.collection('developer_licenses').doc(kodeRaw.toLowerCase()).get();
-                        }
+        if (passRaw === passExpected) {
+            localStorage.setItem('warung_login', 'true');
+            localStorage.setItem('warung_mode_offline', 'false');
+            localStorage.setItem('warung_role', this.loginRole);
+            localStorage.setItem('warung_kode_toko', kodeRaw.toLowerCase());
+            // Simpan juga password terenkripsi/plain di localStorage untuk validasi offline berikutnya jika diperlukan
+            localStorage.setItem('warung_pass_' + kodeRaw.toLowerCase(), passRaw);
 
-                        if (!licenseDoc.exists) {
-                            this.showNotification('❌ Lisensi tidak terdaftar!', 'error');
-                            this.isLoadingLogin = false;
-                            return;
-                        }
+            this.isLoggedIn = true;
+            this.isModeOffline = false;
+            this.userRole = this.loginRole;
+            this.kodeToko = kodeRaw.toLowerCase();
+            this.muatDataCacheLokal();
+            this.dengarkanDataRealtime();
+            this.showNotification('Berhasil terhubung ke Toko: ' + this.kodeToko.toUpperCase());
+            this.$nextTick(() => { lucide.createIcons(); });
+        } else {
+            this.showNotification('Password Salah!', 'error');
+        }
+    } catch (e) {
+        // JIKA TERJADI ERROR KONEKSI/SERVER, VALIDASI MELALUI CACHE LOKAL (BUKAN ASAL MASUK)
+        this.prosesLoginOfflineCache(kodeRaw, passRaw);
+    } finally {
+        this.isLoadingLogin = false;
+        this.loginPassword = '';
+    }
+},
 
-                        const licenseData = licenseDoc.data() || {};
-                        const passExpected = this.loginRole === 'pemilik' ? licenseData.passwordPemilik : licenseData.passwordKaryawan;
+// Fungsi Tambahan untuk Validasi Aman saat Offline / Gangguan Server
+prosesLoginOfflineCache(kodeRaw, passRaw) {
+    const savedKode = localStorage.getItem('warung_kode_toko');
+    const savedRole = localStorage.getItem('warung_role');
+    const savedPass = localStorage.getItem('warung_pass_' + kodeRaw.toLowerCase());
 
-                        if (passRaw === passExpected) {
-                            localStorage.setItem('warung_login', 'true');
-                            localStorage.setItem('warung_mode_offline', 'false');
-                            localStorage.setItem('warung_role', this.loginRole);
-                            localStorage.setItem('warung_kode_toko', kodeRaw.toLowerCase());
-
-                            this.isLoggedIn = true;
-                            this.isModeOffline = false;
-                            this.userRole = this.loginRole;
-                            this.kodeToko = kodeRaw.toLowerCase();
-
-                            this.muatDataCacheLokal();
-                            this.dengarkanDataRealtime();
-                            this.showNotification('Berhasil terhubung ke Toko: ' + this.kodeToko.toUpperCase());
-                            this.$nextTick(() => { lucide.createIcons(); });
-                        } else {
-                            this.showNotification('Password Salah!', 'error');
-                        }
-                    } catch (e) {
-                        localStorage.setItem('warung_login', 'true');
-                        localStorage.setItem('warung_mode_offline', 'false');
-                        localStorage.setItem('warung_role', this.loginRole);
-                        localStorage.setItem('warung_kode_toko', kodeRaw.toLowerCase());
-
-                        this.isLoggedIn = true;
-                        this.isModeOffline = false;
-                        this.userRole = this.loginRole;
-                        this.kodeToko = kodeRaw.toLowerCase();
-                        this.muatDataCacheLokal();
-                        this.showNotification('Masuk dengan data Cache Lokal');
-                    } finally {
-                        this.isLoadingLogin = false;
-                        this.loginPassword = '';
-                    }
-                },
-
-                logout() {
+    // Cek apakah data input cocok dengan cache perangkat yang pernah login sebelumnya
+    if (savedKode && kodeRaw.toLowerCase() === savedKode.toLowerCase() && passRaw === savedPass) {
+        localStorage.setItem('warung_login', 'true');
+        localStorage.setItem('warung_mode_offline', 'true');
+        
+        this.isLoggedIn = true;
+        this.isModeOffline = true;
+        this.userRole = savedRole || this.loginRole;
+        this.kodeToko = savedKode;
+        this.muatDataCacheLokal();
+        this.showNotification('Masuk dengan Mode Offline (Cache Lokal Aman)');
+        this.$nextTick(() => { lucide.createIcons(); });
+    } else {
+        this.showNotification('Gagal terhubung ke server & Password Cache tidak valid!', 'error');
+    }
+    this.isLoadingLogin = false;
+    this.loginPassword = '';
+},
+                                                                     logout() {
                     unsubs.forEach(u => u && u());
                     unsubs = [];
                     localStorage.removeItem('warung_login');
@@ -1882,6 +2157,14 @@
                         this.simpanDataCacheLokal();
                     }, () => {});
                     unsubs.push(u5);
+
+                    const u6 = tokoRef.collection('member').onSnapshot((snap) => {
+                        const listM = [];
+                        snap.forEach(doc => { listM.push({ id: doc.id, ...doc.data() }); });
+                        this.daftarMember = listM;
+                        this.simpanDataCacheLokal();
+                    }, () => {});
+                    unsubs.push(u6);
                 },
 
                 async simpanProfilToko() {
@@ -2181,7 +2464,7 @@
                 cetakSemuaBarcode() {
                     this.showNotification('Menyiapkan semua barcode...');
                     this.$nextTick(async () => {
-                        await new Promise(resolve => setTimeout(resolve, 100));
+                        await new Promise(resolve => setTimeout(resolve, 150));
                         this.stokBarang.forEach((item, idx) => {
                             try {
                                 const targetId = "#mass-barcode-" + idx;
@@ -2197,7 +2480,7 @@
                                 }
                             } catch(e) {}
                         });
-                        setTimeout(() => { window.print(); }, 400);
+                        setTimeout(() => { window.print(); }, 500);
                     });
                 },
 
@@ -2214,7 +2497,6 @@
                                     this.bunyiBeep();
                                     this.searchKasir = decodedText;
                                     
-                                    // Deteksi apakah barcode yang di-scan adalah Barcode Dus atau Ecer
                                     const foundDus = this.stokBarang.find(i => (i.barcodeDus && i.barcodeDus.trim() === decodedText.trim()) || (i.tipeProduk === 'dus' && i.sku === decodedText.trim()));
                                     if (foundDus) {
                                         this.tambahKeKeranjang(foundDus, 'dus');
@@ -2239,12 +2521,20 @@
                 },
 
                 async tutupScannerKamera() {
-                    if (this.html5QrCode) {
-                        try { await this.html5QrCode.stop(); this.html5QrCode.clear(); } catch (e) {}
-                        finally { this.html5QrCode = null; }
-                    }
-                    this.showScannerModal = false;
-                },
+    if (this.html5QrCode) {
+        try { 
+            if (typeof this.html5QrCode.isScanning !== 'undefined' && this.html5QrCode.isScanning) {
+                await this.html5QrCode.stop(); 
+            }
+            this.html5QrCode.clear(); 
+        } catch (e) {
+            console.warn("Catatan scanner stop:", e);
+        } finally { 
+            this.html5QrCode = null; 
+        }
+    }
+    this.showScannerModal = false;
+},
 
                 get filteredStokKasir() {
                     if (!this.searchKasir) return this.stokBarang || [];
@@ -2298,14 +2588,70 @@
                         }
                     }
                 },
+                
+                updateQtyManual(index) {
+    const c = this.keranjang[index];
+    if (!c) return;
+
+    // Jika input kosong atau sedang dihapus user, biarkan sementara
+    if (c.qty === '' || c.qty === null || isNaN(c.qty)) {
+        return; 
+    }
+
+    let val = parseInt(c.qty);
+    if (val < 1) val = 1;
+
+    const b = this.stokBarang.find(x => String(x.id) === String(c.id));
+    if (b) {
+        const rasio = c.isiRasio || 1;
+        if (val * rasio > b.stok) {
+            c.qty = Math.floor(b.stok / rasio) || 1;
+            this.showNotification('Jumlah melebihi stok yang tersedia!', 'error');
+            return;
+        }
+    }
+    c.qty = val;
+},
 
                 kurangiQtyKeranjang(index) {
                     if (this.keranjang[index].qty > 1) this.keranjang[index].qty--;
                     else this.keranjang.splice(index, 1);
                 },
 
-                totalKeranjang() { return this.keranjang.reduce((acc, c) => acc + ((c.jual || 0) * c.qty), 0); },
                 hitungKembalian() { return (this.uangBayar || 0) - this.totalKeranjang(); },
+
+                async eksekusiUpdatePoinMember(poinTambahan, sisaPoinDigunakan) {
+                    if (!this.activeMemberKasir) return null;
+                    const idM = String(this.activeMemberKasir.id);
+                    let poinBaru = Number(this.activeMemberKasir.poin || 0);
+
+                    if (this.tukarPoinKasir) {
+    const poinTerpakai = Math.ceil(sisaPoinDigunakan / (this.profilToko.nilaiSatuPoin || 100));
+    poinBaru = Math.max(0, poinBaru - poinTerpakai);
+}
+poinBaru += poinTambahan;
+
+                    this.activeMemberKasir.poin = poinBaru;
+                    const idx = this.daftarMember.findIndex(m => String(m.id) === idM);
+                    if (idx !== -1) this.daftarMember[idx].poin = poinBaru;
+
+                    if (navigator.onLine && !this.isModeOffline) {
+                        try {
+                            await db.collection('kasirku_toko').doc(this.kodeToko).collection('member').doc(idM).update({
+                                poin: poinBaru
+                            });
+                        } catch(e){}
+                    } else {
+                        this.offlineQueue.push({ type: 'member', data: { id: idM, poin: poinBaru } });
+                    }
+
+                    return {
+                        id: idM,
+                        nama: this.activeMemberKasir.nama,
+                        poinDiperoleh: poinTambahan,
+                        totalPoinSekarang: poinBaru
+                    };
+                },
 
                 async prosesPembayaran() {
                     const total = this.totalKeranjang();
@@ -2320,16 +2666,23 @@
                         }
                     }
 
+                    const poinBaruTarget = this.hitungEstimasiPoinDiperoleh();
+                    const potonganPoin = this.hitungPotonganPoin();
+                    const dataMemberSummary = await this.eksekusiUpdatePoinMember(poinBaruTarget, potonganPoin);
+
                     const now = Date.now();
                     const transaksiBaru = {
                         id: now,
                         timestamp: now,
                         tanggal: new Date().toLocaleString('id-ID'),
                         items: this.keranjang.map(i => ({ id: i.id, nama: i.nama, jual: Number(i.jual || 0), modal: Number(i.modal || 0), qty: Number(i.qty || 1), tipeSatuan: i.tipeSatuan || 'pcs', isiRasio: i.isiRasio || 1 })),
+                        subtotal: this.totalKeranjangKotor(),
+                        potonganPoin: potonganPoin,
                         total: total,
                         bayar: Number(this.uangBayar),
                         kembali: Number(this.hitungKembalian()),
-                        metode: 'tunai'
+                        metode: 'tunai',
+                        member: dataMemberSummary
                     };
 
                     this.keranjang.forEach(c => {
@@ -2344,8 +2697,7 @@
                         localStorage.setItem('warung_offline_queue', JSON.stringify(this.offlineQueue));
                         this.selectedTrx = transaksiBaru;
                         this.showStrukModal = true;
-                        this.keranjang = [];
-                        this.uangBayar = null;
+                        this.resetFormKasir();
                         this.showNotification('Transaksi dicatat offline');
                         return;
                     }
@@ -2363,16 +2715,14 @@
 
                         this.selectedTrx = transaksiBaru;
                         this.showStrukModal = true;
-                        this.keranjang = [];
-                        this.uangBayar = null;
+                        this.resetFormKasir();
                         this.showNotification('Transaksi Tunai Berhasil & Sinkron!');
                     } catch (e) {
                         this.offlineQueue.push({ type: 'transaksi', data: transaksiBaru });
                         localStorage.setItem('warung_offline_queue', JSON.stringify(this.offlineQueue));
                         this.selectedTrx = transaksiBaru;
                         this.showStrukModal = true;
-                        this.keranjang = [];
-                        this.uangBayar = null;
+                        this.resetFormKasir();
                         this.showNotification('Tersimpan offline');
                     }
                 },
@@ -2388,16 +2738,23 @@
                         }
                     }
 
+                    const poinBaruTarget = this.hitungEstimasiPoinDiperoleh();
+                    const potonganPoin = this.hitungPotonganPoin();
+                    const dataMemberSummary = await this.eksekusiUpdatePoinMember(poinBaruTarget, potonganPoin);
+
                     const now = Date.now();
                     const transaksiBaru = {
                         id: now,
                         timestamp: now,
                         tanggal: new Date().toLocaleString('id-ID'),
                         items: this.keranjang.map(i => ({ id: i.id, nama: i.nama, jual: Number(i.jual || 0), modal: Number(i.modal || 0), qty: Number(i.qty || 1), tipeSatuan: i.tipeSatuan || 'pcs', isiRasio: i.isiRasio || 1 })),
+                        subtotal: this.totalKeranjangKotor(),
+                        potonganPoin: potonganPoin,
                         total: total,
                         bayar: total,
                         kembali: 0,
-                        metode: 'qris'
+                        metode: 'qris',
+                        member: dataMemberSummary
                     };
 
                     this.keranjang.forEach(c => {
@@ -2412,7 +2769,7 @@
                         localStorage.setItem('warung_offline_queue', JSON.stringify(this.offlineQueue));
                         this.selectedTrx = transaksiBaru;
                         this.showStrukModal = true;
-                        this.keranjang = [];
+                        this.resetFormKasir();
                         this.showNotification('QRIS dicatat offline');
                         return;
                     }
@@ -2430,14 +2787,14 @@
 
                         this.selectedTrx = transaksiBaru;
                         this.showStrukModal = true;
-                        this.keranjang = [];
+                        this.resetFormKasir();
                         this.showNotification('Pembayaran QRIS Berhasil & Sinkron!');
                     } catch (e) {
                         this.offlineQueue.push({ type: 'transaksi', data: transaksiBaru });
                         localStorage.setItem('warung_offline_queue', JSON.stringify(this.offlineQueue));
                         this.selectedTrx = transaksiBaru;
                         this.showStrukModal = true;
-                        this.keranjang = [];
+                        this.resetFormKasir();
                         this.showNotification('Tersimpan offline');
                     }
                 },
@@ -2494,10 +2851,7 @@
                         localStorage.setItem('warung_offline_queue', JSON.stringify(this.offlineQueue));
                         this.selectedTrx = transaksiBaru;
                         this.showStrukModal = true;
-                        this.keranjang = [];
-                        this.namaPelangganKasbon = '';
-                        this.noHpKasbon = '';
-                        this.alamatKasbon = '';
+                        this.resetFormKasir();
                         this.showNotification('Kasbon dicatat offline');
                         return;
                     }
@@ -2516,22 +2870,27 @@
 
                         this.selectedTrx = transaksiBaru;
                         this.showStrukModal = true;
-                        this.keranjang = [];
-                        this.namaPelangganKasbon = '';
-                        this.noHpKasbon = '';
-                        this.alamatKasbon = '';
+                        this.resetFormKasir();
                         this.showNotification('Kasbon Pelanggan Berhasil Dicatat!');
                     } catch (e) {
                         this.offlineQueue.push({ type: 'kasbon', data: kasbonBaru });
                         localStorage.setItem('warung_offline_queue', JSON.stringify(this.offlineQueue));
                         this.selectedTrx = transaksiBaru;
                         this.showStrukModal = true;
-                        this.keranjang = [];
-                        this.namaPelangganKasbon = '';
-                        this.noHpKasbon = '';
-                        this.alamatKasbon = '';
+                        this.resetFormKasir();
                         this.showNotification('Tersimpan offline');
                     }
+                },
+
+                resetFormKasir() {
+                    this.keranjang = [];
+                    this.uangBayar = null;
+                    this.selectedMemberId = '';
+                    this.activeMemberKasir = null;
+                    this.tukarPoinKasir = false;
+                    this.namaPelangganKasbon = '';
+                    this.noHpKasbon = '';
+                    this.alamatKasbon = '';
                 },
 
                 bukaModalEditKasbon(k) {
@@ -2736,26 +3095,40 @@
                     document.body.appendChild(link); link.click(); document.body.removeChild(link);
                 },
 
-                cetakLaporanPDF() {
-                    window.print();
-                },
+                cetakLaporanPDF() { window.print(); },
 
                 async connectBluetooth() {
                     try {
-                        const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb'] });
+                        const device = await navigator.bluetooth.requestDevice({ 
+                            acceptAllDevices: true, 
+                            optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb', 'e7810a71-73ae-499d-8c15-faa9aef0c3f2', '0000ff00-0000-1000-8000-00805f9b34fb'] 
+                        });
                         const server = await device.gatt.connect();
-                        const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
-                        this.btCharacteristic = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
-                        this.btDeviceConnected = true;
-                        this.showNotification('Printer Terhubung!');
+                        let service = null;
+                        const services = await server.getPrimaryServices();
+                        if (services.length > 0) service = services[0];
+
+                        if (service) {
+                            const characteristics = await service.getCharacteristics();
+                            if (characteristics.length > 0) {
+                                this.btCharacteristic = characteristics[0];
+                                this.btDeviceConnected = true;
+                                this.showNotification('Printer Bluetooth Terhubung!');
+                                return;
+                            }
+                        }
+                        this.showNotification('Karakteristik Bluetooth tidak ditemukan', 'error');
                     } catch (e) {
-                        this.showNotification('Gagal sambung printer', 'error');
+                        this.showNotification('Gagal sambung printer Bluetooth', 'error');
                     }
                 },
 
                 async cetakStrukBluetooth(trx) {
                     if (!trx) return;
-                    if (!this.btCharacteristic) { await this.connectBluetooth(); if (!this.btCharacteristic) return; }
+                    if (!this.btCharacteristic) { 
+                        await this.connectBluetooth(); 
+                        if (!this.btCharacteristic) return; 
+                    }
                     try {
                         const enc = new TextEncoder();
                         const namaToko = (this.profilToko.nama || 'KASIRKU').toUpperCase();
@@ -2767,7 +3140,16 @@
                         if (telpToko) text += `${telpToko}\n`;
                         text += `--------------------------------\n${trx.tanggal}\nMetode: ${(trx.metode || 'tunai').toUpperCase()}\n--------------------------------\n`;
 
+                        if (trx.member) {
+                            text += `Member : ${trx.member.nama}\n+ Poin : ${trx.member.poinDiperoleh} Poin\n--------------------------------\n`;
+                        }
+
                         (trx.items || []).forEach(i => { text += `${i.nama}\n  ${i.qty} x ${i.jual} = ${i.qty*i.jual}\n`; });
+                        
+                        if (trx.potonganPoin > 0) {
+                            text += `--------------------------------\nPotongan Poin: -Rp ${trx.potonganPoin}\n`;
+                        }
+                        
                         text += `--------------------------------\nTOTAL: Rp ${trx.total}\n`;
                         if (trx.metode !== 'qris' && trx.metode !== 'kasbon') {
                             text += `BAYAR: Rp ${trx.bayar}\nKEMBALI: Rp ${trx.kembali}\n`;
@@ -2775,12 +3157,12 @@
                         if (trx.metode === 'kasbon') {
                             text += `PELANGGAN: ${trx.namaPelanggan || '-'}\nNO HP: ${trx.noHp || '-'}\nSTATUS: KASBON\n`;
                         }
-                        text += `\nTerimakasih!\n\n\n`;
+                        text += `\nTerimakasih Atas Kunjungan Anda!\n\n\n`;
 
                         await this.btCharacteristic.writeValue(enc.encode(text));
-                        this.showNotification('Struk Dicetak!');
+                        this.showNotification('Struk Dicetak ke Printer Bluetooth!');
                     } catch (e) {
-                        this.showNotification('Gagal cetak', 'error');
+                        this.showNotification('Gagal cetak struk Bluetooth', 'error');
                     }
                 }
             }
