@@ -371,21 +371,22 @@
 
             <!-- TAB: KASIR / POS -->
             <div x-show="currentTab === 'kasir'" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                <!-- BAGIAN KIRI: SEARCH & LIST BARANG -->
+                <!-- BAGIAN KIRI: SEARCH & LIST BARANG (Lebar di PC) -->
                 <div class="lg:col-span-7 xl:col-span-8 space-y-4">
                     <div class="flex gap-2">
                         <div class="relative flex-1">
                             <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
                             <input type="text" x-model="searchKasir" 
-       @keydown.enter.prevent="tambahProdukPertamaPencarian()" 
-       placeholder="Cari nama barang atau barcode (ecer/dus)..." 
-       class="w-full bg-white border border-slate-300 rounded-2xl pl-11 pr-4 py-3.5 text-base font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand-600 shadow-sm">
+                                   @keydown.enter.prevent="tambahProdukPertamaPencarian()" 
+                                   placeholder="Cari nama barang atau barcode (ecer/dus)..." 
+                                   class="w-full bg-white border border-slate-300 rounded-2xl pl-11 pr-4 py-3.5 text-base font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand-600 shadow-sm">
                         </div>
                         <button @click="bukaScannerKamera()" class="bg-brand-600 hover:bg-brand-700 text-white px-4 rounded-2xl flex items-center justify-center shadow-md active:scale-95 transition" title="Scan Barcode Kamera">
                             <i data-lucide="scan-line" class="w-6 h-6"></i>
                         </button>
                     </div>
 
+                    <!-- Grid Produk Kasir -->
                     <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 max-h-[580px] lg:max-h-[calc(100vh-210px)] overflow-y-auto pr-1">
                         <template x-for="item in filteredStokKasir" :key="item.id">
                             <div class="border p-3 rounded-2xl transition flex flex-col justify-between relative bg-white border-slate-200 shadow-sm hover:border-brand-500 hover:shadow-md"
@@ -447,8 +448,8 @@
                     </div>
                 </div>
 
-                <!-- BAGIAN KANAN: KERANJANG & INPUT MEMBER -->
-                <div class="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-24 space-y-3">
+                <!-- BAGIAN KANAN: KERANJANG & INPUT MEMBER (Posisinya di Samping pada Tampilan PC) -->
+                <div class="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-20 space-y-3">
                     <!-- SELEKSI MEMBER PELANGGAN (FITUR POIN) -->
                     <div class="clean-card rounded-2xl p-3.5 bg-gradient-to-r from-amber-50/80 to-orange-50/80 border-amber-200">
                         <div class="flex justify-between items-center mb-2">
@@ -482,6 +483,7 @@
                         </template>
                     </div>
 
+                    <!-- KOTAK UTAMA KERANJANG -->
                     <div class="clean-card rounded-2xl p-4.5 space-y-4 shadow-md">
                         <div class="flex justify-between items-center border-b border-slate-200 pb-3">
                             <h3 class="font-black text-base text-slate-900 uppercase tracking-wider flex items-center gap-2">
@@ -490,7 +492,8 @@
                             <button @click="keranjang = []" x-show="keranjang.length > 0" class="text-xs text-rose-600 font-bold hover:underline">Kosongkan</button>
                         </div>
 
-                        <div class="max-h-52 overflow-y-auto space-y-2.5 pr-1 divide-y divide-slate-100">
+                        <!-- Daftar Item di Keranjang -->
+                        <div class="max-h-48 overflow-y-auto space-y-2.5 pr-1 divide-y divide-slate-100">
                             <template x-for="(cart, index) in keranjang" :key="index">
                                 <div class="pt-2 flex justify-between items-center text-sm">
                                     <div class="flex items-center space-x-2.5 flex-1 pr-2">
@@ -511,16 +514,13 @@
                                         </div>
                                     </div>
                                     <div class="flex items-center space-x-1.5">
-    <button @click="kurangiQtyKeranjang(index)" class="w-7 h-7 bg-slate-100 hover:bg-slate-200 rounded-lg font-black text-sm transition">-</button>
-    
-    <!-- Diubah menjadi input number agar bisa diketik manual -->
-    <input type="number" min="1" 
-           x-model.number="cart.qty" 
-           @change="updateQtyManual(index)" 
-           class="w-12 text-center text-sm font-black bg-slate-50 border border-slate-300 rounded-lg py-1 focus:outline-none focus:border-brand-600">
-           
-    <button @click="tambahQtyKeranjang(index)" class="w-7 h-7 bg-slate-100 hover:bg-slate-200 rounded-lg font-black text-sm transition">+</button>
-</div>
+                                        <button @click="kurangiQtyKeranjang(index)" class="w-7 h-7 bg-slate-100 hover:bg-slate-200 rounded-lg font-black text-sm transition">-</button>
+                                        <input type="number" min="1" 
+                                               x-model.number="cart.qty" 
+                                               @change="updateQtyManual(index)" 
+                                               class="w-12 text-center text-sm font-black bg-slate-50 border border-slate-300 rounded-lg py-1 focus:outline-none focus:border-brand-600">
+                                        <button @click="tambahQtyKeranjang(index)" class="w-7 h-7 bg-slate-100 hover:bg-slate-200 rounded-lg font-black text-sm transition">+</button>
+                                    </div>
                                 </div>
                             </template>
                             <template x-if="keranjang.length === 0">
@@ -531,6 +531,7 @@
                             </template>
                         </div>
 
+                        <!-- Ringkasan Total & Tombol Pembayaran -->
                         <div class="border-t border-slate-200 pt-3 space-y-3">
                             <div class="space-y-1 bg-slate-50 p-3.5 rounded-xl border">
                                 <div class="flex justify-between items-center text-xs text-slate-500 font-medium" x-show="tukarPoinKasir && hitungPotonganPoin() > 0">
@@ -554,14 +555,16 @@
                                 <button @click="metodeBayar = 'kasbon'" :class="metodeBayar === 'kasbon' ? 'bg-rose-600 text-white font-bold shadow-md' : 'bg-rose-50 text-rose-700 font-semibold hover:bg-rose-100'" class="py-2.5 rounded-xl text-xs transition">📝 Kasbon</button>
                             </div>
 
+                            <!-- Opsi Pembayaran Tunai -->
                             <div x-show="metodeBayar === 'tunai'" class="space-y-3">
                                 <div class="grid grid-cols-2 gap-2.5">
                                     <div>
                                         <label class="text-xs font-bold text-slate-500 uppercase">Uang Tunai (Rp)</label>
                                         <input type="number" min="0" x-model.number="uangBayar" 
-       @keydown.enter.prevent="prosesPembayaran()" 
-       placeholder="50000" 
-       class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold text-slate-900 focus:outline-none focus:border-brand-600">                                    </div>
+                                               @keydown.enter.prevent="prosesPembayaran()" 
+                                               placeholder="50000" 
+                                               class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold text-slate-900 focus:outline-none focus:border-brand-600">
+                                    </div>
                                     <div>
                                         <label class="text-xs font-bold text-slate-500 uppercase">Kembalian</label>
                                         <div class="bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-3 flex items-center">
@@ -575,14 +578,15 @@
                                 </button>
                             </div>
 
+                            <!-- Opsi Pembayaran QRIS -->
                             <div x-show="metodeBayar === 'qris'" class="space-y-3 text-center">
                                 <div class="bg-slate-50 p-4 rounded-2xl border space-y-2">
                                     <p class="text-xs font-bold text-slate-500 uppercase">Scan QRIS untuk Pembayaran</p>
                                     <template x-if="profilToko.qrisImg">
-                                        <img :src="profilToko.qrisImg" class="w-44 h-44 mx-auto object-contain bg-white p-2 rounded-xl border shadow-sm">
+                                        <img :src="profilToko.qrisImg" class="w-40 h-40 mx-auto object-contain bg-white p-2 rounded-xl border shadow-sm">
                                     </template>
                                     <template x-if="!profilToko.qrisImg">
-                                        <div class="p-6 bg-amber-50 text-amber-800 rounded-xl border border-amber-200 text-xs font-medium">
+                                        <div class="p-4 bg-amber-50 text-amber-800 rounded-xl border border-amber-200 text-xs font-medium">
                                             ⚠️ Gambar QRIS toko belum diatur.
                                         </div>
                                     </template>
@@ -594,7 +598,7 @@
                                 </button>
                             </div>
 
-                            <!-- OPSI KASBON -->
+                            <!-- Opsi Kasbon -->
                             <div x-show="metodeBayar === 'kasbon'" class="space-y-3">
                                 <div class="bg-rose-50 border border-rose-200 p-3.5 rounded-xl space-y-2.5">
                                     <label class="text-xs font-bold text-rose-900 uppercase block">Data Pelanggan / Debitur Kasbon</label>
