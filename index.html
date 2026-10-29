@@ -1096,7 +1096,7 @@
                                         <h4 class="font-extrabold text-slate-900 text-base" x-text="item.nama"></h4>
                                         <div class="text-xs text-slate-500 flex flex-wrap items-center gap-3">
                                             <span x-show="isModeOffline || userRole === 'pemilik'">Modal: <strong class="text-slate-800" x-text="formatRupiah(item.modal)"></strong></span>
-                                            <span x-show="item.tipeProduk !== 'dus'">Jual Ecer: <strong class="text-brand-600 font-bold" x-text="formatRupiah(item.jual)"></strong></span>
+                                            <span x-show="item.tipeProduk !== 'dus'">Jual : <strong class="text-brand-600 font-bold" x-text="formatRupiah(item.jual)"></strong></span>
                                             <span x-show="item.tipeProduk === 'dus'">Jual Per Dus: <strong class="text-amber-700 font-bold" x-text="formatRupiah(item.jual)"></strong></span>
                                             <template x-if="item.tipeProduk !== 'dus' && item.hargaDus > 0">
                                                 <span class="text-indigo-700 font-bold" x-text="'Dus: ' + formatRupiah(item.hargaDus) + ' (' + item.isiDus + ' Pcs)'"></span>
