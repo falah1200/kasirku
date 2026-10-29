@@ -376,7 +376,10 @@
                     <div class="flex gap-2">
                         <div class="relative flex-1">
                             <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                            <input type="text" x-model="searchKasir" placeholder="Cari nama barang atau barcode (ecer/dus)..." class="w-full bg-white border border-slate-300 rounded-2xl pl-11 pr-4 py-3.5 text-base font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand-600 shadow-sm">
+                            <input type="text" x-model="searchKasir" 
+       @keydown.enter.prevent="tambahProdukPertamaPencarian()" 
+       placeholder="Cari nama barang atau barcode (ecer/dus)..." 
+       class="w-full bg-white border border-slate-300 rounded-2xl pl-11 pr-4 py-3.5 text-base font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand-600 shadow-sm">
                         </div>
                         <button @click="bukaScannerKamera()" class="bg-brand-600 hover:bg-brand-700 text-white px-4 rounded-2xl flex items-center justify-center shadow-md active:scale-95 transition" title="Scan Barcode Kamera">
                             <i data-lucide="scan-line" class="w-6 h-6"></i>
@@ -2546,6 +2549,18 @@ prosesLoginOfflineCache(kodeRaw, passRaw) {
                         (i.barcodeDus && i.barcodeDus.toLowerCase().includes(q))
                     );
                 },
+                tambahProdukPertamaPencarian() {
+            const hasilFilter = this.filteredStokKasir;
+            if (hasilFilter.length > 0) {
+                const produkPilihan = hasilFilter[0];
+                const tipe = produkPilihan.tipeProduk === 'dus' ? 'dus' : 'pcs';
+                this.tambahKeKeranjang(produkPilihan, tipe);
+                this.showNotification('Masuk keranjang: ' + produkPilihan.nama);
+                this.searchKasir = '';
+            } else {
+                this.showNotification('Produk tidak ditemukan', 'error');
+            }
+        },
 
                 tambahKeKeranjang(item, tipeSatuan = 'pcs') {
                     if (item.tipeProduk === 'dus') tipeSatuan = 'dus';
