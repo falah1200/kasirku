@@ -558,8 +558,10 @@
                                 <div class="grid grid-cols-2 gap-2.5">
                                     <div>
                                         <label class="text-xs font-bold text-slate-500 uppercase">Uang Tunai (Rp)</label>
-                                        <input type="number" min="0" x-model.number="uangBayar" placeholder="50000" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold text-slate-900 focus:outline-none focus:border-brand-600">
-                                    </div>
+                                        <input type="number" min="0" x-model.number="uangBayar" 
+       @keydown.enter.prevent="prosesPembayaran()" 
+       placeholder="50000" 
+       class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-3 text-base font-bold text-slate-900 focus:outline-none focus:border-brand-600">                                    </div>
                                     <div>
                                         <label class="text-xs font-bold text-slate-500 uppercase">Kembalian</label>
                                         <div class="bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-3 flex items-center">
@@ -1516,9 +1518,10 @@
                         </div>
 
                         <div class="pt-2 space-y-2">
-                            <button @click="cetakStrukBluetooth(selectedTrx)" class="w-full bg-brand-600 text-white font-extrabold py-3.5 rounded-xl text-sm flex items-center justify-center gap-2 shadow-md">
-                                <i data-lucide="printer" class="w-4 h-4"></i> Cetak Struk Bluetooth
-                            </button>
+                            <button @click="showStrukModal = false; cetakStrukBluetooth(selectedTrx)" 
+        class="w-full bg-brand-600 text-white font-extrabold py-3.5 rounded-xl text-sm flex items-center justify-center gap-2 shadow-md">
+    <i data-lucide="printer" class="w-4 h-4"></i> Cetak Struk Bluetooth
+</button>
                             <button @click="window.print()" class="w-full bg-slate-800 text-white font-extrabold py-3.5 rounded-xl text-sm flex items-center justify-center gap-2 shadow-md">
                                 <i data-lucide="file-text" class="w-4 h-4"></i> Cetak Struk Web / PDF
                             </button>
@@ -2627,7 +2630,22 @@ prosesLoginOfflineCache(kodeRaw, passRaw) {
     }
     c.qty = val;
 },
-
+// Tambahkan fungsi ini di dalam warungApp()
+ubahQtyKeyboard(event, index) {
+    if (this.keranjang.length === 0) return;
+    
+    // Jika menekan tombol '+' atau '='
+    if (event.key === '+' || event.key === '=') {
+        event.preventDefault();
+        this.tambahQtyKeranjang(index);
+    }
+    // Jika menekan tombol '-' atau '_'
+    else if (event.key === '-' || event.key === '_') {
+        event.preventDefault();
+        this.kurangiQtyKeranjang(index);
+    }
+},
+                
                 kurangiQtyKeranjang(index) {
                     if (this.keranjang[index].qty > 1) this.keranjang[index].qty--;
                     else this.keranjang.splice(index, 1);
@@ -2669,6 +2687,7 @@ poinBaru += poinTambahan;
                 },
 
                 async prosesPembayaran() {
+                    if (!this.keranjang || this.keranjang.length === 0) return;
                     const total = this.totalKeranjang();
                     if ((this.uangBayar || 0) < total) { this.showNotification('Uang pembayaran kurang!', 'error'); return; }
 
@@ -3140,39 +3159,48 @@ poinBaru += poinTambahan;
 
                 async cetakStrukBluetooth(trx) {
                     if (!trx) return;
+                    this.showStrukModal = false;
                     if (!this.btCharacteristic) { 
                         await this.connectBluetooth(); 
                         if (!this.btCharacteristic) return; 
                     }
                     try {
                         const enc = new TextEncoder();
-                        const namaToko = (this.profilToko.nama || 'KASIRKU').toUpperCase();
-                        const alamatToko = this.profilToko.alamat || '';
-                        const telpToko = this.profilToko.telp ? ('Telp: ' + this.profilToko.telp) : '';
+        const namaToko = (this.profilToko.nama || 'KASIRKU').toUpperCase();
+        const alamatToko = this.profilToko.alamat || '';
+        const telpToko = this.profilToko.telp ? ('Telp: ' + this.profilToko.telp) : '';
+        
+        // Perintah ESC/POS untuk membuat nama toko tebal dan berukuran besar
+        let text = `\x1B@\x1BE\x01\x1D\x21\x01${namaToko}\n`;
+        
+        // Kembalikan ke ukuran normal untuk alamat dan detail berikutnya
+        text += `\x1BE\x00\x1D\x21\x00`;
+        if (alamatToko) text += `${alamatToko}\n`;
+        if (telpToko) text += `${telpToko}\n`;
+        text += `--------------------------------\n${trx.tanggal}\nMetode: ${(trx.metode || 'tunai').toUpperCase()}\n--------------------------------\n`;
 
-                        let text = `\x1B@\x1BA\x01${namaToko}\n`;
-                        if (alamatToko) text += `${alamatToko}\n`;
-                        if (telpToko) text += `${telpToko}\n`;
-                        text += `--------------------------------\n${trx.tanggal}\nMetode: ${(trx.metode || 'tunai').toUpperCase()}\n--------------------------------\n`;
+        if (trx.member) {
+            text += `Member : ${trx.member.nama}\n+ Poin : ${trx.member.poinDiperoleh} Poin\n--------------------------------\n`;
+        }
 
-                        if (trx.member) {
-                            text += `Member : ${trx.member.nama}\n+ Poin : ${trx.member.poinDiperoleh} Poin\n--------------------------------\n`;
-                        }
+        (trx.items || []).forEach(i => { text += `${i.nama}\n  ${i.qty} x ${i.jual} = ${i.qty*i.jual}\n`; });
 
-                        (trx.items || []).forEach(i => { text += `${i.nama}\n  ${i.qty} x ${i.jual} = ${i.qty*i.jual}\n`; });
-                        
-                        if (trx.potonganPoin > 0) {
-                            text += `--------------------------------\nPotongan Poin: -Rp ${trx.potonganPoin}\n`;
-                        }
-                        
-                        text += `--------------------------------\nTOTAL: Rp ${trx.total}\n`;
-                        if (trx.metode !== 'qris' && trx.metode !== 'kasbon') {
-                            text += `BAYAR: Rp ${trx.bayar}\nKEMBALI: Rp ${trx.kembali}\n`;
-                        }
-                        if (trx.metode === 'kasbon') {
-                            text += `PELANGGAN: ${trx.namaPelanggan || '-'}\nNO HP: ${trx.noHp || '-'}\nSTATUS: KASBON\n`;
-                        }
-                        text += `\nTerimakasih Atas Kunjungan Anda!\n\n\n`;
+        if (trx.potonganPoin > 0) {
+            text += `--------------------------------\nPotongan Poin: -Rp ${trx.potonganPoin}\n`;
+        }
+
+        // Cetak bagian TOTAL dengan huruf tebal agar mudah dibaca
+        text += `--------------------------------\n\x1BE\x01TOTAL: Rp ${trx.total}\x1BE\x00\n`;
+
+        if (trx.metode !== 'qris' && trx.metode !== 'kasbon') {
+            text += `BAYAR: Rp ${trx.bayar}\nKEMBALI: Rp ${trx.kembali}\n`;
+        }
+
+        if (trx.metode === 'kasbon') {
+            text += `PELANGGAN: ${trx.namaPelanggan || '-'}\nNO HP: ${trx.noHp || '-'}\nSTATUS: KASBON\n`;
+        }
+
+        text += `\nTerimakasih Atas Kunjungan Anda!\n\n\n`;
 
                         await this.btCharacteristic.writeValue(enc.encode(text));
                         this.showNotification('Struk Dicetak ke Printer Bluetooth!');
