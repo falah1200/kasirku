@@ -2605,7 +2605,7 @@ prosesLoginOfflineCache(kodeRaw, passRaw) {
                         if (totalKebutuhanStok <= item.stok) exist.qty++;
                         else this.showNotification('Batas stok tercapai!', 'error');
                     } else {
-                        this.keranjang.push({ 
+                        this.keranjang.unshift({ 
                             ...item, 
                             tipeSatuan: tipeSatuan,
                             isiRasio: item.tipeProduk === 'dus' ? 1 : isiRasio,
