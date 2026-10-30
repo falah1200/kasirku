@@ -377,9 +377,11 @@
                         <div class="relative flex-1">
                             <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
                             <input type="text" x-model="searchKasir" 
-                                   @keydown.enter.prevent="tambahProdukPertamaPencarian()" 
-                                   placeholder="Cari nama barang atau barcode (ecer/dus)..." 
-                                   class="w-full bg-white border border-slate-300 rounded-2xl pl-11 pr-4 py-3.5 text-base font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand-600 shadow-sm">
+       @keydown.arrow-down.prevent="selectedIndex = Math.min(selectedIndex + 1, filteredStokKasir.length - 1)"
+       @keydown.arrow-up.prevent="selectedIndex = Math.max(selectedIndex - 1, 0)"
+       @keydown.enter.prevent="pilihProdukDariKeyboard()" 
+       placeholder="Cari nama barang atau barcode (ecer/dus)..." 
+       class="w-full bg-white border border-slate-300 rounded-2xl pl-11 pr-4 py-3.5 text-base font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand-600 shadow-sm">
                         </div>
                         <button @click="bukaScannerKamera()" class="bg-brand-600 hover:bg-brand-700 text-white px-4 rounded-2xl flex items-center justify-center shadow-md active:scale-95 transition" title="Scan Barcode Kamera">
                             <i data-lucide="scan-line" class="w-6 h-6"></i>
@@ -388,9 +390,12 @@
 
                     <!-- Grid Produk Kasir -->
                     <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 max-h-[580px] lg:max-h-[calc(100vh-210px)] overflow-y-auto pr-1">
-                        <template x-for="item in filteredStokKasir" :key="item.id">
+                        <template x-for="(item, index) in filteredStokKasir" :key="item.id">
                             <div class="border p-3 rounded-2xl transition flex flex-col justify-between relative bg-white border-slate-200 shadow-sm hover:border-brand-500 hover:shadow-md"
-                                 :class="item.stok === 0 ? 'opacity-40 bg-slate-100' : ''">
+     :class="{
+         'opacity-40 bg-slate-100': item.stok === 0,
+         'ring-2 ring-brand-600 border-brand-600 bg-brand-50/30 shadow-lg': index === selectedIndex
+     }">
                                 <div>
                                     <div class="w-full h-24 bg-slate-100 rounded-xl mb-2 overflow-hidden flex items-center justify-center border border-slate-100">
                                         <template x-if="item.gambar">
@@ -1621,6 +1626,7 @@
                 filterStokMenipisOnly: false,
                 isEditing: false,
                 editId: null,
+                selectedIndex: null,
                 uangBayar: null,
                 namaPelangganKasbon: '',
                 noHpKasbon: '',
@@ -2556,6 +2562,18 @@ prosesLoginOfflineCache(kodeRaw, passRaw) {
                         (i.barcodeDus && i.barcodeDus.toLowerCase().includes(q))
                     );
                 },
+                pilihProdukDariKeyboard() {
+    if (this.selectedIndex !== null && this.filteredStokKasir[this.selectedIndex]) {
+        const produkPilihan = this.filteredStokKasir[this.selectedIndex];
+        const tipe = produkPilihan.tipeProduk === 'dus' ? 'dus' : 'pcs';
+        this.tambahKeKeranjang(produkPilihan, tipe);
+        this.showNotification('Masuk keranjang: ' + produkPilihan.nama);
+        this.searchKasir = '';
+        this.selectedIndex = null;
+    } else {
+        this.tambahProdukPertamaPencarian();
+    }
+},
                 tambahProdukPertamaPencarian() {
             const hasilFilter = this.filteredStokKasir;
             if (hasilFilter.length > 0) {
